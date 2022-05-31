@@ -32,5 +32,6 @@ repos:
     hooks:
       - id: mypy
         exclude: tests/
-        additional_dependencies: [ types-python-dateutil ]
+        additional_dependencies: [ types-python-dateutil, types-pyyaml]
+
         
