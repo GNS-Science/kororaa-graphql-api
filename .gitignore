@@ -7,6 +7,9 @@
 node_modules/**
 package-lock.json
 
+# serverless
+.serverless/**
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

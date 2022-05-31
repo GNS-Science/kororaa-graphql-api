@@ -922,7 +922,7 @@ python-versions = "*"
 name = "pyyaml"
 version = "6.0"
 description = "YAML parser and emitter for Python"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.6"
 
@@ -1219,7 +1219,7 @@ test = []
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.7.2,<4.0"
-content-hash = "9245e3be9973582a4bb632fe60520b2a98b3960fdaabe76e844f7e5e6bfc31ca"
+content-hash = "c5a3a6b61c363c3c10ee100a0aec1f3b4fed887d32f5eb591c554eba5e99c510"
 
 [metadata.files]
 aniso8601 = [

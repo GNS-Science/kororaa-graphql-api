@@ -6,7 +6,15 @@ plugins:
 package:
   individually: false
   patterns:
-    - '!*'
+    - '.git/**'
+    - '.pytest_cache/**'
+    - '.tox/**'
+    - '!docs/**'
+    - '!/**'
+    - '!node_modules/**'
+    - '!package.json'
+    - '!package-log.json'
+    - '!tests/**'
     - kororaa_graphql_api/**
 
 custom:
@@ -53,7 +61,7 @@ custom:
 
 provider:
   name: aws
-  runtime: python3.9
+  runtime: python3.8
   stage: ${opt:stage, 'dev'}
   region: ap-southeast-2
   environment:
