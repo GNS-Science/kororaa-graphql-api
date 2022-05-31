@@ -5,6 +5,7 @@ repo_name: gns-science/kororaa-graphql-api
 #strict: true
 nav:
   - Home: index.md
+  - Development: development.md
   - Installation: installation.md
   - Usage: usage.md
   - Modules: api.md
@@ -51,7 +52,7 @@ plugins:
       lang: en
   - mkdocstrings:
       watch:
-        - kororaa-graphql-api
+        - kororaa_graphql_api
 extra:
   social:
     - icon: fontawesome/brands/twitter
