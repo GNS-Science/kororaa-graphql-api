@@ -74,6 +74,20 @@ provider:
       - name: TempApiKey-${self:custom.stage}
         description: Api key until we have an auth function # Optional
 
+  iamRoleStatements:
+    -  Effect: Allow
+       Action:
+         - "cloudwatch:PutMetricData"
+       Resource: "*"
+    - Effect: Allow
+      Action:
+         - "dynamodb:Scan"
+         - "dynamodb:DescribeTable"
+         - "dynamodb:GetItem"
+         - "dynamodb:ConditionCheckItem"
+         - "dynamodb:Query"
+      Resource: 'arn:aws:dynamodb:ap-southeast-2:461564345538:table/ToshiOpenquakeHazardCurveStats-PROD'
+
 functions:
   app:
     description: The graphql API of ${self:service}
@@ -94,5 +108,6 @@ functions:
           private: true
     environment:
       STACK_NAME: ${self:custom.stack_name}
+      DEPLOYMENT_STAGE: PROD
 
 

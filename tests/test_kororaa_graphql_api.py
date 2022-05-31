@@ -2,17 +2,18 @@
 
 # from unittest import mock
 
-import datetime as dt
+# import datetime as dt
 import unittest
 from unittest import mock
 
-from dateutil.tz import tzutc
+# from dateutil.tz import tzutc
 
 from graphene.test import Client
 
 from kororaa_graphql_api.schema import schema_root
 from kororaa_graphql_api.kororaa_graphql_api import create_app
 from toshi_hazard_store import model
+
 
 class TestFlaskApp(unittest.TestCase):
     """Tests the basic app create."""
@@ -47,7 +48,7 @@ class TestSchemaAboutResolver(unittest.TestCase):
 def mock_query_response(*args, **kwargs):
 
     lvps = list(map(lambda x: model.LevelValuePairAttribute(lvl=x / 1e3, val=(x / 1e6)), range(1, 11)))
-    #print(lvps)
+    # print(lvps)
 
     obj = model.ToshiOpenquakeHazardCurveStats(
         haz_sol_id="ABCDE",
@@ -97,7 +98,7 @@ class TestHazardCurvesResolver(unittest.TestCase):
 
         executed = self.client.execute(QUERY)
         print(executed)
-        res =executed['data']['hazard_curves']
+        res = executed['data']['hazard_curves']
 
         self.assertEqual(mocked_qry.call_count, 1)
         self.assertEqual(res['ok'], True)
