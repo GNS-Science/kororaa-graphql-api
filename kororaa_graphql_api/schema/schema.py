@@ -3,7 +3,9 @@
 import graphene
 from graphene import relay
 from toshi_hazard_store import query
+
 from .toshi_hazard import hazard_models
+
 
 class ToshiHazardCurve(graphene.ObjectType):
     """Represents one set of level and values for a hazard curve."""
@@ -57,7 +59,7 @@ class QueryRoot(graphene.ObjectType):
         imts=graphene.Argument(graphene.List(graphene.String)),
         locs=graphene.Argument(graphene.List(graphene.String)),
         aggs=graphene.Argument(graphene.List(graphene.String)),
-        vs30s=graphene.Argument(graphene.List(graphene.Float))
+        vs30s=graphene.Argument(graphene.List(graphene.Float)),
     )
 
     def resolve_hazard_curves(root, info, **kwargs):
@@ -73,11 +75,15 @@ class QueryRoot(graphene.ObjectType):
                             yield mapping
 
         result_tuples = []
-        for mapping in get_hazard_models(hazard_model=kwargs.get('hazard_model'),
-            vs30s=kwargs.get('vs30s')):
-            result_tuples.append((mapping,
-                list(query.get_hazard_stats_curves(
-                    mapping["toshi_id"], kwargs.get('imts'), kwargs.get('locs'), kwargs.get('aggs')))
+        for mapping in get_hazard_models(hazard_model=kwargs.get('hazard_model'), vs30s=kwargs.get('vs30s')):
+            result_tuples.append(
+                (
+                    mapping,
+                    list(
+                        query.get_hazard_stats_curves(
+                            mapping["toshi_id"], kwargs.get('imts'), kwargs.get('locs'), kwargs.get('aggs')
+                        )
+                    ),
                 )
             )
 
@@ -88,7 +94,11 @@ class QueryRoot(graphene.ObjectType):
                 for obj in query_response:
                     yield ToshiHazardResult(
                         hazard_model=kwargs.get('hazard_model'),
-                        vs30 = mapping['vs30'], imt=obj.imt, loc=obj.loc, agg=obj.agg, curve=get_curve(obj)
+                        vs30=mapping['vs30'],
+                        imt=obj.imt,
+                        loc=obj.loc,
+                        agg=obj.agg,
+                        curve=get_curve(obj),
                     )
 
         def get_curve(obj):
@@ -98,7 +108,6 @@ class QueryRoot(graphene.ObjectType):
                 levels.append(float(lv.lvl))
                 values.append(float(lv.val))
             return ToshiHazardCurve(levels=levels, values=values)
-
 
         return ToshiHazardCurveResult(ok=True, curves=build_response_from_query(result_tuples))
 

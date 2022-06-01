@@ -1,24 +1,29 @@
-import graphene
-from graphene import relay
-
+# import graphene
+# from graphene import relay
 
 # Toshi ID's mapped to VS30
 hazard_models = [
-    { "hazard_model": "TEST1",
+    {
+        "hazard_model": "TEST1",
         "mappings": [
-            {"vs30": 250, "toshi_id": "T3BlbnF1YWtlSGF6YXJkU29sdXRpb246MTAyOTM3" },
-            {"vs30": 350, "toshi_id": "T3BlbnF1YWtlSGF6YXJkU29sdXRpb246MTAyOTYx" }]
+            {"vs30": 250, "toshi_id": "T3BlbnF1YWtlSGF6YXJkU29sdXRpb246MTAyOTM3"},
+            {"vs30": 350, "toshi_id": "T3BlbnF1YWtlSGF6YXJkU29sdXRpb246MTAyOTYx"},
+        ],
     },
-    {"hazard_model": "TEST2",
+    {
+        "hazard_model": "TEST2",
         "mappings": [
-            {"vs30": 250, "toshi_id": "T3BlbnF1YWtlSGF6YXJkU29sdXRpb246MTAyOTcz" },
-            {"vs30": 350, "toshi_id": "T3BlbnF1YWtlSGF6YXJkU29sdXRpb246MTAyOTk3" }]
+            {"vs30": 250, "toshi_id": "T3BlbnF1YWtlSGF6YXJkU29sdXRpb246MTAyOTcz"},
+            {"vs30": 350, "toshi_id": "T3BlbnF1YWtlSGF6YXJkU29sdXRpb246MTAyOTk3"},
+        ],
     },
-    {"hazard_model": "TEST3",
+    {
+        "hazard_model": "TEST3",
         "mappings": [
-            {"vs30": 250, "toshi_id": "T3BlbnF1YWtlSGF6YXJkU29sdXRpb246MTAzMDA5" },
-            {"vs30": 350, "toshi_id": "T3BlbnF1YWtlSGF6YXJkU29sdXRpb246MTAzMDE1" }]
-    }
+            {"vs30": 250, "toshi_id": "T3BlbnF1YWtlSGF6YXJkU29sdXRpb246MTAzMDA5"},
+            {"vs30": 350, "toshi_id": "T3BlbnF1YWtlSGF6YXJkU29sdXRpb246MTAzMDE1"},
+        ],
+    },
 ]
 
 
