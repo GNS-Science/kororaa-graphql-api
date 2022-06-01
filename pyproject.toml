@@ -63,6 +63,7 @@ Flask-Cors = "^3.0.10"
 Flask-GraphQL = "^2.0.1"
 graphene = "<3"
 PyYAML = "^6.0"
+toshi-hazard-store = "^0.3.2"
 
 
 [tool.poetry.extras]
