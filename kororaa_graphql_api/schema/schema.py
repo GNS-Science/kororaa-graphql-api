@@ -3,7 +3,7 @@
 import graphene
 from graphene import relay
 from toshi_hazard_store import query
-
+from .toshi_hazard import hazard_models
 
 class ToshiHazardCurve(graphene.ObjectType):
     """Represents one set of level and values for a hazard curve."""
@@ -21,11 +21,11 @@ class ToshiHazardResult(graphene.ObjectType):
     vs30
     """
 
-    toshi_hazard_id = graphene.ID()
+    hazard_model = graphene.ID()
     loc = graphene.String()
     imt = graphene.String()
     agg = graphene.String()
-
+    vs30 = graphene.Float()
     curve = graphene.Field(ToshiHazardCurve)
 
 
@@ -53,20 +53,43 @@ class QueryRoot(graphene.ObjectType):
 
     hazard_curves = graphene.Field(
         ToshiHazardCurveResult,
-        toshi_hazard_id=graphene.Argument(graphene.ID),
+        hazard_model=graphene.Argument(graphene.String),
         imts=graphene.Argument(graphene.List(graphene.String)),
         locs=graphene.Argument(graphene.List(graphene.String)),
         aggs=graphene.Argument(graphene.List(graphene.String)),
+        vs30s=graphene.Argument(graphene.List(graphene.Float))
     )
 
     def resolve_hazard_curves(root, info, **kwargs):
         print(f"resolve_hazard_curves(root, info, **kwargs) {kwargs}")
         print("#res = list(query.get_hazard_stats_curves(TOSHI_ID, ['PGA'], ['WLG', 'QZN'], ['mean']))")
-        res = list(
-            query.get_hazard_stats_curves(
-                kwargs.get('toshi_hazard_id'), kwargs.get('imts'), kwargs.get('locs'), kwargs.get('aggs')
+
+        def get_hazard_models(hazard_model, vs30s):
+            for model in hazard_models:
+                if model['hazard_model'] == hazard_model:
+                    for mapping in model['mappings']:
+                        if mapping['vs30'] in vs30s:
+                            print(f'mapping {mapping}')
+                            yield mapping
+
+        result_tuples = []
+        for mapping in get_hazard_models(hazard_model=kwargs.get('hazard_model'),
+            vs30s=kwargs.get('vs30s')):
+            result_tuples.append((mapping,
+                list(query.get_hazard_stats_curves(
+                    mapping["toshi_id"], kwargs.get('imts'), kwargs.get('locs'), kwargs.get('aggs')))
+                )
             )
-        )
+
+        def build_response_from_query(result_tuples):
+            # print("build_response_from_query", query_response)
+            # print()
+            for mapping, query_response in result_tuples:
+                for obj in query_response:
+                    yield ToshiHazardResult(
+                        hazard_model=kwargs.get('hazard_model'),
+                        vs30 = mapping['vs30'], imt=obj.imt, loc=obj.loc, agg=obj.agg, curve=get_curve(obj)
+                    )
 
         def get_curve(obj):
             # print(f"get_curve values from {obj}")
@@ -76,15 +99,8 @@ class QueryRoot(graphene.ObjectType):
                 values.append(float(lv.val))
             return ToshiHazardCurve(levels=levels, values=values)
 
-        def build_response_from_query(query_response):
-            # print("build_response_from_query", query_response)
-            # print()
-            for obj in query_response:
-                yield ToshiHazardResult(
-                    toshi_hazard_id=obj.haz_sol_id, imt=obj.imt, loc=obj.loc, agg=obj.agg, curve=get_curve(obj)
-                )
 
-        return ToshiHazardCurveResult(ok=True, curves=build_response_from_query(res))
+        return ToshiHazardCurveResult(ok=True, curves=build_response_from_query(result_tuples))
 
     #     # t0 = dt.utcnow()
     #     # search_result = db_root.search_manager.search(kwargs.get('search_term'))

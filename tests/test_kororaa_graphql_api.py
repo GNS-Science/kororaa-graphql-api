@@ -75,18 +75,20 @@ class TestHazardCurvesResolver(unittest.TestCase):
         QUERY = """
         query {
             hazard_curves (
-                toshi_hazard_id: "ABCDE"
+                hazard_model: "TEST1"
                 imts: ["PGA", "SA(0.5)"]
                 locs: ["WLG", "QZN"]
                 aggs: ["0.1", "mean"]
+                vs30s: [250]
                 )
             {
                 ok
                 curves {
-                    toshi_hazard_id
+                    hazard_model
                     imt
                     loc
                     agg
+                    vs30
                     curve {
                         levels
                         values
@@ -103,4 +105,5 @@ class TestHazardCurvesResolver(unittest.TestCase):
         self.assertEqual(mocked_qry.call_count, 1)
         self.assertEqual(res['ok'], True)
         self.assertEqual(len(res['curves']), 3)
-        self.assertEqual(res['curves'][0]['toshi_hazard_id'], "ABCDE")
+        self.assertEqual(res['curves'][0]['hazard_model'], "TEST1")
+        self.assertEqual(res['curves'][0]['vs30'], 250)
