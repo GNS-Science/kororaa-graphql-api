@@ -5,13 +5,19 @@
 hazard_models = [
     {
         "hazard_model": "TEST1",
+        "notes": "These are the 15km max_jump from GT R2VuZXJhbFRhc2s6MTAyOTM0 .",
         "mappings": [
-            {"vs30": 250, "toshi_id": "T3BlbnF1YWtlSGF6YXJkU29sdXRpb246MTAyOTM3"},
-            {"vs30": 350, "toshi_id": "T3BlbnF1YWtlSGF6YXJkU29sdXRpb246MTAyOTYx"},
+            {"vs30": 250, "toshi_id": "T3BlbnF1YWtlSGF6YXJkU29sdXRpb246MTAzMDA5"},
+            {"vs30": 300, "toshi_id": "T3BlbnF1YWtlSGF6YXJkU29sdXRpb246MTAzMDEy"},
+            {"vs30": 350, "toshi_id": "T3BlbnF1YWtlSGF6YXJkU29sdXRpb246MTAzMDE1"},
+            {"vs30": 400, "toshi_id": "T3BlbnF1YWtlSGF6YXJkU29sdXRpb246MTAzMDE4"},
+            {"vs30": 450, "toshi_id": "T3BlbnF1YWtlSGF6YXJkU29sdXRpb246MTAzMDIx"},
+            {"vs30": 750, "toshi_id": "T3BlbnF1YWtlSGF6YXJkU29sdXRpb246MTAzMDI0"},
         ],
     },
     {
         "hazard_model": "TEST2",
+        "notes": "",
         "mappings": [
             {"vs30": 250, "toshi_id": "T3BlbnF1YWtlSGF6YXJkU29sdXRpb246MTAyOTcz"},
             {"vs30": 350, "toshi_id": "T3BlbnF1YWtlSGF6YXJkU29sdXRpb246MTAyOTk3"},
@@ -19,6 +25,7 @@ hazard_models = [
     },
     {
         "hazard_model": "TEST3",
+        "notes": "",
         "mappings": [
             {"vs30": 250, "toshi_id": "T3BlbnF1YWtlSGF6YXJkU29sdXRpb246MTAzMDA5"},
             {"vs30": 350, "toshi_id": "T3BlbnF1YWtlSGF6YXJkU29sdXRpb246MTAzMDE1"},
