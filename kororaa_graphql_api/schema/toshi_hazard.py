@@ -28,8 +28,16 @@ def df_with_site_codes(df):
     df["loc"] = df.apply(calc_new_col, axis=1)
     return df
 
+def df_with_vs30s(df):
+    """Add vs30 column"""
+    def new_col(row):
+        return 400
 
-SLT_TAG_FINAL_DF = df_with_site_codes(pd.read_json(DF_JSON, dtype={'lat':str,'lon':str}))
+    df["vs30"] = df.apply(new_col, axis=1)
+    return df
+
+SLT_TAG_FINAL_DF = df_with_vs30s(df_with_site_codes(pd.read_json(DF_JSON, dtype={'lat':str,'lon':str})))
+print(SLT_TAG_FINAL_DF)
 
 
 class ToshiHazardCurve(graphene.ObjectType):
@@ -94,34 +102,39 @@ def hazard_curves_dataframe(kwargs):
     imts = kwargs.get('imts')
     aggs = kwargs.get('aggs')
     locs = kwargs.get('locs')
+    vs30s = kwargs.get('vs30s')
 
-    def filter_df(df, imts, aggs):
+    def filter_df(df, imts, locs, aggs, vs30s):
         imt_filter = df['imt'].isin(imts)
-        #vs30_filter = df[df['vs30'].isin(vs30s)]
+        vs30_filter = df['vs30'].isin(vs30s)
         agg_filter = df['agg'].isin(aggs)
         loc_filter = df['loc'].isin(locs)
-        return df[imt_filter & agg_filter & loc_filter]
+        return df[imt_filter & agg_filter & loc_filter & vs30_filter ]
 
-    def build_curve(filtered_df, agg):
-        df = filtered_df[filtered_df['agg'] == agg]
+    def build_curve(filtered_df, imt, loc, agg, vs30):
+        df = filter_df(filtered_df, [imt], [loc], [agg], [vs30])
         levels, values = df['level'].tolist(), df['hazard'].tolist()
-        return ToshiHazardCurve(levels=levels, values=values)
+        if levels and values:
+            return ToshiHazardCurve(levels=levels, values=values)
 
-    def build_response_from_query(df, imts, locs, aggs):
+    def build_response_from_query(df, imts, locs, aggs, vs30s):
         """Todo add vs30s."""
 
-        for(imt, loc, agg) in itertools.product(imts, locs, aggs):
-            yield ToshiHazardResult(
-                hazard_model=kwargs.get('hazard_model'),
-                vs30=400,
-                imt=imt,
-                loc=loc,
-                agg=agg,
-                curve=build_curve(df, agg),
+        for(imt, loc, agg, vs30)  in itertools.product(imts, locs, aggs, vs30s):
+            curve=build_curve(df, imt, loc, agg, vs30)
+            if curve:
+                yield ToshiHazardResult(
+                    hazard_model=kwargs.get('hazard_model'),
+                    vs30=vs30,
+                    imt=imt,
+                    loc=loc,
+                    agg=agg,
+                    curve=curve
                 )
 
-    curves = build_response_from_query(filter_df(SLT_TAG_FINAL_DF, imts, aggs), imts, locs, aggs)
-
+    fdf = filter_df(SLT_TAG_FINAL_DF, imts, locs, aggs, vs30s)
+    print(fdf)
+    curves = build_response_from_query(fdf , imts, locs, aggs, vs30s)
     return ToshiHazardCurveResult(ok=True, curves=curves)
 
 def hazard_curves_dynamodb(kwargs):
