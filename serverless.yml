@@ -6,9 +6,9 @@ plugins:
 package:
   individually: false
   patterns:
-    - '.git/**'
-    - '.pytest_cache/**'
-    - '.tox/**'
+    - '!.git/**'
+    - '!.pytest_cache/**'
+    - '!.tox/**'
     - '!docs/**'
     - '!/**'
     - '!node_modules/**'
@@ -26,10 +26,10 @@ custom:
 
   #serverless-python-requirements settings
   pythonRequirements:
-    dockerizePip: non-linux
+    dockerizePip: true
     slim: true
-    slimPatterns:
-      - '**/*.egg-info*'
+    # slimPatterns:
+    #   - '**/*.egg-info*'
     noDeploy:
       - botocore
 
