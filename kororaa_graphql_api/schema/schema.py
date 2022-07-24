@@ -3,7 +3,7 @@
 import graphene
 from graphene import relay
 
-from .toshi_hazard import hazard_models, hazard_curves_dataframe, hazard_curves_dynamodb, ToshiHazardCurveResult
+from .toshi_hazard import ToshiHazardCurveResult, hazard_curves_dataframe, hazard_curves_dynamodb
 
 
 class QueryRoot(graphene.ObjectType):
@@ -22,7 +22,6 @@ class QueryRoot(graphene.ObjectType):
         vs30s=graphene.Argument(graphene.List(graphene.Float)),
     )
 
-
     def resolve_hazard_curves(root, info, **kwargs):
         print(f"resolve_hazard_curves(root, info, **kwargs) {kwargs}")
         print("#res = list(query.get_hazard_stats_curves(TOSHI_ID, ['PGA'], ['WLG', 'QZN'], ['mean']))")
@@ -34,5 +33,6 @@ class QueryRoot(graphene.ObjectType):
 
     def resolve_about(root, info, **args):
         return "Hello World, I am kororaa_graphql_api!"
+
 
 schema_root = graphene.Schema(query=QueryRoot, mutation=None, auto_camelcase=False)
