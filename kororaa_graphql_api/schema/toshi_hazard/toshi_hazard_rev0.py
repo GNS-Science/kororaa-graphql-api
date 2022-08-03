@@ -4,13 +4,15 @@ from toshi_hazard_store import query
 import itertools
 import logging
 from pathlib import Path
+from typing import Iterable, Any, Dict
 
-import graphene
+
 import pandas as pd
 from nzshm_common.location import location
+from .hazard_schema import ToshiHazardCurveResult, ToshiHazardResult, ToshiHazardCurve
 
 CWD = Path(__file__)
-DF_JSON = str(Path(CWD.parent, '../resources/FullLT_allIMT_nz34_all_aggregates.json'))
+DF_JSON = str(Path(CWD.parent, '../../resources/FullLT_allIMT_nz34_all_aggregates.json'))
 log = logging.getLogger(__name__)
 
 
@@ -43,31 +45,16 @@ def df_with_vs30s(df):
 
 
 SLT_TAG_FINAL_DF = df_with_vs30s(df_with_site_codes(pd.read_json(DF_JSON, dtype={'lat': str, 'lon': str})))
-print(SLT_TAG_FINAL_DF)
+#print(SLT_TAG_FINAL_DF)
 
 
-class ToshiHazardCurve(graphene.ObjectType):
-    """Represents one set of level and values for a hazard curve."""
-
-    levels = graphene.List(graphene.Float, description="IMT levels.")
-    values = graphene.List(graphene.Float, description="Hazard values.")
-
-
-class ToshiHazardResult(graphene.ObjectType):
-    """All the info about a given curve."""
-
-    hazard_model = graphene.String()
-    loc = graphene.String()
-    imt = graphene.String()
-    agg = graphene.String()
-    vs30 = graphene.Float()
-    curve = graphene.Field(ToshiHazardCurve)
-
-
-class ToshiHazardCurveResult(graphene.ObjectType):
-    ok = graphene.Boolean()
-    curves = graphene.List(ToshiHazardResult)
-
+def get_hazard_models(hazard_model:str, vs30s:Iterable[float]) -> Dict[str, Any]:
+    for model in hazard_models:
+        if model['hazard_model'] == hazard_model:
+            for mapping in model['mappings']:
+                if mapping['vs30'] in vs30s:
+                    #rint(f'mapping {mapping}')
+                    yield mapping
 
 # Toshi ID's mapped to VS30
 hazard_models = [
@@ -166,14 +153,6 @@ def hazard_curves_dynamodb(kwargs):
                     agg=obj.agg,
                     curve=get_curve(obj),
                 )
-
-    def get_hazard_models(hazard_model, vs30s):
-        for model in hazard_models:
-            if model['hazard_model'] == hazard_model:
-                for mapping in model['mappings']:
-                    if mapping['vs30'] in vs30s:
-                        print(f'mapping {mapping}')
-                        yield mapping
 
     result_tuples = []
     for mapping in get_hazard_models(hazard_model=kwargs.get('hazard_model'), vs30s=kwargs.get('vs30s')):

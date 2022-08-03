@@ -27,6 +27,7 @@ class QueryRoot(graphene.ObjectType):
         print("#res = list(query.get_hazard_stats_curves(TOSHI_ID, ['PGA'], ['WLG', 'QZN'], ['mean']))")
         hazard_model = kwargs.get('hazard_model')
 
+        # TODO: nasty unstable meh
         if hazard_model == 'DEMO_SLT_TAG_FINAL':
             return hazard_curves_dataframe(kwargs)
         return hazard_curves_dynamodb(kwargs)
