@@ -1,5 +1,6 @@
-"""Schema objects for hazard.""" 
+"""Schema objects for hazard."""
 import graphene
+
 
 class ToshiHazardCurve(graphene.ObjectType):
     """Represents one set of level and values for a hazard curve."""

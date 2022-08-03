@@ -1,10 +1,11 @@
-"""Handl;e Hazard curves from the dataframe JSON."""
+"""Build Hazard curves from the dataframe JSON."""
 import itertools
 import logging
 from pathlib import Path
 
 import pandas as pd
-from .hazard_schema import ToshiHazardCurveResult, ToshiHazardResult, ToshiHazardCurve
+
+from .hazard_schema import ToshiHazardCurve, ToshiHazardCurveResult, ToshiHazardResult
 from .toshi_hazard_rev0 import lookup_site_code
 
 CWD = Path(__file__)

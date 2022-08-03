@@ -8,6 +8,8 @@ from kororaa_graphql_api.schema import schema_root
 from toshi_hazard_store import model
 
 HAZ_MODEL_ID = "GRIDDED"
+
+
 def mock_query_response(*args, **kwargs):
 
     lvps = list(map(lambda x: model.LevelValuePairAttribute(lvl=x / 1e3, val=(x / 1e6)), range(1, 11)))
@@ -23,11 +25,10 @@ def mock_query_response(*args, **kwargs):
     )
     return [obj, obj, obj]
 
+
 @mock.patch('toshi_hazard_store.query.get_hazard_stats_curves', side_effect=mock_query_response)
 class TestHazardCurvesArbitrary(unittest.TestCase):
-    """
-
-    """
+    """ """
 
     def setUp(self):
         self.client = Client(schema_root)
@@ -66,4 +67,3 @@ class TestHazardCurvesArbitrary(unittest.TestCase):
 
         self.assertEqual(res['ok'], True)
         self.assertEqual(mocked_qry.call_count, 0)
-

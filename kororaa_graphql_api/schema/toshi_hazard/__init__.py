@@ -1,4 +1,3 @@
+from .hazard_schema import ToshiHazardCurveResult
 from .toshi_hazard_rev0 import hazard_curves_dynamodb
 from .toshi_hazard_rev1 import hazard_curves_dataframe
-from .hazard_schema import ToshiHazardCurveResult
-

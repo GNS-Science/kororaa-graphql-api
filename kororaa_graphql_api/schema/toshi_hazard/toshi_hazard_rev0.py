@@ -1,19 +1,13 @@
 """Build Hazard curves from the old dynamoDB models."""
 
-from toshi_hazard_store import query
-
-"""The main API schema."""
-import itertools
 import logging
-from pathlib import Path
-from typing import Iterable, Any, Dict
-
+from typing import Any, Dict, Iterable, Iterator
 
 from nzshm_common.location import location
-from .hazard_schema import ToshiHazardCurveResult, ToshiHazardResult, ToshiHazardCurve
+from toshi_hazard_store import query
 
-CWD = Path(__file__)
-DF_JSON = str(Path(CWD.parent, '../../resources/FullLT_allIMT_nz34_all_aggregates.json'))
+from .hazard_schema import ToshiHazardCurve, ToshiHazardCurveResult, ToshiHazardResult
+
 log = logging.getLogger(__name__)
 
 
@@ -25,16 +19,8 @@ def lookup_site_code(lat, lon, default="???"):
     return default
 
 
-def get_hazard_models(hazard_model:str, vs30s:Iterable[float]) -> Dict[str, Any]:
-    for model in hazard_models:
-        if model['hazard_model'] == hazard_model:
-            for mapping in model['mappings']:
-                if mapping['vs30'] in vs30s:
-                    #rint(f'mapping {mapping}')
-                    yield mapping
-
 # Toshi ID's mapped to VS30
-hazard_models = [
+hazard_models: Iterable[Dict] = [
     {
         "hazard_model": "TEST1",
         "notes": "These are the 15km max_jump from GT R2VuZXJhbFRhc2s6MTAyOTM0 .",
@@ -64,6 +50,16 @@ hazard_models = [
         ],
     },
 ]
+
+
+def get_hazard_models(hazard_model: str, vs30s: Iterable[float]) -> Iterator[Dict[str, Any]]:
+    for model in hazard_models:
+        if model['hazard_model'] == hazard_model:
+            for mapping in model['mappings']:
+                if mapping['vs30'] in vs30s:
+                    # rint(f'mapping {mapping}')
+                    yield mapping
+
 
 def hazard_curves_dynamodb(kwargs):
     """Run query against dynamoDB."""
