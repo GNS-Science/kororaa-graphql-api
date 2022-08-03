@@ -29,9 +29,9 @@ Flask-Cors = "^3.0.10"
 Flask-GraphQL = "^2.0.1"
 graphene = "<3"
 PyYAML = "^6.0"
-toshi-hazard-store = "^0.3.2"
 pandas = "^1.4.3"
-nzshm-common = {git = "https://github.com/GNS-Science/nzshm-common-py.git", rev = "5aeef6a7deb41b3c8e915f9f8e1e4ba42fea3b7e"}
+nzshm-common = {git = "https://github.com/GNS-Science/nzshm-common-py.git", rev = "d95df51787c1b42e471e9d8e793c119d07a95e74"}
+toshi-hazard-store = {git = "https://github.com/GNS-Science/toshi-hazard-store.git", rev = "676b3c5eb6658b062fc4ce22b79138955641a1d5"}
 
 
 [tool.poetry.dev-dependencies]
