@@ -1,3 +1,5 @@
+"""Build Hazard curves from the old dynamoDB models."""
+
 from toshi_hazard_store import query
 
 """The main API schema."""
@@ -7,7 +9,6 @@ from pathlib import Path
 from typing import Iterable, Any, Dict
 
 
-import pandas as pd
 from nzshm_common.location import location
 from .hazard_schema import ToshiHazardCurveResult, ToshiHazardResult, ToshiHazardCurve
 
@@ -22,30 +23,6 @@ def lookup_site_code(lat, lon, default="???"):
         if round(float(lat), 2) == loc['latitude'] and round(float(lon), 2) == loc['longitude']:
             return loc['id']
     return default
-
-
-def df_with_site_codes(df):
-    """Add site codes to the datframe"""
-
-    def calc_new_col(row):
-        return lookup_site_code(lat=row['lat'], lon=row['lon'])
-
-    df["loc"] = df.apply(calc_new_col, axis=1)
-    return df
-
-
-def df_with_vs30s(df):
-    """Add vs30 column"""
-
-    def new_col(row):
-        return 400
-
-    df["vs30"] = df.apply(new_col, axis=1)
-    return df
-
-
-SLT_TAG_FINAL_DF = df_with_vs30s(df_with_site_codes(pd.read_json(DF_JSON, dtype={'lat': str, 'lon': str})))
-#print(SLT_TAG_FINAL_DF)
 
 
 def get_hazard_models(hazard_model:str, vs30s:Iterable[float]) -> Dict[str, Any]:
@@ -88,47 +65,6 @@ hazard_models = [
     },
 ]
 
-
-def hazard_curves_dataframe(kwargs):
-    """Run query against the demo dataframe."""
-    assert kwargs.get('hazard_model') == 'DEMO_SLT_TAG_FINAL'
-
-    # print(SLT_TAG_FINAL_DF)
-    imts = kwargs.get('imts')
-    aggs = kwargs.get('aggs')
-    locs = kwargs.get('locs')
-    vs30s = kwargs.get('vs30s')
-
-    def filter_df(df, imts, locs, aggs, vs30s):
-        imt_filter = df['imt'].isin(imts)
-        vs30_filter = df['vs30'].isin(vs30s)
-        agg_filter = df['agg'].isin(aggs)
-        loc_filter = df['loc'].isin(locs)
-        return df[imt_filter & agg_filter & loc_filter & vs30_filter]
-
-    def build_curve(filtered_df, imt, loc, agg, vs30):
-        df = filter_df(filtered_df, [imt], [loc], [agg], [vs30])
-        log.info("build_curve dataframe: %s" % df)
-        levels, values = df['level'].tolist(), df['hazard'].tolist()
-        if levels and values:
-            return ToshiHazardCurve(levels=levels, values=values)
-
-    def build_response_from_query(df, imts, locs, aggs, vs30s):
-        """Todo add vs30s."""
-
-        for (imt, loc, agg, vs30) in itertools.product(imts, locs, aggs, vs30s):
-            curve = build_curve(df, imt, loc, agg, vs30)
-            if curve:
-                yield ToshiHazardResult(
-                    hazard_model=kwargs.get('hazard_model'), vs30=vs30, imt=imt, loc=loc, agg=agg, curve=curve
-                )
-
-    fdf = filter_df(SLT_TAG_FINAL_DF, imts, locs, aggs, vs30s)
-    log.info("hazard_curves_dataframe dataframe: %s" % fdf)
-    curves = build_response_from_query(fdf, imts, locs, aggs, vs30s)
-    return ToshiHazardCurveResult(ok=True, curves=curves)
-
-
 def hazard_curves_dynamodb(kwargs):
     """Run query against dynamoDB."""
 
@@ -168,9 +104,3 @@ def hazard_curves_dynamodb(kwargs):
         )
 
     return ToshiHazardCurveResult(ok=True, curves=build_response_from_query(kwargs.get('hazard_model'), result_tuples))
-
-
-#     # t0 = dt.utcnow()
-#     # search_result = db_root.search_manager.search(kwargs.get('search_term'))
-#     # db_metrics.put_duration(__name__, 'resolve_search' , dt.utcnow()-t0)
-#     # return Search(ok=True, search_result=search_result)
