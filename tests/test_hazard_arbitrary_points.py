@@ -1,4 +1,4 @@
-"""Tests for `kororaa_graphql_api` package."""
+"""Tests for toshi_hazard_rev module."""
 
 import unittest
 import itertools
@@ -58,6 +58,7 @@ class TestResolveArbitraryLocationToGridded(unittest.TestCase):
                     lat
                     lon
                     code
+                    resolution
                 }
             }
         }
@@ -77,7 +78,7 @@ class TestResolveArbitraryLocationToGridded(unittest.TestCase):
         self.assertEqual(res['location']['lon'], expected.lon)
         self.assertEqual(res['location']['lat'], expected.lat)
         self.assertEqual(res['location']['code'], expected.code)
-        # assert 0
+        self.assertEqual(res['location']['resolution'], expected.resolution)
 
 
 @mock.patch('toshi_hazard_store.query_v3.get_hazard_curves', side_effect=mock_query_response)
@@ -86,15 +87,6 @@ class TestHazardCurvesArbitrary(unittest.TestCase):
         self.client = Client(schema_root)
 
     def test_get_hazard_for_gridded_with_key_locations(self, mocked_qry):
-
-        # loc_wlg = LOCATIONS_BY_ID['WLG']
-        # loc_dud = LOCATIONS_BY_ID['DUD']
-
-        # print(loc_wlg, loc_dud)
-        # print()
-        # wlg = CodedLocation(loc_wlg['latitude'], loc_wlg['longitude'], 0.1)
-        # dud = CodedLocation(loc_dud['latitude'], loc_dud['longitude'], 0.1)
-        # locs = [wlg.code, dud.code]
 
         QUERY = """
         query {
@@ -135,21 +127,21 @@ class TestHazardCurvesArbitrary(unittest.TestCase):
         # {'id': 'DUD', 'name': 'Dunedin', 'latitude': -45.87, 'longitude': 170.5}
 
         mocked_qry.assert_called_with(
-            ["-41.300~174.780", "-45.870~170.500"],  # These are the resolved codes for the repective cities by ID
+            ["-41.300~174.780", "-45.870~170.500"],  # the resolved codes for the respective cities by ID
             [400.0, 250.0],
             ['GRIDDED_THE_THIRD'],
             ['PGA', 'SA(0.5)'],
             aggs=["mean", "0.005", "0.995", "0.1", "0.9"],
         )
 
-    def test_get_hazard_for_gridded_with_arb_locations(self, mocked_qry):
+    def test_get_hazard_for_gridded_with_arbitrary_locations(self, mocked_qry):
 
         QUERY = """
         query {
             hazard_curves (
                 hazard_model: "%s"
                 imts: ["PGA", "SA(0.5)"]
-                locs: ["-36.9~174.8"]
+                locs: ["-36.913~174.8080144"]
                 aggs: ["mean", "0.005", "0.995", "0.1", "0.9"]
                 vs30s: [400, 250]
                 )

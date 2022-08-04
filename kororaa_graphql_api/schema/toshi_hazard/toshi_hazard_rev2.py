@@ -5,7 +5,7 @@ import logging
 from nzshm_common.location import CodedLocation, location
 from toshi_hazard_store import query_v3
 
-from .hazard_schema import ToshiHazardCurve, ToshiHazardCurveResult, ToshiHazardResult
+from .hazard_schema import GriddedLocation, ToshiHazardCurve, ToshiHazardCurveResult, ToshiHazardResult
 
 log = logging.getLogger(__name__)
 
@@ -38,11 +38,16 @@ def hazard_curves(kwargs):
         # Check if this is a location ID eg "WLG" and if so, convert to the legit code
         if loc in location.LOCATIONS_BY_ID:
             site = location.LOCATIONS_BY_ID[loc]
-            locations.append(CodedLocation(site['latitude'], site['longitude'], 0.001).code)
+            locations.append(CodedLocation(site['latitude'], site['longitude'], 0.001))
         else:
-            locations.append(CodedLocation(*[float(x) for x in loc.split('~')], 0.001).code)
+            locations.append(CodedLocation(*[float(x) for x in loc.split('~')], 0.1).resample(0.001))
+
+    gridded_locations = [
+        GriddedLocation(lat=loc.lat, lon=loc.lon, code=loc.code, resolution=loc.resolution) for loc in locations
+    ]
+    coded_locations = [loc.code for loc in locations]
 
     res = query_v3.get_hazard_curves(
-        locations, kwargs['vs30s'], [kwargs['hazard_model']], kwargs['imts'], aggs=kwargs['aggs']
+        coded_locations, kwargs['vs30s'], [kwargs['hazard_model']], kwargs['imts'], aggs=kwargs['aggs']
     )
-    return ToshiHazardCurveResult(ok=True, curves=build_response_from_query(res))
+    return ToshiHazardCurveResult(ok=True, locations=gridded_locations, curves=build_response_from_query(res))

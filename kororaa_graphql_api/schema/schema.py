@@ -4,19 +4,15 @@ import graphene
 from graphene import relay
 from nzshm_common.location import CodedLocation
 
-from .toshi_hazard import ToshiHazardCurveResult, hazard_curves, hazard_curves_dataframe, hazard_curves_dynamodb
+from .toshi_hazard import (
+    GriddedLocation,
+    GriddedLocationResult,
+    ToshiHazardCurveResult,
+    hazard_curves,
+    hazard_curves_dataframe,
+    hazard_curves_dynamodb,
+)
 from .toshi_hazard.toshi_hazard_rev0 import get_hazard_models  # TODO deprecate this
-
-
-class GriddedLocation(graphene.ObjectType):
-    lat = graphene.Float()
-    lon = graphene.Float()
-    code = graphene.String()
-
-
-class GriddedLocationResult(graphene.ObjectType):
-    location = graphene.Field(GriddedLocation)
-    ok = graphene.Boolean()
 
 
 class QueryRoot(graphene.ObjectType):
@@ -45,7 +41,10 @@ class QueryRoot(graphene.ObjectType):
     def resolve_gridded_location(root, info, **kwargs):
         grid_loc = CodedLocation(kwargs['lat'], kwargs['lon'], kwargs['resolution'])
         return GriddedLocationResult(
-            location=GriddedLocation(lat=grid_loc.lat, lon=grid_loc.lon, code=grid_loc.code), ok=True
+            location=GriddedLocation(
+                lat=grid_loc.lat, lon=grid_loc.lon, code=grid_loc.code, resolution=grid_loc.resolution
+            ),
+            ok=True,
         )
 
     def resolve_hazard_curves(root, info, **kwargs):

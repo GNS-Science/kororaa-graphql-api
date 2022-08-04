@@ -2,6 +2,13 @@
 import graphene
 
 
+class GriddedLocation(graphene.ObjectType):
+    lat = graphene.Float()
+    lon = graphene.Float()
+    resolution = graphene.Float()
+    code = graphene.String()
+
+
 class ToshiHazardCurve(graphene.ObjectType):
     """Represents one set of level and values for a hazard curve."""
 
@@ -22,4 +29,10 @@ class ToshiHazardResult(graphene.ObjectType):
 
 class ToshiHazardCurveResult(graphene.ObjectType):
     ok = graphene.Boolean()
+    locations = graphene.List(GriddedLocation, required=False)
     curves = graphene.List(ToshiHazardResult)
+
+
+class GriddedLocationResult(graphene.ObjectType):
+    location = graphene.Field(GriddedLocation)
+    ok = graphene.Boolean()
