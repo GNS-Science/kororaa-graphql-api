@@ -33,15 +33,16 @@ def build_hazard_aggregation_models():
                 hazard_model_id=HAZARD_MODEL_ID,
             ).set_location(loc)
 
+
 def mock_query_response(*args, **kwargs):
     return build_hazard_aggregation_models()
 
 
 class TestResolveArbitraryLocationToGridded(unittest.TestCase):
-
     def setUp(self):
         self.client = Client(schema_root)
-    @unittest.skip('not implemented')
+
+    # @unittest.skip('not implemented')
     def test_get_gridded_location(self):
 
         QUERY = """
@@ -60,7 +61,11 @@ class TestResolveArbitraryLocationToGridded(unittest.TestCase):
                 }
             }
         }
-        """ % (locs[0].lat, locs[0].lon, 0.1)
+        """ % (
+            locs[0].lat,
+            locs[0].lon,
+            0.1,
+        )
 
         executed = self.client.execute(QUERY)
         print(executed)
@@ -72,21 +77,31 @@ class TestResolveArbitraryLocationToGridded(unittest.TestCase):
         self.assertEqual(res['location']['lon'], expected.lon)
         self.assertEqual(res['location']['lat'], expected.lat)
         self.assertEqual(res['location']['code'], expected.code)
+        # assert 0
+
 
 @mock.patch('toshi_hazard_store.query_v3.get_hazard_curves', side_effect=mock_query_response)
 class TestHazardCurvesArbitrary(unittest.TestCase):
-
     def setUp(self):
         self.client = Client(schema_root)
 
-    def test_get_hazard_for_gridded(self, mocked_qry):
+    def test_get_hazard_for_gridded_with_key_locations(self, mocked_qry):
+
+        # loc_wlg = LOCATIONS_BY_ID['WLG']
+        # loc_dud = LOCATIONS_BY_ID['DUD']
+
+        # print(loc_wlg, loc_dud)
+        # print()
+        # wlg = CodedLocation(loc_wlg['latitude'], loc_wlg['longitude'], 0.1)
+        # dud = CodedLocation(loc_dud['latitude'], loc_dud['longitude'], 0.1)
+        # locs = [wlg.code, dud.code]
 
         QUERY = """
         query {
             hazard_curves (
                 hazard_model: "%s"
                 imts: ["PGA", "SA(0.5)"]
-                locs: ["WLG", "ZQN"]
+                locs: ["WLG", "DUD"]
                 aggs: ["mean", "0.005", "0.995", "0.1", "0.9"]
                 vs30s: [400, 250]
                 )
@@ -105,7 +120,57 @@ class TestHazardCurvesArbitrary(unittest.TestCase):
                 }
             }
         }
-        """ % (HAZARD_MODEL_ID)
+        """ % (
+            HAZARD_MODEL_ID
+        )  # , json.dumps(locs))
+
+        executed = self.client.execute(QUERY)
+        # print(executed)
+        res = executed['data']['hazard_curves']
+
+        self.assertEqual(res['ok'], True)
+        self.assertEqual(mocked_qry.call_count, 1)
+
+        # {'id': 'WLG', 'name': 'Wellington', 'latitude': -41.3, 'longitude': 174.78}
+        # {'id': 'DUD', 'name': 'Dunedin', 'latitude': -45.87, 'longitude': 170.5}
+
+        mocked_qry.assert_called_with(
+            ["-41.300~174.780", "-45.870~170.500"],  # These are the resolved codes for the repective cities by ID
+            [400.0, 250.0],
+            ['GRIDDED_THE_THIRD'],
+            ['PGA', 'SA(0.5)'],
+            aggs=["mean", "0.005", "0.995", "0.1", "0.9"],
+        )
+
+    def test_get_hazard_for_gridded_with_arb_locations(self, mocked_qry):
+
+        QUERY = """
+        query {
+            hazard_curves (
+                hazard_model: "%s"
+                imts: ["PGA", "SA(0.5)"]
+                locs: ["-36.9~174.8"]
+                aggs: ["mean", "0.005", "0.995", "0.1", "0.9"]
+                vs30s: [400, 250]
+                )
+            {
+                ok
+                curves {
+                    hazard_model
+                    imt
+                    loc
+                    agg
+                    vs30
+                    curve {
+                        levels
+                        values
+                    }
+                }
+            }
+        }
+        """ % (
+            HAZARD_MODEL_ID
+        )
 
         executed = self.client.execute(QUERY)
         print(executed)
@@ -114,5 +179,10 @@ class TestHazardCurvesArbitrary(unittest.TestCase):
         self.assertEqual(res['ok'], True)
         self.assertEqual(mocked_qry.call_count, 1)
 
-        mocked_qry.assert_called_with(['WLG', 'ZQN'], [400.0, 250.0], ['GRIDDED_THE_THIRD'],
-            ['PGA', 'SA(0.5)'], aggs=["mean", "0.005", "0.995", "0.1", "0.9"])
+        mocked_qry.assert_called_with(
+            ['-36.900~174.800'],
+            [400.0, 250.0],
+            ['GRIDDED_THE_THIRD'],
+            ['PGA', 'SA(0.5)'],
+            aggs=["mean", "0.005", "0.995", "0.1", "0.9"],
+        )

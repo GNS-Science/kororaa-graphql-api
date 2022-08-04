@@ -40,7 +40,7 @@ def create_app():
             config = yaml.safe_load(f.read())
         logging.config.dictConfig(config)
     else:
-        print('warning, no logging config found, using basicConfig(INFO)')
+        print('Warning, no logging config found, using basicConfig(INFO)')
         logging.basicConfig(level=logging.INFO)
 
     logger.debug('DEBUG logging enabled')

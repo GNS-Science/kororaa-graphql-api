@@ -1,22 +1,13 @@
 """Build Hazard curves from the old dynamoDB models."""
 
 import logging
-from typing import Any, Dict, Iterable, Iterator
 
-from nzshm_common.location import location
+from nzshm_common.location import CodedLocation, location
 from toshi_hazard_store import query_v3
 
 from .hazard_schema import ToshiHazardCurve, ToshiHazardCurveResult, ToshiHazardResult
 
 log = logging.getLogger(__name__)
-
-
-def lookup_site_code(lat, lon, default="???"):
-    """Map locations to nzshm_common.location.LOCATIONS."""
-    for loc in location.LOCATIONS:
-        if round(float(lat), 2) == loc['latitude'] and round(float(lon), 2) == loc['longitude']:
-            return loc['id']
-    return default
 
 
 def hazard_curves(kwargs):
@@ -31,7 +22,7 @@ def hazard_curves(kwargs):
         return ToshiHazardCurve(levels=levels, values=values)
 
     def build_response_from_query(result):
-        # THS_HazardAggregation-LOCAL<-36.9~174.8, -36.870~174.770:250:PGA:mean:GRIDDED_THE_THIRD>
+        log.info("build_response_from_query")
         for obj in result:
             yield ToshiHazardResult(
                 hazard_model=obj.hazard_model_id,
@@ -42,6 +33,16 @@ def hazard_curves(kwargs):
                 curve=get_curve(obj),
             )
 
-    res = query_v3.get_hazard_curves(kwargs['locs'], kwargs['vs30s'],
-        [kwargs['hazard_model']], kwargs['imts'], aggs=kwargs['aggs'])
+    locations = []
+    for loc in kwargs['locs']:
+        # Check if this is a location ID eg "WLG" and if so, convert to the legit code
+        if loc in location.LOCATIONS_BY_ID:
+            site = location.LOCATIONS_BY_ID[loc]
+            locations.append(CodedLocation(site['latitude'], site['longitude'], 0.001).code)
+        else:
+            locations.append(CodedLocation(*[float(x) for x in loc.split('~')], 0.001).code)
+
+    res = query_v3.get_hazard_curves(
+        locations, kwargs['vs30s'], [kwargs['hazard_model']], kwargs['imts'], aggs=kwargs['aggs']
+    )
     return ToshiHazardCurveResult(ok=True, curves=build_response_from_query(res))
