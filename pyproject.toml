@@ -30,8 +30,10 @@ Flask-GraphQL = "^2.0.1"
 graphene = "<3"
 PyYAML = "^6.0"
 pandas = "^1.4.3"
-nzshm-common = {git = "https://github.com/GNS-Science/nzshm-common-py.git", rev = "d95df51787c1b42e471e9d8e793c119d07a95e74"}
-toshi-hazard-store = {git = "https://github.com/GNS-Science/toshi-hazard-store.git", rev = "676b3c5eb6658b062fc4ce22b79138955641a1d5"}
+toshi-hazard-haste = {git = "https://github.com/GNS-Science/toshi-hazard-haste.git", rev = "b83c7c169009de35c1c76ebe79f129fd4e38c674" }
+toshi-hazard-store = {git = "https://github.com/GNS-Science/toshi-hazard-store.git", rev = "11a8dc13e74dcaa02349a1fe7b326ac52937ceec"}
+geopandas = "^0.11.1"
+matplotlib = "^3.5.3"
 
 
 [tool.poetry.dev-dependencies]
