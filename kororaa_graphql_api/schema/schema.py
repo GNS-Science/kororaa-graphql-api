@@ -8,6 +8,7 @@ from .toshi_hazard import (
     GriddedHazardResult,
     GriddedLocation,
     GriddedLocationResult,
+    RegionGridEnum,
     ToshiHazardCurveResult,
     hazard_curves,
     hazard_curves_dataframe,
@@ -42,13 +43,20 @@ class QueryRoot(graphene.ObjectType):
 
     gridded_hazard = graphene.Field(
         GriddedHazardResult,
-        grid_id=graphene.Argument(graphene.String),
+        grid_id=graphene.Argument(RegionGridEnum),
         hazard_model_ids=graphene.Argument(graphene.List(graphene.String)),
         imts=graphene.Argument(graphene.List(graphene.String)),
         locs=graphene.Argument(graphene.List(graphene.String)),
         aggs=graphene.Argument(graphene.List(graphene.String)),
         vs30s=graphene.Argument(graphene.List(graphene.Float)),
         poes=graphene.Argument(graphene.List(graphene.Float)),
+        # geojson_args = graphene.Argument(GeojsonInputArgs, required=False)
+        # geojson = graphene.Argument(
+        #     color_scale = graphene.String( default_value='jet', required=False),
+        #     stroke_width = graphene.Float(default_value='0.1', required=False),
+        #     stroke_opacity = graphene.Float(default_value='1.0', required=False),
+        #     fill_opacity = graphene.Float(default_value='1.0', required=False)
+        # )
     )
 
     def resolve_gridded_location(root, info, **kwargs):
