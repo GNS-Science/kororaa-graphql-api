@@ -36,6 +36,3 @@ class ToshiHazardCurveResult(graphene.ObjectType):
 class GriddedLocationResult(graphene.ObjectType):
     location = graphene.Field(GriddedLocation)
     ok = graphene.Boolean()
-
-
-

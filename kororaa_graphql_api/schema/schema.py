@@ -5,14 +5,14 @@ from graphene import relay
 from nzshm_common.location import CodedLocation
 
 from .toshi_hazard import (
+    GriddedHazardResult,
     GriddedLocation,
     GriddedLocationResult,
     ToshiHazardCurveResult,
     hazard_curves,
     hazard_curves_dataframe,
     hazard_curves_dynamodb,
-    gridded_hazard,
-    GriddedHazardResult
+    query_gridded_hazard,
 )
 from .toshi_hazard.toshi_hazard_rev0 import get_hazard_models  # TODO deprecate this
 
@@ -48,7 +48,7 @@ class QueryRoot(graphene.ObjectType):
         locs=graphene.Argument(graphene.List(graphene.String)),
         aggs=graphene.Argument(graphene.List(graphene.String)),
         vs30s=graphene.Argument(graphene.List(graphene.Float)),
-        poes=graphene.Argument(graphene.List(graphene.Float))
+        poes=graphene.Argument(graphene.List(graphene.Float)),
     )
 
     def resolve_gridded_location(root, info, **kwargs):
@@ -62,8 +62,7 @@ class QueryRoot(graphene.ObjectType):
 
     def resolve_gridded_hazard(root, info, **kwargs):
         print(f"resolve_gridded_hazard(root, info, **kwargs {kwargs}")
-        return gridded_hazard(kwargs)
-
+        return query_gridded_hazard(kwargs)
 
     def resolve_hazard_curves(root, info, **kwargs):
         print(f"resolve_hazard_curves(root, info, **kwargs) {kwargs}")
