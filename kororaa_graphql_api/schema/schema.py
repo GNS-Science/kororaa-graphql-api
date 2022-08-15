@@ -2,8 +2,17 @@
 
 import graphene
 from graphene import relay
+from nzshm_common.location import CodedLocation
 
-from .toshi_hazard import ToshiHazardCurveResult, hazard_curves_dataframe, hazard_curves_dynamodb
+from .toshi_hazard import (
+    GriddedLocation,
+    GriddedLocationResult,
+    ToshiHazardCurveResult,
+    hazard_curves,
+    hazard_curves_dataframe,
+    hazard_curves_dynamodb,
+)
+from .toshi_hazard.toshi_hazard_rev0 import get_hazard_models  # TODO deprecate this
 
 
 class QueryRoot(graphene.ObjectType):
@@ -12,6 +21,13 @@ class QueryRoot(graphene.ObjectType):
     node = relay.Node.Field()
 
     about = graphene.String(description='About this API ')
+
+    gridded_location = graphene.Field(
+        GriddedLocationResult,
+        lat=graphene.Argument(graphene.Float),
+        lon=graphene.Argument(graphene.Float),
+        resolution=graphene.Argument(graphene.Float),
+    )
 
     hazard_curves = graphene.Field(
         ToshiHazardCurveResult,
@@ -22,14 +38,30 @@ class QueryRoot(graphene.ObjectType):
         vs30s=graphene.Argument(graphene.List(graphene.Float)),
     )
 
+    def resolve_gridded_location(root, info, **kwargs):
+        grid_loc = CodedLocation(kwargs['lat'], kwargs['lon'], kwargs['resolution'])
+        return GriddedLocationResult(
+            location=GriddedLocation(
+                lat=grid_loc.lat, lon=grid_loc.lon, code=grid_loc.code, resolution=grid_loc.resolution
+            ),
+            ok=True,
+        )
+
     def resolve_hazard_curves(root, info, **kwargs):
         print(f"resolve_hazard_curves(root, info, **kwargs) {kwargs}")
         print("#res = list(query.get_hazard_stats_curves(TOSHI_ID, ['PGA'], ['WLG', 'QZN'], ['mean']))")
         hazard_model = kwargs.get('hazard_model')
 
+        # TODO: remove old revs
+        # THE V2 DEMO from Dataframe
         if hazard_model == 'DEMO_SLT_TAG_FINAL':
             return hazard_curves_dataframe(kwargs)
-        return hazard_curves_dynamodb(kwargs)
+
+        # THE V0 OLD TEST data from dynamoDB
+        if list(get_hazard_models(hazard_model=kwargs.get('hazard_model'), vs30s=kwargs.get('vs30s'))):
+            return hazard_curves_dynamodb(kwargs)
+
+        return hazard_curves(kwargs)
 
     def resolve_about(root, info, **args):
         return "Hello World, I am kororaa_graphql_api!"

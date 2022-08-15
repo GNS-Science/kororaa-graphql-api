@@ -64,7 +64,7 @@ def mock_query_response(*args, **kwargs):
 @mock.patch('toshi_hazard_store.query.get_hazard_stats_curves', side_effect=mock_query_response)
 class TestHazardCurvesResolver(unittest.TestCase):
     """
-    The masthead feature of this  API.
+    The masthead feature of this  API rev0.
     """
 
     def setUp(self):

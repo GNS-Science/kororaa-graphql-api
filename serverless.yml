@@ -75,10 +75,10 @@ provider:
         description: Api key until we have an auth function # Optional
 
   iamRoleStatements:
-    -  Effect: Allow
-       Action:
+    - Effect: Allow
+      Action:
          - "cloudwatch:PutMetricData"
-       Resource: "*"
+      Resource: "*"
     - Effect: Allow
       Action:
          - "dynamodb:Scan"
@@ -86,7 +86,9 @@ provider:
          - "dynamodb:GetItem"
          - "dynamodb:ConditionCheckItem"
          - "dynamodb:Query"
-      Resource: 'arn:aws:dynamodb:ap-southeast-2:461564345538:table/ToshiOpenquakeHazardCurveStats-PROD'
+      Resource:
+         - "arn:aws:dynamodb:ap-southeast-2:461564345538:table/THS_HazardAggregation-PROD"
+         - "arn:aws:dynamodb:ap-southeast-2:461564345538:table/ToshiOpenquakeHazardCurveStats-PROD"
 
 functions:
   app:
@@ -109,5 +111,7 @@ functions:
     environment:
       STACK_NAME: ${self:custom.stack_name}
       DEPLOYMENT_STAGE: PROD
+      NZSHM22_HAZARD_STORE_STAGE: PROD
+      NZSHM22_HAZARD_STORE_REGION: ${self:custom.region}
 
 
