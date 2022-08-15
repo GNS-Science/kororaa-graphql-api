@@ -11,6 +11,8 @@ from .toshi_hazard import (
     hazard_curves,
     hazard_curves_dataframe,
     hazard_curves_dynamodb,
+    gridded_hazard,
+    GriddedHazardResult
 )
 from .toshi_hazard.toshi_hazard_rev0 import get_hazard_models  # TODO deprecate this
 
@@ -38,6 +40,17 @@ class QueryRoot(graphene.ObjectType):
         vs30s=graphene.Argument(graphene.List(graphene.Float)),
     )
 
+    gridded_hazard = graphene.Field(
+        GriddedHazardResult,
+        grid_id=graphene.Argument(graphene.String),
+        hazard_model_ids=graphene.Argument(graphene.List(graphene.String)),
+        imts=graphene.Argument(graphene.List(graphene.String)),
+        locs=graphene.Argument(graphene.List(graphene.String)),
+        aggs=graphene.Argument(graphene.List(graphene.String)),
+        vs30s=graphene.Argument(graphene.List(graphene.Float)),
+        poes=graphene.Argument(graphene.List(graphene.Float))
+    )
+
     def resolve_gridded_location(root, info, **kwargs):
         grid_loc = CodedLocation(kwargs['lat'], kwargs['lon'], kwargs['resolution'])
         return GriddedLocationResult(
@@ -46,6 +59,11 @@ class QueryRoot(graphene.ObjectType):
             ),
             ok=True,
         )
+
+    def resolve_gridded_hazard(root, info, **kwargs):
+        print(f"resolve_gridded_hazard(root, info, **kwargs {kwargs}")
+        return gridded_hazard(kwargs)
+
 
     def resolve_hazard_curves(root, info, **kwargs):
         print(f"resolve_hazard_curves(root, info, **kwargs) {kwargs}")
