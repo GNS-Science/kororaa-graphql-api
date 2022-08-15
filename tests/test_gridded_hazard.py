@@ -9,10 +9,7 @@ from unittest import mock
 from graphene.test import Client
 from kororaa_graphql_api.schema import schema_root
 
-# from toshi_hazard_store import model
-
 from toshi_hazard_haste import model as thh_model  # to be mocked
-
 from nzshm_common.grids import RegionGrid
 
 HAZARD_MODEL_ID = 'GRIDDED_THE_THIRD'
@@ -21,14 +18,12 @@ vs30s = [250, 350, 400]
 imts = ['PGA', 'SA(0.5)']
 aggs = ['mean', '0.10']
 
-# import kororaa_graphql_api.schema.toshi_hazard.gridded_hazard
-# locs = [CodedLocation(o['latitude'], o['longitude'], 0.001) for o in LOCATIONS_BY_ID.values()]
-
 
 def build_hazard_aggregation_models(*args, **kwargs):
-    print('args, kwargs', args, kwargs)
+    print('args', args)
+    grid_id = args[1]['location_grid_ids'][0]
     try:
-        grid_size = len(RegionGrid[args[0]].load())
+        grid_size = len(RegionGrid[grid_id].load())
     except KeyError:
         grid_size = 100
 
@@ -36,7 +31,7 @@ def build_hazard_aggregation_models(*args, **kwargs):
 
         obj = thh_model.GriddedHazard.new_model(
             hazard_model_id=HAZARD_MODEL_ID,
-            location_grid_id=args[0],
+            location_grid_id=grid_id,
             vs30=vs30,
             imt=imt,
             agg=agg,
@@ -48,7 +43,7 @@ def build_hazard_aggregation_models(*args, **kwargs):
 
 
 def mock_query_response(*args, **kwargs):
-    return list(build_hazard_aggregation_models(*args, *kwargs))
+    return list(build_hazard_aggregation_models(args, kwargs))
 
 
 @mock.patch(
@@ -93,12 +88,12 @@ class TestGriddedHazard(unittest.TestCase):
         self.assertEqual(mocked_qry.call_count, 1)
 
         mocked_qry.assert_called_with(
-            "WLG_0_01_nb_1_1",
-            [0.1, 0.02],
-            ['GRIDDED_THE_THIRD'],
-            [400.0, 250.0],
-            ['PGA', 'SA(0.5)'],
-            aggs=["mean", "0.9"],
+            hazard_model_ids=['GRIDDED_THE_THIRD'],
+            location_grid_ids=['WLG_0_01_nb_1_1'],
+            vs30s=[400.0, 250.0],
+            imts=['PGA', 'SA(0.5)'],
+            aggs=['mean', '0.9'],
+            poes=[0.1, 0.02],
         )
 
         self.assertEqual(res['gridded_hazard'][0]['grid_id'], "WLG_0_01_nb_1_1")
@@ -134,18 +129,18 @@ class TestGriddedHazard(unittest.TestCase):
         )  # , json.dumps(locs))
 
         executed = self.client.execute(QUERY)
-        # print(executed)
+        print(executed)
         res = executed['data']['gridded_hazard']
         self.assertEqual(res['ok'], True)
         self.assertEqual(mocked_qry.call_count, 1)
 
         mocked_qry.assert_called_with(
-            "NZ_0_2_NB_1_1",
-            [0.1, 0.02],
-            ['GRIDDED_THE_THIRD'],
-            [400.0, 250.0],
-            ['PGA', 'SA(0.5)'],
-            aggs=["mean", "0.9"],
+            hazard_model_ids=['GRIDDED_THE_THIRD'],
+            location_grid_ids=['NZ_0_2_NB_1_1'],
+            vs30s=[400.0, 250.0],
+            imts=['PGA', 'SA(0.5)'],
+            aggs=['mean', '0.9'],
+            poes=[0.1, 0.02],
         )
 
         self.assertEqual(res['gridded_hazard'][0]['grid_id'], "NZ_0_2_NB_1_1")

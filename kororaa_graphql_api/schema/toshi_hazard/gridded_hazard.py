@@ -38,6 +38,7 @@ class GriddedHazard(graphene.ObjectType):
     grid_locations = graphene.List(GriddedLocation)
 
     def resolve_geojson(root, info, **args):
+        """Resolver gridded hazard to geojosn with formatting options."""
 
         log.info('resolve_geojson args: %s' % args)
 
@@ -63,7 +64,7 @@ class GriddedHazard(graphene.ObjectType):
         def fix_nan(poes):
             for i in range(len(poes)):
                 if poes[i] is None:
-                    log.debug('Nan at %s' % i)
+                    log.info('Nan at %s' % i)
                     poes[i] = 0.0
             return poes
 
@@ -94,6 +95,7 @@ class GriddedHazardResult(graphene.ObjectType):
 
 def query_gridded_hazard(kwargs):
     """Run query against dynamoDB."""
+    log.info('query_gridded_hazard args: %s' % kwargs)
 
     def build_response_from_query(result):
         log.info("build_response_from_query %s" % result)
@@ -109,12 +111,11 @@ def query_gridded_hazard(kwargs):
             )
 
     response = model.get_gridded_hazard(
-        RegionGridEnum.get(kwargs['grid_id']).name,
-        kwargs['poes'],
-        kwargs['hazard_model_ids'],
-        kwargs['vs30s'],
-        kwargs['imts'],
+        hazard_model_ids=kwargs['hazard_model_ids'],
+        location_grid_ids=[RegionGridEnum.get(kwargs['grid_id']).name],  # wrapped in list as we receive just a singular
+        vs30s=kwargs['vs30s'],
+        imts=kwargs['imts'],
         aggs=kwargs['aggs'],
+        poes=kwargs['poes'],
     )
-    print('response', response)
     return GriddedHazardResult(ok=True, gridded_hazard=build_response_from_query(response))

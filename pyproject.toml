@@ -13,7 +13,6 @@ classifiers=[
     'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
     'Natural Language :: English',
     'Programming Language :: Python :: 3',
-    'Programming Language :: Python :: 3.7',
     'Programming Language :: Python :: 3.8',
     'Programming Language :: Python :: 3.9',
 ]
@@ -34,7 +33,6 @@ toshi-hazard-haste = {git = "https://github.com/GNS-Science/toshi-hazard-haste.g
 toshi-hazard-store = {git = "https://github.com/GNS-Science/toshi-hazard-store.git", rev = "11a8dc13e74dcaa02349a1fe7b326ac52937ceec"}
 geopandas = "^0.11.1"
 matplotlib = "^3.5.3"
-
 
 [tool.poetry.dev-dependencies]
 
