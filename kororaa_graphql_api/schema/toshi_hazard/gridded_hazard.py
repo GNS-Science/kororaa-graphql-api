@@ -5,11 +5,9 @@ import logging
 import geopandas as gpd
 import graphene
 import matplotlib as mpl
-import matplotlib.cm
-import matplotlib.colors
 from nzshm_common.geometry.geometry import create_square_tile
 from nzshm_common.grids import RegionGrid
-from toshi_hazard_haste import model
+from toshi_hazard_store import query
 
 from .hazard_schema import GriddedLocation
 
@@ -110,7 +108,7 @@ def query_gridded_hazard(kwargs):
                 values=obj.grid_poes,
             )
 
-    response = model.get_gridded_hazard(
+    response = query.get_gridded_hazard(
         hazard_model_ids=kwargs['hazard_model_ids'],
         location_grid_ids=[RegionGridEnum.get(kwargs['grid_id']).name],  # wrapped in list as we receive just a singular
         vs30s=kwargs['vs30s'],

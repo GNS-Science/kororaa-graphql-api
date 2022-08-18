@@ -1,5 +1,7 @@
 """The main API schema."""
 
+import logging
+
 import graphene
 from graphene import relay
 from nzshm_common.location import CodedLocation
@@ -11,11 +13,10 @@ from .toshi_hazard import (
     RegionGridEnum,
     ToshiHazardCurveResult,
     hazard_curves,
-    hazard_curves_dataframe,
-    hazard_curves_dynamodb,
     query_gridded_hazard,
 )
-from .toshi_hazard.toshi_hazard_rev0 import get_hazard_models  # TODO deprecate this
+
+log = logging.getLogger(__name__)
 
 
 class QueryRoot(graphene.ObjectType):
@@ -50,16 +51,10 @@ class QueryRoot(graphene.ObjectType):
         aggs=graphene.Argument(graphene.List(graphene.String)),
         vs30s=graphene.Argument(graphene.List(graphene.Float)),
         poes=graphene.Argument(graphene.List(graphene.Float)),
-        # geojson_args = graphene.Argument(GeojsonInputArgs, required=False)
-        # geojson = graphene.Argument(
-        #     color_scale = graphene.String( default_value='jet', required=False),
-        #     stroke_width = graphene.Float(default_value='0.1', required=False),
-        #     stroke_opacity = graphene.Float(default_value='1.0', required=False),
-        #     fill_opacity = graphene.Float(default_value='1.0', required=False)
-        # )
     )
 
     def resolve_gridded_location(root, info, **kwargs):
+        log.info("resolve_gridded_location kwargs %s" % kwargs)
         grid_loc = CodedLocation(kwargs['lat'], kwargs['lon'], kwargs['resolution'])
         return GriddedLocationResult(
             location=GriddedLocation(
@@ -69,23 +64,11 @@ class QueryRoot(graphene.ObjectType):
         )
 
     def resolve_gridded_hazard(root, info, **kwargs):
-        print(f"resolve_gridded_hazard(root, info, **kwargs {kwargs}")
+        log.info("resolve_gridded_hazard kwargs %s" % kwargs)
         return query_gridded_hazard(kwargs)
 
     def resolve_hazard_curves(root, info, **kwargs):
-        print(f"resolve_hazard_curves(root, info, **kwargs) {kwargs}")
-        print("#res = list(query.get_hazard_stats_curves(TOSHI_ID, ['PGA'], ['WLG', 'QZN'], ['mean']))")
-        hazard_model = kwargs.get('hazard_model')
-
-        # TODO: remove old revs
-        # THE V2 DEMO from Dataframe
-        if hazard_model == 'DEMO_SLT_TAG_FINAL':
-            return hazard_curves_dataframe(kwargs)
-
-        # THE V0 OLD TEST data from dynamoDB
-        if list(get_hazard_models(hazard_model=kwargs.get('hazard_model'), vs30s=kwargs.get('vs30s'))):
-            return hazard_curves_dynamodb(kwargs)
-
+        log.info("resolve_hazard_curves kwargs %s" % kwargs)
         return hazard_curves(kwargs)
 
     def resolve_about(root, info, **args):

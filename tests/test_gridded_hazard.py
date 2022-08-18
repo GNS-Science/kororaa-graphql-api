@@ -9,7 +9,7 @@ from unittest import mock
 from graphene.test import Client
 from kororaa_graphql_api.schema import schema_root
 
-from toshi_hazard_haste import model as thh_model  # to be mocked
+from toshi_hazard_store import model
 from nzshm_common.grids import RegionGrid
 
 HAZARD_MODEL_ID = 'GRIDDED_THE_THIRD'
@@ -29,7 +29,7 @@ def build_hazard_aggregation_models(*args, **kwargs):
 
     for (imt, vs30, agg) in itertools.product(imts, vs30s, aggs):
 
-        obj = thh_model.GriddedHazard.new_model(
+        obj = model.GriddedHazard.new_model(
             hazard_model_id=HAZARD_MODEL_ID,
             location_grid_id=grid_id,
             vs30=vs30,
@@ -47,7 +47,7 @@ def mock_query_response(*args, **kwargs):
 
 
 @mock.patch(
-    'kororaa_graphql_api.schema.toshi_hazard.gridded_hazard.model.get_gridded_hazard', side_effect=mock_query_response
+    'kororaa_graphql_api.schema.toshi_hazard.gridded_hazard.query.get_gridded_hazard', side_effect=mock_query_response
 )
 class TestGriddedHazard(unittest.TestCase):
     def setUp(self):
