@@ -31,12 +31,13 @@ custom:
 
   #serverless-python-requirements settings
   pythonRequirements:
-    dockerizePip: true
+    dockerizePip: non-linux
     slim: true
-    # slimPatterns:
-    #   - '**/*.egg-info*'
+    slimPatterns:
+      - '**/*.egg-info*'
     noDeploy:
       - botocore
+
 
   #Lambda warmer see https://www.serverless.com/plugins/serverless-plugin-warmup
   # warmup:
