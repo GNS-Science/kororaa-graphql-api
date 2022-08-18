@@ -76,7 +76,7 @@ provider:
 
   apiGateway:
     apiKeys:
-      - name: TempApiKey-${self:custom.stage}
+      - name: KoraraaTempApiKey-${self:custom.stage}
         description: Api key until we have an auth function # Optional
 
   iam:
