@@ -17,9 +17,8 @@
   },
   "homepage": "https://github.com/GNS-Science/kororaa-graphql-api#readme",
   "dependencies": {
-    "serverless": "^3.18.2"
-  },
-  "devDependencies": {
+    "ajv": "^8.11.0",
+    "serverless": "^3.18.2",
     "serverless-python-requirements": "^5.4.0",
     "serverless-wsgi": "^3.0.0"
   }
