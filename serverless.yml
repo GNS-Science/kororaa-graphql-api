@@ -79,21 +79,23 @@ provider:
       - name: TempApiKey-${self:custom.stage}
         description: Api key until we have an auth function # Optional
 
-  iamRoleStatements:
-    - Effect: Allow
-      Action:
-         - "cloudwatch:PutMetricData"
-      Resource: "*"
-    - Effect: Allow
-      Action:
-         - "dynamodb:Scan"
-         - "dynamodb:DescribeTable"
-         - "dynamodb:GetItem"
-         - "dynamodb:ConditionCheckItem"
-         - "dynamodb:Query"
-      Resource:
-         - "arn:aws:dynamodb:ap-southeast-2:461564345538:table/THS_HazardAggregation-PROD"
-         - "arn:aws:dynamodb:ap-southeast-2:461564345538:table/THS_GriddedHazard-PROD"
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action:
+             - "cloudwatch:PutMetricData"
+          Resource: "*"
+        - Effect: Allow
+          Action:
+             - "dynamodb:Scan"
+             - "dynamodb:DescribeTable"
+             - "dynamodb:GetItem"
+             - "dynamodb:ConditionCheckItem"
+             - "dynamodb:Query"
+          Resource:
+             - "arn:aws:dynamodb:ap-southeast-2:461564345538:table/THS_HazardAggregation-PROD"
+             - "arn:aws:dynamodb:ap-southeast-2:461564345538:table/THS_GriddedHazard-PROD"
 
 
 functions:
