@@ -93,8 +93,7 @@ provider:
          - "dynamodb:Query"
       Resource:
          - "arn:aws:dynamodb:ap-southeast-2:461564345538:table/THS_HazardAggregation-PROD"
-         - "arn:aws:dynamodb:ap-southeast-2:461564345538:table/ToshiOpenquakeHazardCurveStats-PROD"
-         - "arn:aws:dynamodb:ap-southeast-2:461564345538:table/THH_GriddedHazard-PROD"
+         - "arn:aws:dynamodb:ap-southeast-2:461564345538:table/THS_GriddedHazard-PROD"
 
 
 functions:

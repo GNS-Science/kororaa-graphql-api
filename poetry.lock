@@ -1367,8 +1367,8 @@ doc = []
 [package.source]
 type = "git"
 url = "https://github.com/GNS-Science/toshi-hazard-store.git"
-reference = "2d4a9c4edc8096dc30226673d53c016ea5cabe61"
-resolved_reference = "2d4a9c4edc8096dc30226673d53c016ea5cabe61"
+reference = "f491e4167b4840ef8e36512f72480a737290aa5f"
+resolved_reference = "f491e4167b4840ef8e36512f72480a737290aa5f"
 
 [[package]]
 name = "tox"
@@ -1547,7 +1547,7 @@ test = []
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.8,<4.0"
-content-hash = "93b3611c3c0b6767041dd237d122689f59d24f482ade7d98e31cc0617a72f5f6"
+content-hash = "942025de0ccd9bafd59c60decc38dedfe0b82edb8b9704d323d170183fe579a4"
 
 [metadata.files]
 aniso8601 = [
