@@ -31,7 +31,7 @@ custom:
 
   #serverless-python-requirements settings
   pythonRequirements:
-    dockerizePip: non-linux
+    # dockerizePip: non-linux
     slim: true
     slimPatterns:
       - '**/*.egg-info*'
