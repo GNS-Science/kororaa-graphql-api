@@ -13,7 +13,6 @@ classifiers=[
     'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
     'Natural Language :: English',
     'Programming Language :: Python :: 3',
-    'Programming Language :: Python :: 3.7',
     'Programming Language :: Python :: 3.8',
     'Programming Language :: Python :: 3.9',
 ]
@@ -30,9 +29,10 @@ Flask-GraphQL = "^2.0.1"
 graphene = "<3"
 PyYAML = "^6.0"
 pandas = "^1.4.3"
-nzshm-common = {git = "https://github.com/GNS-Science/nzshm-common-py.git", rev = "d95df51787c1b42e471e9d8e793c119d07a95e74"}
-toshi-hazard-store = {git = "https://github.com/GNS-Science/toshi-hazard-store.git", rev = "676b3c5eb6658b062fc4ce22b79138955641a1d5"}
-
+geopandas = "^0.11.1"
+matplotlib = "^3.5.3"
+nzshm-common = {extras = ["geometry"], version = "^0.3.2"}
+toshi-hazard-store = {git = "https://github.com/GNS-Science/toshi-hazard-store.git", rev = "f491e4167b4840ef8e36512f72480a737290aa5f"}
 
 [tool.poetry.dev-dependencies]
 
@@ -123,5 +123,5 @@ skip_gitignore = true
 #skip_glob = docs/conf.py
 
 [build-system]
-requires = ["poetry-core>=1.0.0"]
+requires = ["poetry-core>=1.1.0b3"]
 build-backend = "poetry.core.masonry.api"

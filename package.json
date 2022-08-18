@@ -1,4 +1,18 @@
 {
+  "name": "nzshm22-kororaa-api",
+  "version": "0.1.0",
+  "description": "A graphql API for Kororaa UI usingAWS lambda.",
+  "scripts": {
+    "deploy": "serverless deploy --stage ${STAGE}"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/GNS-Science/kororaa-graphql-api.git"
+  },
+  "bugs": {
+    "url": "https://github.com/GNS-Science/kororaa-graphql-api/issues"
+  },
+  "homepage": "https://github.com/GNS-Science/kororaa-graphql-api#readme",
   "dependencies": {
     "serverless": "^3.18.2"
   },
