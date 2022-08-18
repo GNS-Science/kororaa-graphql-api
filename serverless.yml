@@ -6,15 +6,20 @@ plugins:
 package:
   individually: false
   patterns:
+    - '!__pycache__/**'
     - '!.git/**'
+    - '!.github/**'
     - '!.pytest_cache/**'
+    - '!.mypy_cache/**'
     - '!.tox/**'
+    - '!dist/**'
     - '!docs/**'
     - '!/**'
     - '!node_modules/**'
     - '!package.json'
     - '!package-log.json'
     - '!tests/**'
+    - '!site/**'
     - kororaa_graphql_api/**
 
 custom:
@@ -89,6 +94,8 @@ provider:
       Resource:
          - "arn:aws:dynamodb:ap-southeast-2:461564345538:table/THS_HazardAggregation-PROD"
          - "arn:aws:dynamodb:ap-southeast-2:461564345538:table/ToshiOpenquakeHazardCurveStats-PROD"
+         - "arn:aws:dynamodb:ap-southeast-2:461564345538:table/THH_GriddedHazard-PROD"
+
 
 functions:
   app:
