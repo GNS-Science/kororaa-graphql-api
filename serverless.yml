@@ -44,7 +44,7 @@ custom:
 
   # Lambda warmer see https://www.serverless.com/plugins/serverless-plugin-warmup
   warmup:
-    lowConcurrencyWarmer:
+    littleWarmer:
       enabled: true
       events:
         - schedule: rate(5 minutes)
@@ -126,8 +126,7 @@ functions:
       NZSHM22_HAZARD_STORE_STAGE: PROD
       NZSHM22_HAZARD_STORE_REGION: ${self:custom.region}
     warmup:
-      lowConcurrencyWarmer:
+      littleWarmer:
         enabled:
           - test
           - prod
-
