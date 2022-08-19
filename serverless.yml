@@ -37,6 +37,8 @@ custom:
       - '**/*.egg-info*'
     noDeploy:
       - botocore
+      - fiona
+      - Fiona.libs
 
 
   #Lambda warmer see https://www.serverless.com/plugins/serverless-plugin-warmup
