@@ -3,6 +3,7 @@ service: nzshm22-kororaa-api
 plugins:
   - serverless-python-requirements
   - serverless-wsgi
+  - serverless-plugin-warmup
 package:
   individually: false
   patterns:
@@ -41,13 +42,13 @@ custom:
       - Fiona.libs
 
 
-  #Lambda warmer see https://www.serverless.com/plugins/serverless-plugin-warmup
-  # warmup:
-  #   lowConcurrencyWarmer:
-  #     enabled: true
-  #     events:
-  #       - schedule: rate(5 minutes)
-  #     concurrency: 1
+  # Lambda warmer see https://www.serverless.com/plugins/serverless-plugin-warmup
+  warmup:
+    lowConcurrencyWarmer:
+      enabled: true
+      events:
+        - schedule: rate(5 minutes)
+      concurrency: 1
 
 # DRY constants: define all compound/generated names in one place
 # Override args are: .. defaults:
@@ -124,5 +125,9 @@ functions:
       DEPLOYMENT_STAGE: PROD
       NZSHM22_HAZARD_STORE_STAGE: PROD
       NZSHM22_HAZARD_STORE_REGION: ${self:custom.region}
-
+    warmup:
+      lowConcurrencyWarmer:
+        enabled:
+          - test
+          - prod
 
