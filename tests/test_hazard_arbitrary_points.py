@@ -140,12 +140,13 @@ class TestHazardCurves(unittest.TestCase):
         )
 
         wlg = LOCATIONS_BY_ID['WLG']
-        expected = CodedLocation(wlg['latitude'], wlg['longitude'], 0.001)
+        expected_res = 0.01
+        expected = CodedLocation(wlg['latitude'], wlg['longitude'], expected_res)  # .resample(0.001)
 
         self.assertEqual(res['locations'][0]['lon'], expected.lon)
         self.assertEqual(res['locations'][0]['lat'], expected.lat)
         self.assertEqual(res['locations'][0]['code'], expected.code)
-        self.assertEqual(res['locations'][0]['resolution'], expected.resolution)
+        self.assertEqual(res['locations'][0]['resolution'], expected_res)
         self.assertEqual(res['locations'][0]['name'], "Wellington")
         self.assertEqual(res['locations'][0]['key'], "WLG")
 
@@ -159,7 +160,7 @@ class TestHazardCurves(unittest.TestCase):
                 locs: ["WLG", "DUD"]
                 aggs: ["mean", "0.005", "0.995", "0.1", "0.9"]
                 vs30s: [400, 250]
-                resolution: 0.1
+                resolution: 0.1 #ignot
                 )
             {
                 ok
@@ -197,7 +198,7 @@ class TestHazardCurves(unittest.TestCase):
         self.assertEqual(mocked_qry.call_count, 1)
 
         mocked_qry.assert_called_with(
-            ["-41.300~174.800", "-45.900~170.500"],  # the resolved codes for the respective cities by ID
+            ["-41.300~174.780", "-45.870~170.500"],  # the resolved codes for the respective cities by ID
             [400.0, 250.0],
             ['GRIDDED_THE_THIRD'],
             ['PGA', 'SA(0.5)'],
@@ -205,12 +206,13 @@ class TestHazardCurves(unittest.TestCase):
         )
 
         wlg = LOCATIONS_BY_ID['WLG']
-        expected = CodedLocation(wlg['latitude'], wlg['longitude'], 0.1).resample(0.001)
+        expected_res = 0.01
+        expected = CodedLocation(wlg['latitude'], wlg['longitude'], expected_res)  # .resample(0.001)
 
         self.assertEqual(res['locations'][0]['lon'], expected.lon)
         self.assertEqual(res['locations'][0]['lat'], expected.lat)
         self.assertEqual(res['locations'][0]['code'], expected.code)
-        self.assertEqual(res['locations'][0]['resolution'], expected.resolution)
+        self.assertEqual(res['locations'][0]['resolution'], expected_res)
         self.assertEqual(res['locations'][0]['name'], "Wellington")
         self.assertEqual(res['locations'][0]['key'], "WLG")
 
@@ -264,12 +266,13 @@ class TestHazardCurves(unittest.TestCase):
         )
 
         wlg = LOCATIONS_BY_ID['WLG']
-        expected = CodedLocation(wlg['latitude'], wlg['longitude'], 0.01).resample(0.001)
+        expected_res = 0.01
+        expected = CodedLocation(wlg['latitude'], wlg['longitude'], expected_res)
 
         self.assertEqual(res['locations'][0]['lon'], expected.lon)
         self.assertEqual(res['locations'][0]['lat'], expected.lat)
         self.assertEqual(res['locations'][0]['code'], expected.code)
-        self.assertEqual(res['locations'][0]['resolution'], expected.resolution)
+        self.assertEqual(res['locations'][0]['resolution'], expected_res)
         self.assertEqual(res['locations'][0]['name'], "Wellington")
         self.assertEqual(res['locations'][0]['key'], "WLG")
 

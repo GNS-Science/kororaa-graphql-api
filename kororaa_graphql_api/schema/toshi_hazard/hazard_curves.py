@@ -21,7 +21,7 @@ def match_named_location_coord_code(location_code: str, resolution: float = 0.01
         # print('test', tloc, 'named', named_location, loc)
 
         if tloc == named_location:
-            tloc = tloc.resample(0.001)
+            # tloc = tloc.resample(0.001)
             return GriddedLocation(
                 lat=tloc.lat,
                 lon=tloc.lon,
@@ -37,9 +37,7 @@ def normalise_locations(locations: Iterable[str], resolution: float = 0.01) -> I
         # Check if this is a location ID eg "WLG" and if so, convert to the legit code
         if loc in location.LOCATIONS_BY_ID:
             site = location.LOCATIONS_BY_ID[loc]
-            cloc = CodedLocation(site['latitude'], site['longitude'], resolution).resample(
-                0.001
-            )  # NamedLocation have 0.01 resolution
+            cloc = CodedLocation(site['latitude'], site['longitude'], 0.01)  # NamedLocation have 0.01 resolution
             yield GriddedLocation(
                 lat=cloc.lat,
                 lon=cloc.lon,
@@ -51,13 +49,13 @@ def normalise_locations(locations: Iterable[str], resolution: float = 0.01) -> I
             continue
 
         # do these coordinates match a named location?, if so convert to the legit code.
-        matched = match_named_location_coord_code(loc, resolution)
+        matched = match_named_location_coord_code(loc, 0.01)
         if matched:
             yield matched
             continue
 
         # TODO: if we don't match a named location, this falls back to default grid resolution
-        cloc = CodedLocation(*[float(x) for x in loc.split('~')], 0.1).resample(0.001)
+        cloc = CodedLocation(*[float(x) for x in loc.split('~')], resolution)
         yield GriddedLocation(lat=cloc.lat, lon=cloc.lon, code=cloc.code, resolution=cloc.resolution)
 
 
@@ -85,7 +83,7 @@ def hazard_curves(kwargs):
             )
 
     gridded_locations = list(normalise_locations(kwargs['locs'], kwargs['resolution']))
-    coded_locations = [loc.code for loc in gridded_locations]
+    coded_locations = [CodedLocation(lat=loc.lat, lon=loc.lon, resolution=0.001).code for loc in gridded_locations]
     res = query_v3.get_hazard_curves(
         coded_locations, kwargs['vs30s'], [kwargs['hazard_model']], kwargs['imts'], aggs=kwargs['aggs']
     )

@@ -58,6 +58,7 @@ class TestHazardCurvesNamed(unittest.TestCase):
         )
 
     def test_get_wlg_by_shortcode_with_lowres(self, mocked_qry):
+        """For name location resolution is ignored. they always use 0.01"""
 
         QUERY = """
         query {
@@ -91,7 +92,7 @@ class TestHazardCurvesNamed(unittest.TestCase):
         self.assertEqual(res['ok'], True)
         self.assertEqual(mocked_qry.call_count, 1)
         mocked_qry.assert_called_with(
-            ["-41.300~174.800"],  # the resolved codes for the respective cities by ID
+            ["-41.300~174.780"],  # the resolved codes for the respective cities by ID
             [400.0],
             ['GRIDDED_THE_THIRD'],
             ['PGA'],
@@ -139,7 +140,7 @@ class TestHazardCurvesNamed(unittest.TestCase):
         )
 
     def test_get_wlg_by_latlon_low_res(self, mocked_qry):
-
+        """For name location resolution is ignored. they always use 0.01"""
         QUERY = """
         query {
             hazard_curves (
@@ -172,7 +173,7 @@ class TestHazardCurvesNamed(unittest.TestCase):
         self.assertEqual(res['ok'], True)
         self.assertEqual(mocked_qry.call_count, 1)
         mocked_qry.assert_called_with(
-            ["-41.300~174.800"],  # the resolved codes for the respective cities by ID
+            ["-41.300~174.780"],  # the resolved codes for the respective cities by ID
             [400.0],
             ['GRIDDED_THE_THIRD'],
             ['PGA'],
