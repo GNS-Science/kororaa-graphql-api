@@ -101,7 +101,6 @@ provider:
              - "arn:aws:dynamodb:ap-southeast-2:461564345538:table/THS_HazardAggregation-PROD"
              - "arn:aws:dynamodb:ap-southeast-2:461564345538:table/THS_GriddedHazard-PROD"
 
-
 functions:
   app:
     description: The graphql API of ${self:service}
