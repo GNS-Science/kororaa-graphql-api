@@ -1,4 +1,4 @@
-name: deploy-aws-lambda-test
+name: deploy-aws-lambda
 
 on:
   push:
@@ -57,10 +57,8 @@ jobs:
       - name: Serverless Deploy ....
         run: |
           if [[ "${{github.base_ref}}" == "main" || "${{github.ref}}" == 'refs/heads/main' ]]; then
-              echo "STAGE=prod" >> "$GITHUB_ENV"
+              STAGE=prod npm run-script deploy
           else
-              echo "STAGE=test" >> "$GITHUB_ENV"
+              STAGE=test npm run-script deploy
           fi
-          npm run-script deploy
-        # env:
-        #   STAGE: "test"
+
