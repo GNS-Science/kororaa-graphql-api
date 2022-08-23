@@ -16,7 +16,13 @@ vs30s = [250, 350, 450]
 imts = ['PGA', 'SA(0.5)']
 aggs = ['mean', '0.10']
 
-locs = [CodedLocation(o['latitude'], o['longitude'], 0.001) for o in LOCATIONS_BY_ID.values()]
+
+wlg = LOCATIONS_BY_ID['WLG']
+dud = LOCATIONS_BY_ID['DUD']
+locs = [
+    CodedLocation(wlg['latitude'], wlg['longitude'], 0.001),
+    CodedLocation(dud['latitude'], dud['longitude'], 0.001),
+]
 
 
 def build_hazard_aggregation_models():
@@ -149,6 +155,7 @@ class TestHazardCurves(unittest.TestCase):
         self.assertEqual(res['locations'][0]['resolution'], expected_res)
         self.assertEqual(res['locations'][0]['name'], "Wellington")
         self.assertEqual(res['locations'][0]['key'], "WLG")
+        self.assertEqual(res['curves'][0]['loc'], expected.code)
 
     def test_get_hazard_for_gridded_with_key_locations_lowres(self, mocked_qry):
 

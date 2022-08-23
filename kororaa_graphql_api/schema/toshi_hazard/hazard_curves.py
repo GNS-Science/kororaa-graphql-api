@@ -70,14 +70,20 @@ def hazard_curves(kwargs):
             values.append(float(lv.val))
         return ToshiHazardCurve(levels=levels, values=values)
 
-    def build_response_from_query(result):
+    def build_response_from_query(result, resolution):
         log.info("build_response_from_query")
         for obj in result:
+            named = match_named_location_coord_code(obj.nloc_001, 0.01)
+            if named:
+                loc_code = named.code
+            else:
+                loc_code = CodedLocation(*[float(x) for x in obj.nloc_001.split('~')], resolution).code
+
             yield ToshiHazardResult(
                 hazard_model=obj.hazard_model_id,
                 vs30=obj.vs30,
                 imt=obj.imt,
-                loc=obj.nloc_001,
+                loc=loc_code,
                 agg=obj.agg,
                 curve=get_curve(obj),
             )
@@ -87,4 +93,6 @@ def hazard_curves(kwargs):
     res = query_v3.get_hazard_curves(
         coded_locations, kwargs['vs30s'], [kwargs['hazard_model']], kwargs['imts'], aggs=kwargs['aggs']
     )
-    return ToshiHazardCurveResult(ok=True, locations=gridded_locations, curves=build_response_from_query(res))
+    return ToshiHazardCurveResult(
+        ok=True, locations=gridded_locations, curves=build_response_from_query(res, kwargs['resolution'])
+    )
