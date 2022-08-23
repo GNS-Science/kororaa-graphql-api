@@ -33,6 +33,7 @@ geopandas = "^0.11.1"
 matplotlib = "^3.5.3"
 nzshm-common = {extras = ["geometry"], version = "^0.3.2"}
 toshi-hazard-store = {git = "https://github.com/GNS-Science/toshi-hazard-store.git", rev = "f491e4167b4840ef8e36512f72480a737290aa5f"}
+boto3 = "^1.24.57"
 
 [tool.poetry.dev-dependencies]
 

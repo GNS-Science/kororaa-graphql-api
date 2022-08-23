@@ -1,6 +1,7 @@
 """Build Gridded Hazard."""
 import json
 import logging
+from datetime import datetime as dt
 
 import geopandas as gpd
 import graphene
@@ -9,11 +10,15 @@ from nzshm_common.geometry.geometry import create_square_tile
 from nzshm_common.grids import RegionGrid
 from toshi_hazard_store import query
 
+from kororaa_graphql_api.cloudwatch import ServerlessMetricWriter
+
 from .hazard_schema import GriddedLocation
 
 log = logging.getLogger(__name__)
 
 RegionGridEnum = graphene.Enum.from_enum(RegionGrid)
+
+db_metrics = ServerlessMetricWriter(metric_name="MethodDuration")
 
 
 class GriddedHazard(graphene.ObjectType):
@@ -37,7 +42,7 @@ class GriddedHazard(graphene.ObjectType):
 
     def resolve_geojson(root, info, **args):
         """Resolver gridded hazard to geojosn with formatting options."""
-
+        t0 = dt.utcnow()
         log.info('resolve_geojson args: %s' % args)
 
         # get the query arguments
@@ -83,7 +88,9 @@ class GriddedHazard(graphene.ObjectType):
         gdf = gdf.rename(
             columns={'fill_opacity': 'fill-opacity', 'stroke_width': 'stroke-width', 'stroke_opacity': 'stroke-opacity'}
         )
-        return json.loads(gdf.to_json())
+        res = json.loads(gdf.to_json())
+        db_metrics.put_duration(__name__, 'resolve_geojson', dt.utcnow() - t0)
+        return res
 
 
 class GriddedHazardResult(graphene.ObjectType):
@@ -93,6 +100,7 @@ class GriddedHazardResult(graphene.ObjectType):
 
 def query_gridded_hazard(kwargs):
     """Run query against dynamoDB."""
+    t0 = dt.utcnow()
     log.info('query_gridded_hazard args: %s' % kwargs)
 
     def build_response_from_query(result):
@@ -116,4 +124,6 @@ def query_gridded_hazard(kwargs):
         aggs=kwargs['aggs'],
         poes=kwargs['poes'],
     )
-    return GriddedHazardResult(ok=True, gridded_hazard=build_response_from_query(response))
+    res = GriddedHazardResult(ok=True, gridded_hazard=build_response_from_query(response))
+    db_metrics.put_duration(__name__, 'query_gridded_hazard', dt.utcnow() - t0)
+    return res

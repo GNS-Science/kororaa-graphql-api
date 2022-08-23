@@ -1,14 +1,19 @@
 """Build Hazard curves from the old dynamoDB models."""
 
 import logging
+from datetime import datetime as dt
 from typing import Iterable, Iterator
 
 from nzshm_common.location import CodedLocation, location
 from toshi_hazard_store import query_v3
 
+from kororaa_graphql_api.cloudwatch import ServerlessMetricWriter
+
 from .hazard_schema import GriddedLocation, ToshiHazardCurve, ToshiHazardCurveResult, ToshiHazardResult
 
 log = logging.getLogger(__name__)
+
+db_metrics = ServerlessMetricWriter(metric_name="MethodDuration")
 
 
 def match_named_location_coord_code(location_code: str, resolution: float = 0.01) -> CodedLocation:
@@ -61,6 +66,7 @@ def normalise_locations(locations: Iterable[str], resolution: float = 0.01) -> I
 
 def hazard_curves(kwargs):
     """Run query against dynamoDB usign v3 query."""
+    t0 = dt.utcnow()
 
     def get_curve(obj):
         # print(f"get_curve values from {obj}")
@@ -93,6 +99,8 @@ def hazard_curves(kwargs):
     res = query_v3.get_hazard_curves(
         coded_locations, kwargs['vs30s'], [kwargs['hazard_model']], kwargs['imts'], aggs=kwargs['aggs']
     )
-    return ToshiHazardCurveResult(
+    res = ToshiHazardCurveResult(
         ok=True, locations=gridded_locations, curves=build_response_from_query(res, kwargs['resolution'])
     )
+    db_metrics.put_duration(__name__, 'hazard_curves', dt.utcnow() - t0)
+    return res

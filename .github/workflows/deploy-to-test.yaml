@@ -55,6 +55,12 @@ jobs:
           aws-region: ap-southeast-2
 
       - name: Serverless Deploy ....
+        run: |
+          if [[ "${{github.base_ref}}" == "main" || "${{github.ref}}" == 'refs/heads/main' ]]; then
+              echo "STAGE=prod" >> "$GITHUB_ENV"
+          else
+              echo "STAGE=test" >> "$GITHUB_ENV"
+          fi
         run: npm run-script deploy
-        env:
-          STAGE: "test"
+        # env:
+        #   STAGE: "test"

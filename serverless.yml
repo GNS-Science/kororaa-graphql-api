@@ -101,7 +101,6 @@ provider:
              - "arn:aws:dynamodb:ap-southeast-2:461564345538:table/THS_HazardAggregation-PROD"
              - "arn:aws:dynamodb:ap-southeast-2:461564345538:table/THS_GriddedHazard-PROD"
 
-
 functions:
   app:
     description: The graphql API of ${self:service}
@@ -125,6 +124,7 @@ functions:
       DEPLOYMENT_STAGE: PROD
       NZSHM22_HAZARD_STORE_STAGE: PROD
       NZSHM22_HAZARD_STORE_REGION: ${self:custom.region}
+      ENABLE_METRICS: 1
     warmup:
       littleWarmer:
         enabled:
