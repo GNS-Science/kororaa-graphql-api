@@ -61,6 +61,6 @@ jobs:
           else
               echo "STAGE=test" >> "$GITHUB_ENV"
           fi
-        run: npm run-script deploy
+          npm run-script deploy
         # env:
         #   STAGE: "test"
