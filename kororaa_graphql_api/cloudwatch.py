@@ -8,7 +8,7 @@ import boto3
 
 REGION = os.getenv('REGION', 'ap-southeast-2')
 STACK_NAME = os.getenv('STACK_NAME', 'kororaa_graphql_api')
-IS_OFFLINE = bool(os.getenv('SLS_OFFLINE')) is True
+ENABLE_METRICS = bool(os.getenv('ENABLE_METRICS')) is True
 
 logger = logging.getLogger(__name__)
 
@@ -38,7 +38,5 @@ class ServerlessMetricWriter:
                 }
             ],
         )
-        if IS_OFFLINE:
-            pass
-        else:
+        if ENABLE_METRICS:
             self._client.put_metric_data(**rec)
