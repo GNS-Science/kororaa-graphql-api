@@ -16,7 +16,13 @@ vs30s = [250, 350, 450]
 imts = ['PGA', 'SA(0.5)']
 aggs = ['mean', '0.10']
 
-locs = [CodedLocation(o['latitude'], o['longitude'], 0.001) for o in LOCATIONS_BY_ID.values()]
+
+wlg = LOCATIONS_BY_ID['WLG']
+dud = LOCATIONS_BY_ID['DUD']
+locs = [
+    CodedLocation(wlg['latitude'], wlg['longitude'], 0.001),
+    CodedLocation(dud['latitude'], dud['longitude'], 0.001),
+]
 
 
 def build_hazard_aggregation_models():
@@ -42,7 +48,6 @@ class TestResolveArbitraryLocationToGridded(unittest.TestCase):
     def setUp(self):
         self.client = Client(schema_root)
 
-    # @unittest.skip('not implemented')
     def test_get_gridded_location(self):
 
         QUERY = """
@@ -82,7 +87,7 @@ class TestResolveArbitraryLocationToGridded(unittest.TestCase):
 
 
 @mock.patch('toshi_hazard_store.query_v3.get_hazard_curves', side_effect=mock_query_response)
-class TestHazardCurvesArbitrary(unittest.TestCase):
+class TestHazardCurves(unittest.TestCase):
     def setUp(self):
         self.client = Client(schema_root)
 
@@ -105,10 +110,18 @@ class TestHazardCurvesArbitrary(unittest.TestCase):
                     loc
                     agg
                     vs30
-                    curve {
-                        levels
-                        values
-                    }
+                    # curve {
+                    #     levels
+                    #     values
+                    # }
+                }
+                locations {
+                  lat
+                  lon
+                  resolution
+                  code
+                  name
+                  key
                 }
             }
         }
@@ -117,14 +130,12 @@ class TestHazardCurvesArbitrary(unittest.TestCase):
         )  # , json.dumps(locs))
 
         executed = self.client.execute(QUERY)
-        # print(executed)
         res = executed['data']['hazard_curves']
+
+        print(executed)
 
         self.assertEqual(res['ok'], True)
         self.assertEqual(mocked_qry.call_count, 1)
-
-        # {'id': 'WLG', 'name': 'Wellington', 'latitude': -41.3, 'longitude': 174.78}
-        # {'id': 'DUD', 'name': 'Dunedin', 'latitude': -45.87, 'longitude': 170.5}
 
         mocked_qry.assert_called_with(
             ["-41.300~174.780", "-45.870~170.500"],  # the resolved codes for the respective cities by ID
@@ -134,6 +145,144 @@ class TestHazardCurvesArbitrary(unittest.TestCase):
             aggs=["mean", "0.005", "0.995", "0.1", "0.9"],
         )
 
+        wlg = LOCATIONS_BY_ID['WLG']
+        expected_res = 0.01
+        expected = CodedLocation(wlg['latitude'], wlg['longitude'], expected_res)  # .resample(0.001)
+
+        self.assertEqual(res['locations'][0]['lon'], expected.lon)
+        self.assertEqual(res['locations'][0]['lat'], expected.lat)
+        self.assertEqual(res['locations'][0]['code'], expected.code)
+        self.assertEqual(res['locations'][0]['resolution'], expected_res)
+        self.assertEqual(res['locations'][0]['name'], "Wellington")
+        self.assertEqual(res['locations'][0]['key'], "WLG")
+        self.assertEqual(res['curves'][0]['loc'], expected.code)
+
+    def test_get_hazard_for_gridded_with_key_locations_lowres(self, mocked_qry):
+
+        QUERY = """
+        query {
+            hazard_curves (
+                hazard_model: "%s"
+                imts: ["PGA", "SA(0.5)"]
+                locs: ["WLG", "DUD"]
+                aggs: ["mean", "0.005", "0.995", "0.1", "0.9"]
+                vs30s: [400, 250]
+                resolution: 0.1 #ignot
+                )
+            {
+                ok
+                curves {
+                    hazard_model
+                    imt
+                    loc
+                    agg
+                    vs30
+                    # curve {
+                    #     levels
+                    #     values
+                    # }
+                }
+                locations {
+                  lat
+                  lon
+                  resolution
+                  code
+                  name
+                  key
+                }
+            }
+        }
+        """ % (
+            HAZARD_MODEL_ID
+        )  # , json.dumps(locs))
+
+        executed = self.client.execute(QUERY)
+        res = executed['data']['hazard_curves']
+
+        print(executed)
+
+        self.assertEqual(res['ok'], True)
+        self.assertEqual(mocked_qry.call_count, 1)
+
+        mocked_qry.assert_called_with(
+            ["-41.300~174.780", "-45.870~170.500"],  # the resolved codes for the respective cities by ID
+            [400.0, 250.0],
+            ['GRIDDED_THE_THIRD'],
+            ['PGA', 'SA(0.5)'],
+            aggs=["mean", "0.005", "0.995", "0.1", "0.9"],
+        )
+
+        wlg = LOCATIONS_BY_ID['WLG']
+        expected_res = 0.01
+        expected = CodedLocation(wlg['latitude'], wlg['longitude'], expected_res)  # .resample(0.001)
+
+        self.assertEqual(res['locations'][0]['lon'], expected.lon)
+        self.assertEqual(res['locations'][0]['lat'], expected.lat)
+        self.assertEqual(res['locations'][0]['code'], expected.code)
+        self.assertEqual(res['locations'][0]['resolution'], expected_res)
+        self.assertEqual(res['locations'][0]['name'], "Wellington")
+        self.assertEqual(res['locations'][0]['key'], "WLG")
+
+    def test_get_wlg_by_latlon(self, mocked_qry):
+
+        QUERY = """
+        query {
+            hazard_curves (
+                locs: ["-41.30~174.78"]
+                hazard_model: "%s"
+                imts: ["PGA"]
+                aggs: ["mean"]
+                vs30s: [400]
+                resolution: 0.01
+                )
+            {
+                ok
+                curves {
+                    hazard_model
+                    curve {
+                        levels
+                        values
+                    }
+                }
+                locations {
+                  lat
+                  lon
+                  resolution
+                  code
+                  name
+                  key
+                }
+            }
+        }
+        """ % (
+            HAZARD_MODEL_ID
+        )  # , json.dumps(locs))
+
+        executed = self.client.execute(QUERY)
+        res = executed['data']['hazard_curves']
+        print(executed)
+
+        self.assertEqual(res['ok'], True)
+        self.assertEqual(mocked_qry.call_count, 1)
+        mocked_qry.assert_called_with(
+            ["-41.300~174.780"],  # the resolved codes for the respective cities by ID
+            [400.0],
+            ['GRIDDED_THE_THIRD'],
+            ['PGA'],
+            aggs=["mean"],
+        )
+
+        wlg = LOCATIONS_BY_ID['WLG']
+        expected_res = 0.01
+        expected = CodedLocation(wlg['latitude'], wlg['longitude'], expected_res)
+
+        self.assertEqual(res['locations'][0]['lon'], expected.lon)
+        self.assertEqual(res['locations'][0]['lat'], expected.lat)
+        self.assertEqual(res['locations'][0]['code'], expected.code)
+        self.assertEqual(res['locations'][0]['resolution'], expected_res)
+        self.assertEqual(res['locations'][0]['name'], "Wellington")
+        self.assertEqual(res['locations'][0]['key'], "WLG")
+
     def test_get_hazard_for_gridded_with_arbitrary_locations(self, mocked_qry):
 
         QUERY = """
@@ -141,7 +290,7 @@ class TestHazardCurvesArbitrary(unittest.TestCase):
             hazard_curves (
                 hazard_model: "%s"
                 imts: ["PGA", "SA(0.5)"]
-                locs: ["-36.913~174.8080144"]
+                locs: ["-36.959~174.8080144"]
                 aggs: ["mean", "0.005", "0.995", "0.1", "0.9"]
                 vs30s: [400, 250]
                 )
@@ -172,7 +321,7 @@ class TestHazardCurvesArbitrary(unittest.TestCase):
         self.assertEqual(mocked_qry.call_count, 1)
 
         mocked_qry.assert_called_with(
-            ['-36.900~174.800'],
+            ['-37.000~174.800'],
             [400.0, 250.0],
             ['GRIDDED_THE_THIRD'],
             ['PGA', 'SA(0.5)'],

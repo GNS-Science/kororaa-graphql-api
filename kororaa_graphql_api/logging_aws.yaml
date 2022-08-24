@@ -32,7 +32,7 @@ loggers:
     propagate: no
 
   pynamodb:
-    level: INFO
+    level: DEBUG
     handlers: [console_handler]
     propagate: no
 
@@ -46,7 +46,7 @@ loggers:
     handlers: [console_handler]
     propagate: no
 
-  graphql_api:
+  kororaa_graphql_api:
     level: DEBUG
     handlers: [console_handler]
     propagate: no

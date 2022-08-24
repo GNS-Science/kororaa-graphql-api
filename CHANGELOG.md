@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.0] - 2022-08-015
+
+### Added
+
+* gridded_hazard queries
+* geojson field with config args
+
 ## [0.2.0] - 2022-08-04
 
 ### Added

@@ -7,6 +7,8 @@ class GriddedLocation(graphene.ObjectType):
     lon = graphene.Float()
     resolution = graphene.Float()
     code = graphene.String()
+    name = graphene.String(required=False)
+    key = graphene.String(required=False)
 
 
 class ToshiHazardCurve(graphene.ObjectType):

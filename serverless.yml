@@ -3,18 +3,24 @@ service: nzshm22-kororaa-api
 plugins:
   - serverless-python-requirements
   - serverless-wsgi
+  - serverless-plugin-warmup
 package:
   individually: false
   patterns:
+    - '!__pycache__/**'
     - '!.git/**'
+    - '!.github/**'
     - '!.pytest_cache/**'
+    - '!.mypy_cache/**'
     - '!.tox/**'
+    - '!dist/**'
     - '!docs/**'
     - '!/**'
     - '!node_modules/**'
     - '!package.json'
     - '!package-log.json'
     - '!tests/**'
+    - '!site/**'
     - kororaa_graphql_api/**
 
 custom:
@@ -26,20 +32,23 @@ custom:
 
   #serverless-python-requirements settings
   pythonRequirements:
-    dockerizePip: true
+    # dockerizePip: non-linux
     slim: true
-    # slimPatterns:
-    #   - '**/*.egg-info*'
+    slimPatterns:
+      - '**/*.egg-info*'
     noDeploy:
       - botocore
+      - fiona
+      - Fiona.libs
 
-  #Lambda warmer see https://www.serverless.com/plugins/serverless-plugin-warmup
-  # warmup:
-  #   lowConcurrencyWarmer:
-  #     enabled: true
-  #     events:
-  #       - schedule: rate(5 minutes)
-  #     concurrency: 1
+
+  # Lambda warmer see https://www.serverless.com/plugins/serverless-plugin-warmup
+  warmup:
+    littleWarmer:
+      enabled: true
+      events:
+        - schedule: rate(5 minutes)
+      concurrency: 1
 
 # DRY constants: define all compound/generated names in one place
 # Override args are: .. defaults:
@@ -71,24 +80,26 @@ provider:
 
   apiGateway:
     apiKeys:
-      - name: TempApiKey-${self:custom.stage}
+      - name: KoraraaTempApiKey-${self:custom.stage}
         description: Api key until we have an auth function # Optional
 
-  iamRoleStatements:
-    - Effect: Allow
-      Action:
-         - "cloudwatch:PutMetricData"
-      Resource: "*"
-    - Effect: Allow
-      Action:
-         - "dynamodb:Scan"
-         - "dynamodb:DescribeTable"
-         - "dynamodb:GetItem"
-         - "dynamodb:ConditionCheckItem"
-         - "dynamodb:Query"
-      Resource:
-         - "arn:aws:dynamodb:ap-southeast-2:461564345538:table/THS_HazardAggregation-PROD"
-         - "arn:aws:dynamodb:ap-southeast-2:461564345538:table/ToshiOpenquakeHazardCurveStats-PROD"
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action:
+             - "cloudwatch:PutMetricData"
+          Resource: "*"
+        - Effect: Allow
+          Action:
+             - "dynamodb:Scan"
+             - "dynamodb:DescribeTable"
+             - "dynamodb:GetItem"
+             - "dynamodb:ConditionCheckItem"
+             - "dynamodb:Query"
+          Resource:
+             - "arn:aws:dynamodb:ap-southeast-2:461564345538:table/THS_HazardAggregation-PROD"
+             - "arn:aws:dynamodb:ap-southeast-2:461564345538:table/THS_GriddedHazard-PROD"
 
 functions:
   app:
@@ -113,5 +124,9 @@ functions:
       DEPLOYMENT_STAGE: PROD
       NZSHM22_HAZARD_STORE_STAGE: PROD
       NZSHM22_HAZARD_STORE_REGION: ${self:custom.region}
-
-
+      ENABLE_METRICS: 1
+    warmup:
+      littleWarmer:
+        enabled:
+          - test
+          - prod
