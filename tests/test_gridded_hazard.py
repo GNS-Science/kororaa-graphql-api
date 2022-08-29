@@ -36,9 +36,9 @@ def build_hazard_aggregation_models(*args, **kwargs):
             imt=imt,
             agg=agg,
             poe=0.02,
-            grid_poes=[random.randint(0, 5e6) / 1e6 for x in range(grid_size)],
+            grid_poes=[random.randint(0, 4.7e6) / 1e6 for x in range(grid_size)],
         )
-        print('OBJ', obj)
+        # print('OBJ', obj)
         yield obj
 
 
@@ -120,7 +120,10 @@ class TestGriddedHazard(unittest.TestCase):
                     agg
                     vs30
                     values
-                    geojson( color_scale: "inferno", color_scale_vmax:10.0, fill_opacity:0.5)
+                    hazard_map( color_scale: "inferno", fill_opacity:0.5, color_scale_vmax:3.0) {
+                        geojson
+                        colour_scale { levels hexrgbs}
+                    }
                 }
             }
         }
@@ -129,7 +132,7 @@ class TestGriddedHazard(unittest.TestCase):
         )  # , json.dumps(locs))
 
         executed = self.client.execute(QUERY)
-        print(executed)
+        # print(executed)
         res = executed['data']['gridded_hazard']
         self.assertEqual(res['ok'], True)
         self.assertEqual(mocked_qry.call_count, 1)
@@ -146,7 +149,15 @@ class TestGriddedHazard(unittest.TestCase):
         self.assertEqual(res['gridded_hazard'][0]['grid_id'], "NZ_0_2_NB_1_1")
         self.assertEqual(len(res['gridded_hazard'][0]['values']), 1057)
 
-        df_json = json.loads(res['gridded_hazard'][0]['geojson'])
         print()
+        df_json = json.loads(res['gridded_hazard'][0]['hazard_map']['geojson'])
         print(df_json.get('features')[0])
         self.assertEqual(len(res['gridded_hazard'][0]['values']), len(df_json.get('features')))
+
+        cscale = res['gridded_hazard'][0]['hazard_map']['colour_scale']
+        print(cscale)
+        self.assertEqual(cscale['levels'][0], 0)
+        self.assertEqual(cscale['levels'][-1], 3.0)
+
+        self.assertEqual(cscale['hexrgbs'][0], '#000004')
+        self.assertEqual(cscale['hexrgbs'][-1], '#fcffa4')
