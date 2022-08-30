@@ -18,7 +18,7 @@ handlers:
 loggers:
 
   root:
-    level: WARNING
+    level: INFO
     handlers: [console_handler]
 
   flask:
@@ -52,6 +52,11 @@ loggers:
     propagate: no
 
   backoff:
+    level: INFO
+    handlers: [console_handler]
+    propagate: no
+
+  kororaa_graphql_api.cloudwatch:
     level: INFO
     handlers: [console_handler]
     propagate: no

@@ -8,9 +8,9 @@ import boto3
 
 REGION = os.getenv('REGION', 'ap-southeast-2')
 STACK_NAME = os.getenv('STACK_NAME', 'kororaa_graphql_api')
-ENABLE_METRICS = bool(os.getenv('ENABLE_METRICS')) is True
+ENABLE_METRICS = bool(os.getenv('ENABLE_METRICS', '').upper() in ["1", "Y", "YES", "TRUE"])
 
-logger = logging.getLogger(__name__)
+log = logging.getLogger(__name__)
 
 
 class ServerlessMetricWriter:
@@ -37,6 +37,10 @@ class ServerlessMetricWriter:
                     'StorageResolution': self._resolution,
                 }
             ],
+        )
+        log.debug(
+            'ENABLE_METRICS for %s = %s (os: %s)'
+            % (self._metric_name, ENABLE_METRICS, bool(os.getenv('ENABLE_METRICS')))
         )
         if ENABLE_METRICS:
             self._client.put_metric_data(**rec)
