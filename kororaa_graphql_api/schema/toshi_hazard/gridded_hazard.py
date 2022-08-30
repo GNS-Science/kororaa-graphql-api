@@ -29,7 +29,7 @@ class HexRgbValueMapping(graphene.ObjectType):
 
 def get_colour_scale(cmap: mpl.cm, norm: mpl.colors.Normalize, vmax: float) -> HexRgbValueMapping:
     # build the colour_scale
-    assert vmax * 2 == int(vmax * 2)  # make sure we have a value on a 0.5 enum
+    assert vmax * 2 == int(vmax * 2)  # make sure we have a value on a 0.5 interval
     levels, hexrgbs = [], []
     for level in range(0, int(vmax * 10) + 1):
         levels.append(level / 10)
@@ -99,7 +99,6 @@ class GriddedHazard(graphene.ObjectType):
         poes = fix_nan(root.values)
 
         # grid colours
-
         color_scale_vmin = color_scale_vmin or 0
         color_scale_vmax = color_scale_vmax or math.ceil(max(poes) * 2) / 2
         log.debug('color_scale_vmax: %s' % color_scale_vmax)
