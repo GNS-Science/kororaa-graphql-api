@@ -58,6 +58,7 @@ class GriddedHazard(graphene.ObjectType):
         color_scale=graphene.String(default_value='jet', required=False),
         color_scale_vmax=graphene.Float(required=False),
         color_scale_vmin=graphene.Float(default_value=0.0, required=False),
+        color_scale_log=graphene.Boolean(required=False),
         stroke_width=graphene.Float(default_value='0.1', required=False),
         stroke_opacity=graphene.Float(default_value='1.0', required=False),
         fill_opacity=graphene.Float(default_value='1.0', required=False),
@@ -73,6 +74,7 @@ class GriddedHazard(graphene.ObjectType):
         # get the query arguments
         color_scale_vmax = args.get('color_scale_vmax')
         color_scale_vmin = args.get('color_scale_vmin')
+        color_scale_log = args.get('color_scale_log', False)
         color_scale = args['color_scale']
         fill_opacity = args['fill_opacity']
         stroke_opacity = args['stroke_opacity']
@@ -103,7 +105,11 @@ class GriddedHazard(graphene.ObjectType):
         color_scale_vmax = color_scale_vmax if color_scale_vmax else math.ceil(max(poes) * 2) / 2  # 0 ur None
         log.debug('color_scale_vmax: %s' % color_scale_vmax)
 
-        norm = mpl.colors.Normalize(vmin=color_scale_vmin, vmax=color_scale_vmax)
+        if color_scale_log:
+            norm = mpl.colors.LogNorm(vmin=1e-10, vmax=color_scale_vmax)
+        else:
+            norm = mpl.colors.Normalize(vmin=color_scale_vmin, vmax=color_scale_vmax)
+
         color_values = [mpl.colors.to_hex(cmap(norm(v)), keep_alpha=True) for v in poes]
 
         gdf = gpd.GeoDataFrame(
