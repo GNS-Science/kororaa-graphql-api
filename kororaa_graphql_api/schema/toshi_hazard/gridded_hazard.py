@@ -100,7 +100,7 @@ class GriddedHazard(graphene.ObjectType):
 
         # grid colours
         color_scale_vmin = color_scale_vmin or 0
-        color_scale_vmax = color_scale_vmax or math.ceil(max(poes) * 2) / 2
+        color_scale_vmax = color_scale_vmax if color_scale_vmax else math.ceil(max(poes) * 2) / 2  # 0 ur None
         log.debug('color_scale_vmax: %s' % color_scale_vmax)
 
         norm = mpl.colors.Normalize(vmin=color_scale_vmin, vmax=color_scale_vmax)
