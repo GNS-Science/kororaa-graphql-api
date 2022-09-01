@@ -2,6 +2,7 @@
 import json
 import logging
 import math
+import os
 from datetime import datetime as dt
 
 import geopandas as gpd
@@ -20,6 +21,18 @@ log = logging.getLogger(__name__)
 RegionGridEnum = graphene.Enum.from_enum(RegionGrid)
 
 db_metrics = ServerlessMetricWriter(metric_name="MethodDuration")
+
+
+class ColourScaleNormalise(graphene.Enum):
+    LOG = "log"
+    LIN = "lin"
+
+
+COLOR_SCALE_NORMALISE_LOG = (
+    ColourScaleNormalise.LOG
+    if os.getenv('COLOR_SCALE_NORMALISATION', '').upper() == 'LOG'
+    else ColourScaleNormalise.LIN
+)
 
 
 class HexRgbValueMapping(graphene.ObjectType):
@@ -58,7 +71,7 @@ class GriddedHazard(graphene.ObjectType):
         color_scale=graphene.String(default_value='jet', required=False),
         color_scale_vmax=graphene.Float(required=False),
         color_scale_vmin=graphene.Float(default_value=0.0, required=False),
-        color_scale_log=graphene.Boolean(required=False),
+        color_scale_normalise=graphene.Argument(ColourScaleNormalise, required=False),
         stroke_width=graphene.Float(default_value='0.1', required=False),
         stroke_opacity=graphene.Float(default_value='1.0', required=False),
         fill_opacity=graphene.Float(default_value='1.0', required=False),
@@ -74,7 +87,7 @@ class GriddedHazard(graphene.ObjectType):
         # get the query arguments
         color_scale_vmax = args.get('color_scale_vmax')
         color_scale_vmin = args.get('color_scale_vmin')
-        color_scale_log = args.get('color_scale_log', False)
+        color_scale_normalise = args.get('color_scale_normalise', COLOR_SCALE_NORMALISE_LOG)
         color_scale = args['color_scale']
         fill_opacity = args['fill_opacity']
         stroke_opacity = args['stroke_opacity']
@@ -105,9 +118,11 @@ class GriddedHazard(graphene.ObjectType):
         color_scale_vmax = color_scale_vmax if color_scale_vmax else math.ceil(max(poes) * 2) / 2  # 0 ur None
         log.debug('color_scale_vmax: %s' % color_scale_vmax)
 
-        if color_scale_log:
+        if color_scale_normalise == ColourScaleNormalise.LOG:
+            log.debug("resolve_hazard_map using LOG normalized colour scale")
             norm = mpl.colors.LogNorm(vmin=1e-10, vmax=color_scale_vmax)
         else:
+            log.debug("resolve_hazard_map using LIN normalized colour scale")
             norm = mpl.colors.Normalize(vmin=color_scale_vmin, vmax=color_scale_vmax)
 
         color_values = [mpl.colors.to_hex(cmap(norm(v)), keep_alpha=True) for v in poes]

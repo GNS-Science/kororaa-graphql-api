@@ -263,7 +263,7 @@ class TestGriddedHazard(unittest.TestCase):
             {
                 ok
                 gridded_hazard {
-                    hazard_map( color_scale_log: true) {
+                    hazard_map (color_scale_normalise: LOG) {
                         colour_scale { levels hexrgbs}
                     }
                 }

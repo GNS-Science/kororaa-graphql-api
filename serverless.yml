@@ -78,6 +78,7 @@ provider:
     URL_DEFAULT_TTL: ${self:custom.url_default_ttl}
     DEPLOYMENT_STAGE: ${self:custom.stage}
     ENABLE_METRICS: ${env:ENABLE_METRICS, 0}
+    COLOR_SCALE_NORMALISATION: ${env:COLOR_SCALE_NORMALISATION, LIN}
 
   apiGateway:
     apiKeys:

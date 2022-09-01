@@ -56,6 +56,9 @@ jobs:
           aws-region: ap-southeast-2
 
       - name: Serverless Deploy ....
+        env:
+          ENABLE_METRICS: ${{ secrets.ENABLE_METRICS }}
+          COLOR_SCALE_NORMALISATION: ${{ secrets.COLOR_SCALE_NORMALISATION }}
         run: |
           if [[ "${{github.base_ref}}" == "main" || "${{github.ref}}" == 'refs/heads/main' ]]; then
               STAGE=prod npm run-script deploy
