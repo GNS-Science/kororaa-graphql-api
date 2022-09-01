@@ -114,14 +114,15 @@ class GriddedHazard(graphene.ObjectType):
         poes = fix_nan(root.values)
 
         # grid colours
-        color_scale_vmin = color_scale_vmin or 0
         color_scale_vmax = color_scale_vmax if color_scale_vmax else math.ceil(max(poes) * 2) / 2  # 0 ur None
         log.debug('color_scale_vmax: %s' % color_scale_vmax)
 
         if color_scale_normalise == ColourScaleNormalise.LOG:
+            color_scale_vmin = color_scale_vmin or min(poes)
             log.debug("resolve_hazard_map using LOG normalized colour scale")
-            norm = mpl.colors.LogNorm(vmin=1e-10, vmax=color_scale_vmax)
+            norm = mpl.colors.LogNorm(vmin=color_scale_vmin, vmax=color_scale_vmax)
         else:
+            color_scale_vmin = color_scale_vmin or 0
             log.debug("resolve_hazard_map using LIN normalized colour scale")
             norm = mpl.colors.Normalize(vmin=color_scale_vmin, vmax=color_scale_vmax)
 
