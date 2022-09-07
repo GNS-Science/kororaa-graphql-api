@@ -22,10 +22,9 @@ aggs = ['mean', '0.10']
 def build_hazard_aggregation_models(*args, **kwargs):
     print('args', args)
     grid_id = args[1]['location_grid_ids'][0]
-    try:
-        grid_size = len(RegionGrid[grid_id].load())
-    except KeyError:
-        grid_size = 100
+    grid_size = len(RegionGrid[grid_id].load())
+    grid_poes = [random.randint(0, 4.7e6) / 1e6 for x in range(grid_size)]
+    grid_poes[0] = 0.1
 
     for (imt, vs30, agg) in itertools.product(imts, vs30s, aggs):
 
@@ -36,9 +35,9 @@ def build_hazard_aggregation_models(*args, **kwargs):
             imt=imt,
             agg=agg,
             poe=0.02,
-            grid_poes=[random.randint(0, 5e6) / 1e6 for x in range(grid_size)],
+            grid_poes=grid_poes,
         )
-        print('OBJ', obj)
+        # print('OBJ', obj)
         yield obj
 
 
@@ -69,10 +68,6 @@ class TestGriddedHazard(unittest.TestCase):
                 ok
                 gridded_hazard {
                     grid_id
-                    hazard_model
-                    imt
-                    agg
-                    vs30
                     values
                 }
             }
@@ -114,13 +109,13 @@ class TestGriddedHazard(unittest.TestCase):
             {
                 ok
                 gridded_hazard {
-                    grid_id
                     hazard_model
-                    imt
-                    agg
-                    vs30
                     values
-                    geojson( color_scale: "inferno", color_scale_vmax:10.0, fill_opacity:0.5)
+                    grid_id
+                    hazard_map( color_scale: "inferno", fill_opacity:0.5, color_scale_vmax: 0) {
+                        geojson
+                        colour_scale { levels hexrgbs}
+                    }
                 }
             }
         }
@@ -129,7 +124,7 @@ class TestGriddedHazard(unittest.TestCase):
         )  # , json.dumps(locs))
 
         executed = self.client.execute(QUERY)
-        print(executed)
+        # print(executed)
         res = executed['data']['gridded_hazard']
         self.assertEqual(res['ok'], True)
         self.assertEqual(mocked_qry.call_count, 1)
@@ -146,7 +141,148 @@ class TestGriddedHazard(unittest.TestCase):
         self.assertEqual(res['gridded_hazard'][0]['grid_id'], "NZ_0_2_NB_1_1")
         self.assertEqual(len(res['gridded_hazard'][0]['values']), 1057)
 
-        df_json = json.loads(res['gridded_hazard'][0]['geojson'])
         print()
+        df_json = json.loads(res['gridded_hazard'][0]['hazard_map']['geojson'])
         print(df_json.get('features')[0])
         self.assertEqual(len(res['gridded_hazard'][0]['values']), len(df_json.get('features')))
+        self.assertTrue(max(res['gridded_hazard'][0]['values']) < 4.7)
+        self.assertTrue(max(res['gridded_hazard'][0]['values']) > 4.5)
+
+        cscale = res['gridded_hazard'][0]['hazard_map']['colour_scale']
+        print(cscale)
+        self.assertEqual(cscale['levels'][0], 0)
+        self.assertEqual(cscale['levels'][-1], 5.0)
+
+        self.assertEqual(cscale['hexrgbs'][0], '#000004')
+        self.assertEqual(cscale['hexrgbs'][-1], '#fcffa4')
+
+    def test_get_gridded_hazard_auto_vmax_0(self, mocked_qry):
+
+        QUERY = """
+        query {
+            gridded_hazard (
+                grid_id: NZ_0_2_NB_1_1
+                hazard_model_ids: ["%s"]
+                imts: ["PGA"]
+                aggs: ["mean"]
+                vs30s: [400]
+                poes: [0.1]
+                )
+            {
+                ok
+                gridded_hazard {
+                    hazard_map( color_scale: "inferno", color_scale_vmax: 0) {
+                        colour_scale { levels hexrgbs}
+                    }
+                }
+            }
+        }
+        """ % (
+            HAZARD_MODEL_ID
+        )  # , json.dumps(locs))
+
+        executed = self.client.execute(QUERY)
+        print(executed)
+        res = executed['data']['gridded_hazard']
+        cscale = res['gridded_hazard'][0]['hazard_map']['colour_scale']
+        self.assertEqual(cscale['levels'][-1], 5.0)
+
+    def test_get_gridded_hazard_auto_vmax_none(self, mocked_qry):
+
+        QUERY = """
+        query {
+            gridded_hazard (
+                grid_id: NZ_0_2_NB_1_1
+                hazard_model_ids: ["%s"]
+                imts: ["PGA"]
+                aggs: ["mean"]
+                vs30s: [400]
+                poes: [0.1]
+                )
+            {
+                ok
+                gridded_hazard {
+                    hazard_map( color_scale: "inferno") {
+                        colour_scale { levels hexrgbs}
+                    }
+                }
+            }
+        }
+        """ % (
+            HAZARD_MODEL_ID
+        )  # , json.dumps(locs))
+
+        executed = self.client.execute(QUERY)
+        print(executed)
+        res = executed['data']['gridded_hazard']
+        cscale = res['gridded_hazard'][0]['hazard_map']['colour_scale']
+        self.assertEqual(cscale['levels'][-1], 5.0)
+
+    def test_get_gridded_hazard_manual_vmax(self, mocked_qry):
+
+        QUERY = """
+        query {
+            gridded_hazard (
+                grid_id: NZ_0_2_NB_1_1
+                hazard_model_ids: ["%s"]
+                imts: ["PGA"]
+                aggs: ["mean"]
+                vs30s: [400]
+                poes: [0.1]
+            )
+            {
+                ok
+                gridded_hazard {
+                    hazard_map( color_scale_vmax: 6.5 ) {
+                        colour_scale { levels hexrgbs}
+                    }
+                }
+            }
+        }
+        """ % (
+            HAZARD_MODEL_ID
+        )  # , json.dumps(locs))
+
+        executed = self.client.execute(QUERY)
+        print(executed)
+        res = executed['data']['gridded_hazard']
+        cscale = res['gridded_hazard'][0]['hazard_map']['colour_scale']
+        self.assertEqual(cscale['levels'][-1], 6.5)
+
+    def test_get_gridded_hazard_color_scale_log(self, mocked_qry):
+
+        QUERY = """
+        query {
+            gridded_hazard (
+                grid_id: NZ_0_2_NB_1_1
+                hazard_model_ids: ["%s"]
+                imts: ["PGA"]
+                aggs: ["mean"]
+                vs30s: [400]
+                poes: [0.1]
+            )
+            {
+                ok
+                gridded_hazard {
+                    hazard_map (color_scale_normalise: LOG) {
+                        colour_scale { levels hexrgbs}
+                    }
+                }
+            }
+        }
+        """ % (
+            HAZARD_MODEL_ID
+        )  # , json.dumps(locs))
+
+        executed = self.client.execute(QUERY)
+        print(executed)
+        res = executed['data']['gridded_hazard']
+        cscale = res['gridded_hazard'][0]['hazard_map']['colour_scale']
+        print(cscale)
+        self.assertEqual(cscale['levels'][0], 0)
+        self.assertEqual(cscale['levels'][-1], 5.0)
+
+        self.assertEqual(cscale['hexrgbs'][0], '#000000')
+        #self.assertEqual(cscale['hexrgbs'][1], '#46ffb1') # too much random
+        #self.assertEqual(cscale['hexrgbs'][-4], '#890000')
+        self.assertEqual(cscale['hexrgbs'][-1], '#800000')

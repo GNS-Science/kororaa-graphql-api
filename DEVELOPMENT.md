@@ -33,6 +33,14 @@ You'll problably see an error, if youtr AWS credentials are not thise required f
 
 ### AWS credentials
 
+## TESTING
+
+### Run API locally
+`$> ENABLE_METRICS=0 AWS_PROFILE=toshi_batch_devops sls wsgi serve --region ap-southeast-2 --stage PROD`
+
+
+### API Feature tests
+`$>poetry run pytest`
 
 
 

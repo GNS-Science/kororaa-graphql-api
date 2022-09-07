@@ -1,6 +1,8 @@
 """Build Gridded Hazard."""
 import json
 import logging
+import math
+import os
 from datetime import datetime as dt
 
 import geopandas as gpd
@@ -21,6 +23,39 @@ RegionGridEnum = graphene.Enum.from_enum(RegionGrid)
 db_metrics = ServerlessMetricWriter(metric_name="MethodDuration")
 
 
+class ColourScaleNormalise(graphene.Enum):
+    LOG = "log"
+    LIN = "lin"
+
+
+COLOR_SCALE_NORMALISE_LOG = (
+    ColourScaleNormalise.LOG
+    if os.getenv('COLOR_SCALE_NORMALISATION', '').upper() == 'LOG'
+    else ColourScaleNormalise.LIN
+)
+
+
+class HexRgbValueMapping(graphene.ObjectType):
+    levels = graphene.List(graphene.Float)
+    hexrgbs = graphene.List(graphene.String)
+
+
+def get_colour_scale(cmap: mpl.cm, norm: mpl.colors.Normalize, vmax: float) -> HexRgbValueMapping:
+    # build the colour_scale
+    assert vmax * 2 == int(vmax * 2)  # make sure we have a value on a 0.5 interval
+    levels, hexrgbs = [], []
+    for level in range(0, int(vmax * 10) + 1):
+        levels.append(level / 10)
+        hexrgbs.append(mpl.colors.to_hex(cmap(norm(level / 10))))
+    hexrgb = HexRgbValueMapping(levels=levels, hexrgbs=hexrgbs)
+    return hexrgb
+
+
+class GeoJsonHazardMap(graphene.ObjectType):
+    geojson = graphene.JSONString()
+    colour_scale = graphene.Field(HexRgbValueMapping)
+
+
 class GriddedHazard(graphene.ObjectType):
     grid_id = graphene.Field(RegionGridEnum)
     hazard_model = graphene.String()
@@ -30,24 +65,29 @@ class GriddedHazard(graphene.ObjectType):
     poe = graphene.Float()
     values = graphene.List(graphene.Float, description="Acceleration values.")
 
-    geojson = graphene.JSONString(
+    hazard_map = graphene.Field(
+        GeoJsonHazardMap,
+        # Extra args
         color_scale=graphene.String(default_value='jet', required=False),
-        color_scale_vmax=graphene.Float(default_value=3.0, required=False),
+        color_scale_vmax=graphene.Float(required=False),
         color_scale_vmin=graphene.Float(default_value=0.0, required=False),
+        color_scale_normalise=graphene.Argument(ColourScaleNormalise, required=False),
         stroke_width=graphene.Float(default_value='0.1', required=False),
         stroke_opacity=graphene.Float(default_value='1.0', required=False),
         fill_opacity=graphene.Float(default_value='1.0', required=False),
     )
+
     grid_locations = graphene.List(GriddedLocation)
 
-    def resolve_geojson(root, info, **args):
+    def resolve_hazard_map(root, info, **args):
         """Resolver gridded hazard to geojosn with formatting options."""
         t0 = dt.utcnow()
         log.info('resolve_geojson args: %s' % args)
 
         # get the query arguments
-        color_scale_vmax = args['color_scale_vmax']
-        color_scale_vmin = args['color_scale_vmin']
+        color_scale_vmax = args.get('color_scale_vmax')
+        color_scale_vmin = args.get('color_scale_vmin')
+        color_scale_normalise = args.get('color_scale_normalise', COLOR_SCALE_NORMALISE_LOG)
         color_scale = args['color_scale']
         fill_opacity = args['fill_opacity']
         stroke_opacity = args['stroke_opacity']
@@ -58,8 +98,8 @@ class GriddedHazard(graphene.ObjectType):
         grid = region_grid.load()
         loc, geometry = [], []
         cmap = mpl.cm.get_cmap(color_scale)
-        norm = mpl.colors.Normalize(vmin=color_scale_vmin, vmax=color_scale_vmax)
 
+        # build the hazard_map
         for pt in grid:
             loc.append((pt[1], pt[0]))
             geometry.append(create_square_tile(region_grid.resolution, pt[1], pt[0]))
@@ -72,7 +112,22 @@ class GriddedHazard(graphene.ObjectType):
             return poes
 
         poes = fix_nan(root.values)
+
+        # grid colours
+        color_scale_vmax = color_scale_vmax if color_scale_vmax else math.ceil(max(poes) * 2) / 2  # 0 ur None
+        log.debug('color_scale_vmax: %s' % color_scale_vmax)
+
+        if color_scale_normalise == ColourScaleNormalise.LOG:
+            color_scale_vmin = color_scale_vmin or min(poes)
+            log.debug("resolve_hazard_map using LOG normalized colour scale")
+            norm = mpl.colors.LogNorm(vmin=color_scale_vmin, vmax=color_scale_vmax)
+        else:
+            color_scale_vmin = color_scale_vmin or 0
+            log.debug("resolve_hazard_map using LIN normalized colour scale")
+            norm = mpl.colors.Normalize(vmin=color_scale_vmin, vmax=color_scale_vmax)
+
         color_values = [mpl.colors.to_hex(cmap(norm(v)), keep_alpha=True) for v in poes]
+
         gdf = gpd.GeoDataFrame(
             data=dict(
                 loc=loc,
@@ -88,9 +143,11 @@ class GriddedHazard(graphene.ObjectType):
         gdf = gdf.rename(
             columns={'fill_opacity': 'fill-opacity', 'stroke_width': 'stroke-width', 'stroke_opacity': 'stroke-opacity'}
         )
-        res = json.loads(gdf.to_json())
+
         db_metrics.put_duration(__name__, 'resolve_geojson', dt.utcnow() - t0)
-        return res
+        return GeoJsonHazardMap(
+            geojson=json.loads(gdf.to_json()), colour_scale=get_colour_scale(cmap, norm, vmax=color_scale_vmax)
+        )
 
 
 class GriddedHazardResult(graphene.ObjectType):

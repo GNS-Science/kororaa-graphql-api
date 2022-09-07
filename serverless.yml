@@ -77,6 +77,8 @@ provider:
     REGION: ${self:custom.region}
     URL_DEFAULT_TTL: ${self:custom.url_default_ttl}
     DEPLOYMENT_STAGE: ${self:custom.stage}
+    ENABLE_METRICS: ${env:ENABLE_METRICS, 0}
+    COLOR_SCALE_NORMALISATION: ${env:COLOR_SCALE_NORMALISATION, 'LIN'}
 
   apiGateway:
     apiKeys:
@@ -124,7 +126,6 @@ functions:
       DEPLOYMENT_STAGE: PROD
       NZSHM22_HAZARD_STORE_STAGE: PROD
       NZSHM22_HAZARD_STORE_REGION: ${self:custom.region}
-      ENABLE_METRICS: 1
     warmup:
       littleWarmer:
         enabled:
