@@ -2,13 +2,16 @@
 import graphene
 
 
-class GriddedLocation(graphene.ObjectType):
+class HazardCodedLocation(graphene.ObjectType):
     lat = graphene.Float()
     lon = graphene.Float()
-    resolution = graphene.Float()
     code = graphene.String()
     name = graphene.String(required=False)
     key = graphene.String(required=False)
+
+
+class GriddedLocation(HazardCodedLocation):
+    resolution = graphene.Float()
 
 
 class ToshiHazardCurve(graphene.ObjectType):
@@ -38,3 +41,20 @@ class ToshiHazardCurveResult(graphene.ObjectType):
 class GriddedLocationResult(graphene.ObjectType):
     location = graphene.Field(GriddedLocation)
     ok = graphene.Boolean()
+
+
+class DisaggregationReport(graphene.ObjectType):
+    """All the info about a given disagg report."""
+
+    hazard_model = graphene.String()
+    location = graphene.Field(HazardCodedLocation)
+    imt = graphene.String()
+    poe = graphene.Float()
+    vs30 = graphene.Int()
+    inv_time = graphene.Int()
+    report_url = graphene.String()
+
+
+class DisaggregationReportResult(graphene.ObjectType):
+    ok = graphene.Boolean()
+    reports = graphene.List(DisaggregationReport, required=False)

@@ -7,11 +7,13 @@ from graphene import relay
 from nzshm_common.location import CodedLocation
 
 from .toshi_hazard import (
+    DisaggregationReportResult,
     GriddedHazardResult,
     GriddedLocation,
     GriddedLocationResult,
     RegionGridEnum,
     ToshiHazardCurveResult,
+    disaggregation_reports,
     hazard_curves,
     query_gridded_hazard,
 )
@@ -25,6 +27,10 @@ class QueryRoot(graphene.ObjectType):
     node = relay.Node.Field()
 
     about = graphene.String(description='About this API ')
+
+    disaggregation_reports = graphene.Field(
+        DisaggregationReportResult,
+    )
 
     gridded_location = graphene.Field(
         GriddedLocationResult,
@@ -53,6 +59,10 @@ class QueryRoot(graphene.ObjectType):
         vs30s=graphene.Argument(graphene.List(graphene.Float)),
         poes=graphene.Argument(graphene.List(graphene.Float)),
     )
+
+    def resolve_disaggregation_reports(root, info, **kwargs):
+        log.info("resolve_disaggregation_reports kwargs %s" % kwargs)
+        return disaggregation_reports(kwargs)
 
     def resolve_gridded_location(root, info, **kwargs):
         log.info("resolve_gridded_location kwargs %s" % kwargs)

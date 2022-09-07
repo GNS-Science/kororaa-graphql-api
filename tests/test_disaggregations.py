@@ -7,34 +7,36 @@ from moto import mock_s3
 
 # from kororaa_graphql_api.datastore import *
 from kororaa_graphql_api.schema import schema_root
-from kororaa_graphql_api.config import S3_BUCKET_NAME
+from kororaa_graphql_api.config import S3_BUCKET_NAME, DISAGGS_KEY
 
-DISAGGS_KEY = 'DISAGGS/disaggs.json'
 DISAGGS = [
     {
-        "model_id": "SLT_v8_gmm_v2",
-        "location": "-41.300~174.780",
-        "location_name": "Wellington",
+        "hazard_model": "SLT_v8_gmm_v2",
+        "location_code": "-41.300~174.780",
+        "location_key": "WLG",
         "imt": "PGA",
-        "poe": 2,
+        "vs30": 400,
+        "poe": 0.02,
         "inv_time": 50,
         "report_url": "http://fake-plastic-trees/DATA/slt_v8_gmm_v2/diagreport_report/XXX",
     },
     {
-        "model_id": "SLT_v8_gmm_v2",
-        "location": "-41.300~174.780",
-        "location_name": "Wellington",
+        "hazard_model": "SLT_v8_gmm_v2",
+        "location_code": "-41.300~174.780",
+        "location_key": "WLG",
         "imt": "SA(0.5)",
-        "poe": 2,
+        "vs30": 400,
+        "poe": 0.02,
         "inv_time": 50,
         "report_url": "http://fake-plastic-trees/DATA/slt_v8_gmm_v2/diagreport_report/XXX",
     },
     {
-        "model_id": "SLT_v8_gmm_v2",
-        "location": "-41.300~174.780",
-        "location_name": "Wellington",
+        "hazard_model": "SLT_v8_gmm_v2",
+        "location_code": "-41.300~174.780",
+        "location_key": "WLG",
         "imt": "SA(0.5)",
-        "poe": 10,
+        "vs30": 400,
+        "poe": 0.1,
         "inv_time": 50,
         "report_url": "http://fake-plastic-trees/DATA/slt_v8_gmm_v2/diagreport_report/XXX",
     },
@@ -72,16 +74,16 @@ class TestDisaggsWithS3(unittest.TestCase):
 
         obj = json.load(file_object)
         self.assertEqual(len(obj), 3)
-        self.assertEqual(obj[0]['model_id'], "SLT_v8_gmm_v2")
+        self.assertEqual(obj[0]['hazard_model'], "SLT_v8_gmm_v2")
 
-    @unittest.skip('not implemented')
+    # @unittest.skip('not implemented')
     def test_get_disaggs(self):
         QUERY = """
         query {
-            disaggregations {
+            disaggregation_reports {
                 ok
-                disaggregations {
-                    model_id
+                reports {
+                    hazard_model
                     location {
                         name
                         code
@@ -98,5 +100,8 @@ class TestDisaggsWithS3(unittest.TestCase):
 
         executed = self.client.execute(QUERY)
         print(executed)
-        res = executed['data']['disaggregations']['disaggregations']
+        res = executed['data']['disaggregation_reports']['reports']
         self.assertEqual(len(res), 3)
+        self.assertEqual(res[0]['hazard_model'], "SLT_v8_gmm_v2")
+        self.assertEqual(res[0]['location']['code'], "-41.30~174.78")
+        self.assertEqual(res[0]['location']['name'], "Wellington")
