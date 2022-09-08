@@ -6,6 +6,7 @@ import graphene
 from graphene import relay
 from nzshm_common.location import CodedLocation
 
+from .publications import ScienceReportResult, get_science_reports
 from .toshi_hazard import (
     DisaggregationReportResult,
     GriddedHazardResult,
@@ -30,6 +31,10 @@ class QueryRoot(graphene.ObjectType):
 
     disaggregation_reports = graphene.Field(
         DisaggregationReportResult,
+    )
+
+    science_reports = graphene.Field(
+        ScienceReportResult,
     )
 
     gridded_location = graphene.Field(
@@ -63,6 +68,10 @@ class QueryRoot(graphene.ObjectType):
     def resolve_disaggregation_reports(root, info, **kwargs):
         log.info("resolve_disaggregation_reports kwargs %s" % kwargs)
         return disaggregation_reports(kwargs)
+
+    def resolve_science_reports(root, info, **kwargs):
+        log.info("resolve_science_reports kwargs %s" % kwargs)
+        return get_science_reports(kwargs)
 
     def resolve_gridded_location(root, info, **kwargs):
         log.info("resolve_gridded_location kwargs %s" % kwargs)
