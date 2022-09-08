@@ -24,7 +24,7 @@ def fetch_data() -> Iterator:
     file_object = io.BytesIO()
     s3obj.download_fileobj(file_object)
     file_object.seek(0)
-    return json.load(file_object)
+    return json.load(file_object)["data"]
 
 
 def get_science_reports(kwargs):
@@ -39,11 +39,26 @@ def get_science_reports(kwargs):
 
     def build_status_notes(obj: Dict):
         status = obj['Status']
-        if status == 'published':
-            return (ReportStatusEnum.Published, None)
-        if 'done' in status:
-            return (ReportStatusEnum.Review, status)
+        try:
+            if status == 'published':
+                return (ReportStatusEnum.Published, None)
+            if 'done' in status:
+                return (ReportStatusEnum.Review, status)
+        except:  # noqa
+            pass
         return (ReportStatusEnum.Undefined, status)
+
+    def build_date(obj: Dict):
+        try:
+            return dateutil.parser.isoparse(obj["Publication date"])
+        except:  # noqa
+            return
+
+    def build_area(obj: Dict):
+        try:
+            return ProjectAreaEnum.get(obj['Area'].upper())
+        except:  # noqa
+            return
 
     def build_science_reports() -> Iterator[ScienceReport]:
         log.info("build_science_reports")
@@ -56,12 +71,12 @@ def get_science_reports(kwargs):
                 title=obj['Title'],
                 lead_author=Person(name=obj['Lead Author']),
                 reviewers=reviewers,
-                area=ProjectAreaEnum.get(obj['Area'].upper()),
+                area=build_area(obj),
                 status=status,
                 notes=notes,
                 bibliographic_ref=obj["Bibliographic Reference"],
                 report_number=obj['Report Number'],
-                publication_date=dateutil.parser.isoparse(obj["Publication date"]),
+                publication_date=build_date(obj),
             )
             # assert 0
 
