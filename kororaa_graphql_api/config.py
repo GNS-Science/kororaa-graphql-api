@@ -19,3 +19,4 @@ LOGGING_CFG = os.getenv('LOGGING_CFG', 'graphql_api/logging_aws.yaml')
 ENABLE_METRICS = bool(os.getenv('ENABLE_METRICS', '').upper() in ["1", "Y", "YES", "TRUE"])
 CW_METRICS_RESOLUTION = os.getenv('CW_METRICS_RESOLUTION', 60)  # 1 for high resolution or 60
 DISAGGS_KEY = os.environ.get('DISAGGS_KEY', "DISAGGS_KEY/is/unconfigured.json")
+PUBLICATIONS_KEY = os.environ.get('PUBLICATIONS_KEY', "PUBLICATIONS_KEY/is/unconfigured.json")
