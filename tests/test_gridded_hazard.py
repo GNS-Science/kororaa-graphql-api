@@ -283,6 +283,6 @@ class TestGriddedHazard(unittest.TestCase):
         self.assertEqual(cscale['levels'][-1], 5.0)
 
         self.assertEqual(cscale['hexrgbs'][0], '#000000')
-        #self.assertEqual(cscale['hexrgbs'][1], '#46ffb1') # too much random
-        #self.assertEqual(cscale['hexrgbs'][-4], '#890000')
+        # self.assertEqual(cscale['hexrgbs'][1], '#46ffb1') # too much random
+        # self.assertEqual(cscale['hexrgbs'][-4], '#890000')
         self.assertEqual(cscale['hexrgbs'][-1], '#800000')

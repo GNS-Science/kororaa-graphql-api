@@ -1,0 +1,29 @@
+[
+    {
+        "hazard_model": "SLT_v8_gmm_v2",
+        "location_key": "WLG",
+        "imt": "PGA",
+        "vs30": 400,
+        "poe": 0.02,
+        "inv_time": 50,
+        "report_url": "http://fake-plastic-trees/DATA/slt_v8_gmm_v2/diagreport_report/XXX"
+    },
+    {
+        "hazard_model": "SLT_v8_gmm_v2",
+        "location_key": "WLG",
+        "imt": "SA(0.5)",
+        "vs30": 400,
+        "poe": 0.02,
+        "inv_time": 50,
+        "report_url": "http://fake-plastic-trees/DATA/slt_v8_gmm_v2/diagreport_report/XXX"
+    },
+    {
+        "hazard_model": "SLT_v8_gmm_v2",
+        "location_key": "WLG",
+        "imt": "SA(0.5)",
+        "vs30": 400,
+        "poe": 0.1,
+        "inv_time": 50,
+        "report_url": "http://fake-plastic-trees/DATA/slt_v8_gmm_v2/diagreport_report/XXX"
+    }
+]

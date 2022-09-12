@@ -6,9 +6,7 @@ import os
 
 import boto3
 
-REGION = os.getenv('REGION', 'ap-southeast-2')
-STACK_NAME = os.getenv('STACK_NAME', 'kororaa_graphql_api')
-ENABLE_METRICS = bool(os.getenv('ENABLE_METRICS', '').upper() in ["1", "Y", "YES", "TRUE"])
+from kororaa_graphql_api.config import ENABLE_METRICS, REGION, STACK_NAME
 
 log = logging.getLogger(__name__)
 

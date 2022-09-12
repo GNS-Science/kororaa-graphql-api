@@ -23,6 +23,7 @@
     "serverless-wsgi": "^3.0.0"
   },
   "devDependencies": {
-    "serverless-plugin-warmup": "^8.0.0"
+    "serverless-plugin-warmup": "^8.0.0",
+    "serverless-s3-local": "^0.6.22"
   }
 }
