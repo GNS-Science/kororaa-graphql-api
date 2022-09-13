@@ -1,0 +1,18 @@
+[
+    {
+      "index" : "help_getting_started.md",
+      "content_type":"MD",
+      "author":"Joni Mitchell",
+      "tags":["help"],
+      "status":"PUBLISHED",
+      "created": "2021-10-01T00:00:00.000+12:00"
+      },
+    {
+      "index" : "help_getting_stopped.md",
+      "content_type":"RAW",
+      "author":"Hambone Walker",
+      "tags":["glossary"],
+      "status":"DRAFT",
+      "created": "2021-10-01T00:00:00.000+12:00"
+    }
+]

@@ -84,14 +84,6 @@ provider:
   runtime: python3.8
   stage: ${opt:stage, 'dev'}
   region: ap-southeast-2
-  environment:
-    REGION: ${self:custom.region}
-    URL_DEFAULT_TTL: ${self:custom.url_default_ttl}
-    DEPLOYMENT_STAGE: ${self:custom.stage}
-    ENABLE_METRICS: ${env:ENABLE_METRICS, 0}
-    COLOR_SCALE_NORMALISATION: ${env:COLOR_SCALE_NORMALISATION, 'LIN'}
-    S3_BUCKET_NAME: ${self:custom.s3_bucket}
-
   apiGateway:
     apiKeys:
       - name: KoraraaTempApiKey-${self:custom.stage}
@@ -121,8 +113,6 @@ provider:
             - ${self:custom.s3_role_resource}
             - ${self:custom.s3_role_resource}/*
 
-
-
 functions:
   app:
     description: The graphql API of ${self:service}
@@ -143,11 +133,18 @@ functions:
           private: true
     environment:
       STACK_NAME: ${self:custom.stack_name}
-      DEPLOYMENT_STAGE: PROD
+      REGION: ${self:custom.region}
+      URL_DEFAULT_TTL: ${self:custom.url_default_ttl}
+      DEPLOYMENT_STAGE: ${self:custom.stage}
+      ENABLE_METRICS: ${env:ENABLE_METRICS, 0}
+      COLOR_SCALE_NORMALISATION: ${env:COLOR_SCALE_NORMALISATION, 'LIN'}
+      S3_BUCKET_NAME: ${self:custom.s3_bucket}
       NZSHM22_HAZARD_STORE_STAGE: PROD
       NZSHM22_HAZARD_STORE_REGION: ${self:custom.region}
       DISAGGS_KEY: "DISAGGS/disaggs.json"
       PUBLICATIONS_KEY: "PUBLICATIONS/nshm_science_reports_metadata_table.json"
+      TEXT_CONTENT_INDEX_KEY: "TEXT_CONTENT/text_content_index.json"
+      TEXT_CONTENT_FOLDER_KEY: "TEXT_CONTENT"
     warmup:
       littleWarmer:
         enabled:

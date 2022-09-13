@@ -1,6 +1,14 @@
 # Changelog
 
-## [0.3.0] - 2022-08-015
+
+## [0.4.0] - 2022-09-14
+
+### Added
+
+* textual_content
+* science_reports
+
+## [0.3.0] - 2022-08-15
 
 ### Added
 
