@@ -83,5 +83,5 @@ def get_science_reports(kwargs):
     # print(list(build_science_reports()))
 
     res = ScienceReportResult(ok=True, reports=build_science_reports())
-    db_metrics.put_duration(__name__, 'disaggregations', dt.utcnow() - t0)
+    db_metrics.put_duration(__name__, 'get_science_reports', dt.utcnow() - t0)
     return res
