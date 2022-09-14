@@ -6,12 +6,16 @@ import graphene
 from graphene import relay
 from nzshm_common.location import CodedLocation
 
+from .publications import ScienceReportResult, get_science_reports
+from .textual_content import TextualContentResult, get_textual_content
 from .toshi_hazard import (
+    DisaggregationReportResult,
     GriddedHazardResult,
     GriddedLocation,
     GriddedLocationResult,
     RegionGridEnum,
     ToshiHazardCurveResult,
+    disaggregation_reports,
     hazard_curves,
     query_gridded_hazard,
 )
@@ -25,6 +29,20 @@ class QueryRoot(graphene.ObjectType):
     node = relay.Node.Field()
 
     about = graphene.String(description='About this API ')
+
+    disaggregation_reports = graphene.Field(
+        DisaggregationReportResult,
+    )
+
+    science_reports = graphene.Field(
+        ScienceReportResult,
+    )
+
+    textual_content = graphene.Field(
+        TextualContentResult,
+        index=graphene.Argument(graphene.String, required=False),
+        tags=graphene.Argument(graphene.List(graphene.String), required=False),
+    )
 
     gridded_location = graphene.Field(
         GriddedLocationResult,
@@ -53,6 +71,18 @@ class QueryRoot(graphene.ObjectType):
         vs30s=graphene.Argument(graphene.List(graphene.Float)),
         poes=graphene.Argument(graphene.List(graphene.Float)),
     )
+
+    def resolve_disaggregation_reports(root, info, **kwargs):
+        log.info("resolve_disaggregation_reports kwargs %s" % kwargs)
+        return disaggregation_reports(kwargs)
+
+    def resolve_science_reports(root, info, **kwargs):
+        log.info("resolve_science_reports kwargs %s" % kwargs)
+        return get_science_reports(kwargs)
+
+    def resolve_textual_content(root, info, **kwargs):
+        log.info("resolve_textual_content kwargs %s" % kwargs)
+        return get_textual_content(kwargs)
 
     def resolve_gridded_location(root, info, **kwargs):
         log.info("resolve_gridded_location kwargs %s" % kwargs)
