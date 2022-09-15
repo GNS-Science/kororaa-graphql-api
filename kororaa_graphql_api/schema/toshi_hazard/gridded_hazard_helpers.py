@@ -64,10 +64,7 @@ def edge_tiles(clipping_parts: List[Polygon], tiles: List[CustomPolygon]) -> Ite
 def nz_simplified_polgons() -> Iterable[Polygon]:
     small_nz = Path(__file__).parent.parent.parent / 'resources' / 'small-nz.wkt.csv.zip'
     nzdf = load_polygon_file(str(small_nz))
-
-    # build the clipped
     nz_parts = nzdf['geometry'].tolist()
-
     # try to remove holes
     nz_parts_whole = []
     for part in nz_parts:
