@@ -3,9 +3,10 @@ from datetime import datetime as dt
 from functools import lru_cache
 from pathlib import Path
 from typing import Iterable, List, Tuple
-from shapely.geometry import Polygon
 
 from nzshm_grid_loc.io import load_polygon_file
+from shapely.geometry import Polygon
+
 from kororaa_graphql_api.cloudwatch import ServerlessMetricWriter
 
 log = logging.getLogger(__name__)
