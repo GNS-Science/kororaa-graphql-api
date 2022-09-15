@@ -1,28 +1,33 @@
 from datetime import datetime as dt
+from functools import lru_cache
 from pathlib import Path
-from typing import Iterable, List, Optional
+from typing import Iterable, List, Tuple
 
 from nzshm_grid_loc.io import load_polygon_file
 from shapely.geometry import Polygon
-from functools import lru_cache
 
 
 class CustomPolygon:
-    def __init__(self, polygon: Polygon, value: float = None):
+    def __init__(self, polygon: Polygon, value: float, location: Tuple[float, float]):
         self._polygon = polygon
         self._value = value
+        self._location = location
 
-    def value(self) -> Optional[float]:
+    def value(self) -> float:
         return self._value
 
     def polygon(self) -> Polygon:
         return self._polygon
 
+    def location(self) -> Tuple[float, float]:
+        return self._location
+
     def __hash__(self):
-        return hash((self._polygon.wkt, self._value))
+        return hash((self._polygon.wkt, self._value, self._location))
 
     def __eq__(self, other):
-        return self._polygon == other._polygon and self._value == other._value
+        return self._polygon == other._polygon and self._value == other._value and self._location == other._location
+
 
 def inner_tiles(clipping_parts: List[Polygon], tiles: List[CustomPolygon]) -> Iterable[CustomPolygon]:
     """Filter tiles, yielding only those that are completely covered by a clipping part.
@@ -34,15 +39,17 @@ def inner_tiles(clipping_parts: List[Polygon], tiles: List[CustomPolygon]) -> It
             if nz_part.covers(tile.polygon()):
                 yield tile
 
+
 def edge_tiles(clipping_parts: List[Polygon], tiles: List[CustomPolygon]) -> Iterable[CustomPolygon]:
     """Filter tiles, yielding only those that intersect a clipping_part and clipping them to that intersection."""
     for nz_part in clipping_parts:
         for tile in tiles:
             if nz_part.intersects(tile.polygon()):
                 try:
-                    yield CustomPolygon(nz_part.intersection(tile.polygon()), tile.value())
+                    yield CustomPolygon(nz_part.intersection(tile.polygon()), tile.value(), tile.location())
                 except (Exception) as err:
                     print(err)
+
 
 @lru_cache
 def nz_simplified_polgons() -> Iterable[Polygon]:
@@ -57,6 +64,7 @@ def nz_simplified_polgons() -> Iterable[Polygon]:
     for part in nz_parts:
         nz_parts_whole.append(Polygon(part.exterior.coords))
     return nz_parts_whole
+
 
 def clip_tiles(clipping_parts: List[Polygon], tiles: List[Polygon]):
     t0 = dt.utcnow()

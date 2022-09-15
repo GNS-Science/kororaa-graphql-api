@@ -5,6 +5,7 @@ import math
 import os
 from datetime import datetime as dt
 from functools import lru_cache
+
 import geopandas as gpd
 import graphene
 import matplotlib as mpl
@@ -13,12 +14,9 @@ from nzshm_common.grids import RegionGrid
 from toshi_hazard_store import query
 
 from kororaa_graphql_api.cloudwatch import ServerlessMetricWriter
+
+from .gridded_hazard_helpers import CustomPolygon, clip_tiles, nz_simplified_polgons
 from .hazard_schema import GriddedLocation
-from .gridded_hazard_helpers import (
-    CustomPolygon,
-    clip_tiles,
-    nz_simplified_polgons,
-)
 
 log = logging.getLogger(__name__)
 
@@ -101,14 +99,8 @@ class GriddedHazard(graphene.ObjectType):
         # TODO: is the a simpler way to access the base Enum class method?
         region_grid = RegionGrid[RegionGridEnum.get(root.grid_id).name]
         grid = region_grid.load()
-        loc, geometry = [], []
+        geometry = []
         cmap = mpl.cm.get_cmap(color_scale)
-
-        # >>>>>>>>>>>>>>>>>>>>>
-        # build the hazard_map
-        # for pt in grid:
-        #     loc.append((pt[1], pt[0]))
-        #     geometry.append(create_square_tile(region_grid.resolution, pt[1], pt[0]))
 
         def fix_nan(poes):
             for i in range(len(poes)):
@@ -122,9 +114,8 @@ class GriddedHazard(graphene.ObjectType):
 
         # build the hazard_map
         for idx, pt in enumerate(grid):
-            loc.append((pt[1], pt[0]))
             tile = CustomPolygon(
-                create_square_tile(region_grid.resolution, pt[1], pt[0]), poes[idx]
+                create_square_tile(region_grid.resolution, pt[1], pt[0]), value=poes[idx], location=(pt[1], pt[0])
             )
             geometry.append(tile)
 
@@ -133,7 +124,6 @@ class GriddedHazard(graphene.ObjectType):
         new_geometry = clip_tiles(nz_parts, geometry)
         poes = [g.value() for g in new_geometry]
 
-        # >>>>>>>>>>>>>>>>>>>>>>
         # grid colours
         color_scale_vmax = color_scale_vmax if color_scale_vmax else math.ceil(max(poes) * 2) / 2  # 0 ur None
         log.debug('color_scale_vmax: %s' % color_scale_vmax)
@@ -151,7 +141,7 @@ class GriddedHazard(graphene.ObjectType):
 
         gdf = gpd.GeoDataFrame(
             data=dict(
-                # loc=loc,
+                loc=[g.location() for g in new_geometry],
                 geometry=[g.polygon() for g in new_geometry],
                 value=[g.value() for g in new_geometry],
                 fill=color_values,

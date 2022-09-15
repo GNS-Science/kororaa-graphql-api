@@ -131,7 +131,7 @@ class TestGriddedHazard(unittest.TestCase):
 
         mocked_qry.assert_called_with(
             hazard_model_ids=['GRIDDED_THE_THIRD'],
-            location_grid_ids=['WLG_0_01_nb_1_1'], # 'NZ_0_2_NB_1_1'],
+            location_grid_ids=['WLG_0_01_nb_1_1'],  # 'NZ_0_2_NB_1_1'],
             vs30s=[400.0, 250.0],
             imts=['PGA', 'SA(0.5)'],
             aggs=['mean', '0.9'],
@@ -144,7 +144,7 @@ class TestGriddedHazard(unittest.TestCase):
         print()
         df_json = json.loads(res['gridded_hazard'][0]['hazard_map']['geojson'])
         print(df_json.get('features')[0])
-        self.assertEqual(len(df_json.get('features')), 763) # just one tile is dropped
+        self.assertEqual(len(df_json.get('features')), 763)  # just one tile is dropped
         self.assertTrue(max(res['gridded_hazard'][0]['values']) < 4.7)
         self.assertTrue(max(res['gridded_hazard'][0]['values']) > 4.5)
 
