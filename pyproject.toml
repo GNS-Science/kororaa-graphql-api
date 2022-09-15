@@ -36,6 +36,7 @@ toshi-hazard-store = {git = "https://github.com/GNS-Science/toshi-hazard-store.g
 boto3 = "^1.24.57"
 python-dateutil = "^2.8.2"
 pyproj = "3.3.0"
+nzshm-grid-loc = {git = "https://github.com/GNS-Science/nzshm-grid-loc.git", rev = "d3c88c54698c3af529ffca915c9cdd60ddb07f6f"}
 
 [tool.poetry.dev-dependencies]
 
