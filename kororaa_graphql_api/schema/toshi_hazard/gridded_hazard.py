@@ -99,6 +99,7 @@ class GriddedHazard(graphene.ObjectType):
         loc, geometry = [], []
         cmap = mpl.cm.get_cmap(color_scale)
 
+        # >>>>>>>>>>>>>>>>>>>>>
         # build the hazard_map
         for pt in grid:
             loc.append((pt[1], pt[0]))
@@ -113,6 +114,7 @@ class GriddedHazard(graphene.ObjectType):
 
         poes = fix_nan(root.values)
 
+        # >>>>>>>>>>>>>>>>>>>>>>
         # grid colours
         color_scale_vmax = color_scale_vmax if color_scale_vmax else math.ceil(max(poes) * 2) / 2  # 0 ur None
         log.debug('color_scale_vmax: %s' % color_scale_vmax)
