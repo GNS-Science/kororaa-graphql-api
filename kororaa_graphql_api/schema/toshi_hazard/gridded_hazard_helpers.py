@@ -11,6 +11,7 @@ from kororaa_graphql_api.cloudwatch import ServerlessMetricWriter
 log = logging.getLogger(__name__)
 db_metrics = ServerlessMetricWriter(metric_name="MethodDuration")
 
+
 class CustomPolygon:
     def __init__(self, polygon: Polygon, value: float, location: Tuple[float, float]):
         self._polygon = polygon
@@ -51,7 +52,7 @@ def edge_tiles(clipping_parts: List[Polygon], tiles: List[CustomPolygon]) -> Ite
             if nz_part.intersects(tile.polygon()):
                 try:
                     clipped = CustomPolygon(nz_part.intersection(tile.polygon()), tile.value(), tile.location())
-                    if clipped.polygon().geom_type == 'Polygon':
+                    if not clipped.polygon().geom_type == 'Point':
                         yield clipped
                     else:
                         raise RuntimeError("Clipped tile %s is not a Polygon" % (repr(clipped.polygon())))

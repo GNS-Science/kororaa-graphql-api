@@ -49,7 +49,7 @@ class TestGriddedHazard(unittest.TestCase):
         nz_parts = nz_simplified_polgons()
 
         new_geometry = clip_tiles(nz_parts, geometry)
-        self.assertEqual(len(new_geometry), 762)
+        self.assertEqual(len(new_geometry), 763)
 
         # gdf = gpd.GeoDataFrame(data=dict(geometry=[g.polygon() for g in new_geometry],
         # value=[g.value() for g in new_geometry]))

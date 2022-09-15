@@ -144,7 +144,7 @@ class TestGriddedHazard(unittest.TestCase):
         print()
         df_json = json.loads(res['gridded_hazard'][0]['hazard_map']['geojson'])
         print(df_json.get('features')[0])
-        self.assertEqual(len(df_json.get('features')), 762)  # two tiles are dropped
+        self.assertEqual(len(df_json.get('features')), 763)  # one tile dropped
         self.assertTrue(max(res['gridded_hazard'][0]['values']) < 4.7)
         self.assertTrue(max(res['gridded_hazard'][0]['values']) > 4.5)
 
