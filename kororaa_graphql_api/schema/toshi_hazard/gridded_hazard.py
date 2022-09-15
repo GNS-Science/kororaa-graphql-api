@@ -119,7 +119,7 @@ class GriddedHazard(graphene.ObjectType):
             )
             geometry.append(tile)
 
-        print('built %s tiles in %s' % (len(geometry), dt.utcnow() - t0))
+        log.debug('built %s tiles in %s' % (len(geometry), dt.utcnow() - t0))
 
         new_geometry = clip_tiles(nz_parts, geometry)
         poes = [g.value() for g in new_geometry]
