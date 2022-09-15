@@ -4,7 +4,7 @@ import logging
 import math
 import os
 from datetime import datetime as dt
-
+from functools import lru_cache
 import geopandas as gpd
 import graphene
 import matplotlib as mpl
@@ -13,8 +13,12 @@ from nzshm_common.grids import RegionGrid
 from toshi_hazard_store import query
 
 from kororaa_graphql_api.cloudwatch import ServerlessMetricWriter
-
 from .hazard_schema import GriddedLocation
+from .gridded_hazard_helpers import (
+    CustomPolygon,
+    clip_tiles,
+    nz_simplified_polgons,
+)
 
 log = logging.getLogger(__name__)
 
@@ -79,6 +83,7 @@ class GriddedHazard(graphene.ObjectType):
 
     grid_locations = graphene.List(GriddedLocation)
 
+    @lru_cache
     def resolve_hazard_map(root, info, **args):
         """Resolver gridded hazard to geojosn with formatting options."""
         t0 = dt.utcnow()
@@ -101,9 +106,9 @@ class GriddedHazard(graphene.ObjectType):
 
         # >>>>>>>>>>>>>>>>>>>>>
         # build the hazard_map
-        for pt in grid:
-            loc.append((pt[1], pt[0]))
-            geometry.append(create_square_tile(region_grid.resolution, pt[1], pt[0]))
+        # for pt in grid:
+        #     loc.append((pt[1], pt[0]))
+        #     geometry.append(create_square_tile(region_grid.resolution, pt[1], pt[0]))
 
         def fix_nan(poes):
             for i in range(len(poes)):
@@ -113,6 +118,20 @@ class GriddedHazard(graphene.ObjectType):
             return poes
 
         poes = fix_nan(root.values)
+        nz_parts = nz_simplified_polgons()
+
+        # build the hazard_map
+        for idx, pt in enumerate(grid):
+            loc.append((pt[1], pt[0]))
+            tile = CustomPolygon(
+                create_square_tile(region_grid.resolution, pt[1], pt[0]), poes[idx]
+            )
+            geometry.append(tile)
+
+        print('built %s tiles in %s' % (len(geometry), dt.utcnow() - t0))
+
+        new_geometry = clip_tiles(nz_parts, geometry)
+        poes = [g.value() for g in new_geometry]
 
         # >>>>>>>>>>>>>>>>>>>>>>
         # grid colours
@@ -132,9 +151,9 @@ class GriddedHazard(graphene.ObjectType):
 
         gdf = gpd.GeoDataFrame(
             data=dict(
-                loc=loc,
-                geometry=geometry,
-                value=poes,
+                # loc=loc,
+                geometry=[g.polygon() for g in new_geometry],
+                value=[g.value() for g in new_geometry],
                 fill=color_values,
                 fill_opacity=[fill_opacity for n in poes],
                 stroke=color_values,

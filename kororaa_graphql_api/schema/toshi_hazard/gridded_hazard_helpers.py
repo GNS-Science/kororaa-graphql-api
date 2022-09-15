@@ -4,6 +4,7 @@ from typing import Iterable, List, Optional
 
 from nzshm_grid_loc.io import load_polygon_file
 from shapely.geometry import Polygon
+from functools import lru_cache
 
 
 class CustomPolygon:
@@ -23,7 +24,6 @@ class CustomPolygon:
     def __eq__(self, other):
         return self._polygon == other._polygon and self._value == other._value
 
-
 def inner_tiles(clipping_parts: List[Polygon], tiles: List[CustomPolygon]) -> Iterable[CustomPolygon]:
     """Filter tiles, yielding only those that are completely covered by a clipping part.
 
@@ -33,7 +33,6 @@ def inner_tiles(clipping_parts: List[Polygon], tiles: List[CustomPolygon]) -> It
         for tile in tiles:
             if nz_part.covers(tile.polygon()):
                 yield tile
-
 
 def edge_tiles(clipping_parts: List[Polygon], tiles: List[CustomPolygon]) -> Iterable[CustomPolygon]:
     """Filter tiles, yielding only those that intersect a clipping_part and clipping them to that intersection."""
@@ -45,7 +44,7 @@ def edge_tiles(clipping_parts: List[Polygon], tiles: List[CustomPolygon]) -> Ite
                 except (Exception) as err:
                     print(err)
 
-
+@lru_cache
 def nz_simplified_polgons() -> Iterable[Polygon]:
     small_nz = Path(__file__).parent.parent.parent / 'resources' / 'small-nz.wkt.csv.zip'
     nzdf = load_polygon_file(str(small_nz))
@@ -59,11 +58,10 @@ def nz_simplified_polgons() -> Iterable[Polygon]:
         nz_parts_whole.append(Polygon(part.exterior.coords))
     return nz_parts_whole
 
-
 def clip_tiles(clipping_parts: List[Polygon], tiles: List[Polygon]):
     t0 = dt.utcnow()
     covered_tiles: List[CustomPolygon] = list(inner_tiles(clipping_parts, tiles))
-    print('filtered %s wlg tiles to %s in %s' % (len(tiles), len(covered_tiles), dt.utcnow() - t0))
+    print('filtered %s tiles to %s inner in %s' % (len(tiles), len(covered_tiles), dt.utcnow() - t0))
 
     outer_tiles: List[CustomPolygon] = list(set(tiles).difference(set(covered_tiles)))
 

@@ -14,7 +14,7 @@ from nzshm_common.grids import RegionGrid
 
 HAZARD_MODEL_ID = 'GRIDDED_THE_THIRD'
 # grid_ids = ['A', 'B']
-vs30s = [250, 350, 400]
+vs30s = [250, 400]
 imts = ['PGA', 'SA(0.5)']
 aggs = ['mean', '0.10']
 
@@ -99,7 +99,7 @@ class TestGriddedHazard(unittest.TestCase):
         QUERY = """
         query {
             gridded_hazard (
-                grid_id: NZ_0_2_NB_1_1
+                grid_id: WLG_0_01_nb_1_1 # NZ_0_2_NB_1_1
                 hazard_model_ids: ["%s"]
                 imts: ["PGA", "SA(0.5)"]
                 aggs: ["mean", "0.9"]
@@ -131,20 +131,20 @@ class TestGriddedHazard(unittest.TestCase):
 
         mocked_qry.assert_called_with(
             hazard_model_ids=['GRIDDED_THE_THIRD'],
-            location_grid_ids=['NZ_0_2_NB_1_1'],
+            location_grid_ids=['WLG_0_01_nb_1_1'], # 'NZ_0_2_NB_1_1'],
             vs30s=[400.0, 250.0],
             imts=['PGA', 'SA(0.5)'],
             aggs=['mean', '0.9'],
             poes=[0.1, 0.02],
         )
 
-        self.assertEqual(res['gridded_hazard'][0]['grid_id'], "NZ_0_2_NB_1_1")
-        self.assertEqual(len(res['gridded_hazard'][0]['values']), 1057)
+        self.assertEqual(res['gridded_hazard'][0]['grid_id'], 'WLG_0_01_nb_1_1')
+        self.assertEqual(len(res['gridded_hazard'][0]['values']), 764)
 
         print()
         df_json = json.loads(res['gridded_hazard'][0]['hazard_map']['geojson'])
         print(df_json.get('features')[0])
-        self.assertEqual(len(res['gridded_hazard'][0]['values']), len(df_json.get('features')))
+        self.assertEqual(len(df_json.get('features')), 763) # just one tile is dropped
         self.assertTrue(max(res['gridded_hazard'][0]['values']) < 4.7)
         self.assertTrue(max(res['gridded_hazard'][0]['values']) > 4.5)
 
@@ -161,7 +161,7 @@ class TestGriddedHazard(unittest.TestCase):
         QUERY = """
         query {
             gridded_hazard (
-                grid_id: NZ_0_2_NB_1_1
+                grid_id: WLG_0_01_nb_1_1
                 hazard_model_ids: ["%s"]
                 imts: ["PGA"]
                 aggs: ["mean"]
@@ -192,7 +192,7 @@ class TestGriddedHazard(unittest.TestCase):
         QUERY = """
         query {
             gridded_hazard (
-                grid_id: NZ_0_2_NB_1_1
+                grid_id: WLG_0_01_nb_1_1
                 hazard_model_ids: ["%s"]
                 imts: ["PGA"]
                 aggs: ["mean"]
@@ -223,7 +223,7 @@ class TestGriddedHazard(unittest.TestCase):
         QUERY = """
         query {
             gridded_hazard (
-                grid_id: NZ_0_2_NB_1_1
+                grid_id: WLG_0_01_nb_1_1
                 hazard_model_ids: ["%s"]
                 imts: ["PGA"]
                 aggs: ["mean"]
@@ -254,7 +254,7 @@ class TestGriddedHazard(unittest.TestCase):
         QUERY = """
         query {
             gridded_hazard (
-                grid_id: NZ_0_2_NB_1_1
+                grid_id: WLG_0_01_nb_1_1
                 hazard_model_ids: ["%s"]
                 imts: ["PGA"]
                 aggs: ["mean"]
