@@ -1,7 +1,6 @@
 """Tests for toshi_hazard_rev module."""
 
 import unittest
-import random
 from datetime import datetime as dt
 from nzshm_common.grids import RegionGrid
 from nzshm_common.geometry.geometry import create_square_tile

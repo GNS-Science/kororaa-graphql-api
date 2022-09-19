@@ -31,7 +31,7 @@ class CustomPolygon:
         return self._polygon == other._polygon and self._location == other._location
 
 
-def inner_tiles(clipping_parts: List[CustomPolygon], tiles: List[CustomPolygon]) -> Iterable[CustomPolygon]:
+def inner_tiles(clipping_parts: Iterable[CustomPolygon], tiles: Iterable[CustomPolygon]) -> Iterable[CustomPolygon]:
     """Filter tiles, yielding only those that are completely covered by a clipping part.
 
     This can yield a tile more than once if the clipping_parts overlap can to cover that tile.
@@ -42,7 +42,7 @@ def inner_tiles(clipping_parts: List[CustomPolygon], tiles: List[CustomPolygon])
                 yield tile
 
 
-def edge_tiles(clipping_parts: List[CustomPolygon], tiles: List[CustomPolygon]) -> Iterable[CustomPolygon]:
+def edge_tiles(clipping_parts: Iterable[CustomPolygon], tiles: Iterable[CustomPolygon]) -> Iterable[CustomPolygon]:
     """Filter tiles, yielding only those that intersect a clipping_part and clipping them to that intersection."""
     for nz_part in clipping_parts:
         for tile in tiles:
@@ -65,7 +65,9 @@ def nz_simplified_polgons() -> Iterable[Polygon]:
     # try to remove holes
     nz_parts_whole = []
     for part in nz_parts:
-        nz_parts_whole.append(CustomPolygon(Polygon(part.exterior.coords),tuple([part.centroid.x, part.centroid.y])))
+        nz_parts_whole.append(
+            CustomPolygon(Polygon(part.exterior.coords), (float(part.centroid.x), float(part.centroid.y)))
+        )
     return tuple(nz_parts_whole)
 
 
