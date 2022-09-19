@@ -31,9 +31,7 @@ class ColourScaleNormalise(graphene.Enum):
 
 
 COLOR_SCALE_NORMALISE_LOG = (
-    ColourScaleNormalise.LOG
-    if os.getenv('COLOR_SCALE_NORMALISATION', '').upper() == 'LOG'
-    else ColourScaleNormalise.LIN
+    'log' if os.getenv('COLOR_SCALE_NORMALISATION', '').upper() == 'LOG' else 'lin'
 )
 
 
@@ -41,16 +39,37 @@ class HexRgbValueMapping(graphene.ObjectType):
     levels = graphene.List(graphene.Float)
     hexrgbs = graphene.List(graphene.String)
 
+@lru_cache
+def get_normaliser(color_scale_vmax, color_scale_vmin, color_scale_normalise):
+    if color_scale_normalise == ColourScaleNormalise.LOG:
+        log.debug("resolve_hazard_map using LOG normalized colour scale")
+        norm = mpl.colors.LogNorm(vmin=color_scale_vmin, vmax=color_scale_vmax)
+    else:
+        color_scale_vmin = color_scale_vmin or 0
+        log.debug("resolve_hazard_map using LIN normalized colour scale")
+        norm = mpl.colors.Normalize(vmin=color_scale_vmin, vmax=color_scale_vmax)
+    return norm
 
-def get_colour_scale(cmap: mpl.cm, norm: mpl.colors.Normalize, vmax: float) -> HexRgbValueMapping:
+@lru_cache
+def get_colour_scale(color_scale: str, color_scale_normalise,  vmax: float, vmin: float) -> HexRgbValueMapping:
     # build the colour_scale
     assert vmax * 2 == int(vmax * 2)  # make sure we have a value on a 0.5 interval
     levels, hexrgbs = [], []
+    cmap = mpl.cm.get_cmap(color_scale)
+    norm = get_normaliser(vmax, vmin, color_scale_normalise)
     for level in range(0, int(vmax * 10) + 1):
         levels.append(level / 10)
         hexrgbs.append(mpl.colors.to_hex(cmap(norm(level / 10))))
     hexrgb = HexRgbValueMapping(levels=levels, hexrgbs=hexrgbs)
     return hexrgb
+
+@lru_cache
+def get_colour_values(color_scale, color_scale_vmax, color_scale_vmin, color_scale_normalise, poes):
+    # grid colours
+    log.debug('color_scale_vmax: %s' % color_scale_vmax)
+    norm = get_normaliser(color_scale_vmax, color_scale_vmin, color_scale_normalise)
+    cmap = mpl.cm.get_cmap(color_scale)
+    return [mpl.colors.to_hex(cmap(norm(v)), keep_alpha=True) for v in poes]
 
 @lru_cache
 def get_tile_polygons(grid_id: str, poes: Tuple[Any]) -> Tuple[CustomPolygon]:
@@ -61,12 +80,15 @@ def get_tile_polygons(grid_id: str, poes: Tuple[Any]) -> Tuple[CustomPolygon]:
     geometry = []
     for idx, pt in enumerate(grid):
         tile = CustomPolygon(
-            create_square_tile(region_grid.resolution, pt[1], pt[0]), value=poes[idx], location=(pt[1], pt[0])
+            create_square_tile(region_grid.resolution, pt[1], pt[0]), location=(pt[1], pt[0])
         )
         geometry.append(tile)
     log.debug('built %s tiles in %s' % (len(geometry), dt.utcnow() - t0))
     return tuple(geometry)
 
+@lru_cache
+def polygon_centers(polygons):
+    return tuple([tuple([p.location()[0], p.location()[1]]) for p in polygons])
 
 class GeoJsonHazardMap(graphene.ObjectType):
     geojson = graphene.JSONString()
@@ -118,12 +140,10 @@ class GriddedHazard(graphene.ObjectType):
         color_scale_normalise = args.get('color_scale_normalise', COLOR_SCALE_NORMALISE_LOG)
         color_scale = args['color_scale']
 
-        #these arguments should not require recald of colour scale
+        #these arguments should not require recalc of colour scale
         fill_opacity = args['fill_opacity']
         stroke_opacity = args['stroke_opacity']
         stroke_width = args['stroke_width']
-
-        cmap = mpl.cm.get_cmap(color_scale)
 
         def fix_nan(poes):
             res = []
@@ -151,32 +171,38 @@ class GriddedHazard(graphene.ObjectType):
         t1 = dt.utcnow()
         log.debug('resolve_geojson to build geom took %s' %  (t1 - t0))
 
-        poes = [g.value() for g in new_geometry]
 
-        # grid colours
-        color_scale_vmax = color_scale_vmax if color_scale_vmax else math.ceil(max(poes) * 2) / 2  # 0 ur None
-        log.debug('color_scale_vmax: %s' % color_scale_vmax)
+        def location_poes(polygons, poes):
+            return dict(zip(polygon_centers(polygons), poes))
 
-        if color_scale_normalise == ColourScaleNormalise.LOG:
-            color_scale_vmin = color_scale_vmin or min(poes)
-            log.debug("resolve_hazard_map using LOG normalized colour scale")
-            norm = mpl.colors.LogNorm(vmin=color_scale_vmin, vmax=color_scale_vmax)
-        else:
-            color_scale_vmin = color_scale_vmin or 0
-            log.debug("resolve_hazard_map using LIN normalized colour scale")
-            norm = mpl.colors.Normalize(vmin=color_scale_vmin, vmax=color_scale_vmax)
+        # poes = [g.value() for g in new_geometry]
+        def poes_for_clipped_tiles(clipped_tiles, location_poe_mapping):
+            res = []
+            for tile in clipped_tiles:
+                res.append(location_poe_mapping[tuple([tile.location()[0], tile.location()[1]])])
+            return tuple(res)
 
-        color_values = [mpl.colors.to_hex(cmap(norm(v)), keep_alpha=True) for v in poes]
 
+        poes = poes_for_clipped_tiles(new_geometry, location_poes(polygons, poes))
+        assert len(new_geometry) == len(poes)
 
         t2 = dt.utcnow()
-        log.debug('resolve_geojson colour map took  %s' %  (t2 - t1))
+        log.debug('resolve_geojson to build poes %s' %  (t2 - t1))
+
+        color_scale_vmax = color_scale_vmax if color_scale_vmax else math.ceil(max(poes) * 2) / 2  # 0 ur None
+        color_scale_vmin = color_scale_vmin or min(poes)
+
+        print('color_scale_normalise', color_scale_normalise)
+        color_values = get_colour_values(color_scale, color_scale_vmax, color_scale_vmin, color_scale_normalise, poes)
+
+        t3 = dt.utcnow()
+        log.debug('resolve_geojson colour map took  %s' %  (t3 - t2))
 
         gdf = gpd.GeoDataFrame(
             data=dict(
                 loc=[g.location() for g in new_geometry],
                 geometry=[g.polygon() for g in new_geometry],
-                value=[g.value() for g in new_geometry],
+                value=poes,
                 fill=color_values,
                 fill_opacity=[fill_opacity for n in poes],
                 stroke=color_values,
@@ -192,7 +218,7 @@ class GriddedHazard(graphene.ObjectType):
         log.debug('resolve_geojson took %s' %  (t1 - t0))
         db_metrics.put_duration(__name__, 'resolve_geojson', t1 - t0)
         return GeoJsonHazardMap(
-            geojson=json.loads(gdf.to_json()), colour_scale=get_colour_scale(cmap, norm, vmax=color_scale_vmax)
+            geojson=json.loads(gdf.to_json()), colour_scale=get_colour_scale(color_scale, color_scale_normalise, vmax=color_scale_vmax, vmin=color_scale_vmin)
         )
 
 

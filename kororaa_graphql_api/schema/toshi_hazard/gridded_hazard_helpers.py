@@ -14,13 +14,9 @@ db_metrics = ServerlessMetricWriter(metric_name="MethodDuration")
 
 
 class CustomPolygon:
-    def __init__(self, polygon: Polygon, value: float, location: Tuple[float, float]):
+    def __init__(self, polygon: Polygon, location: Tuple[float, float]):
         self._polygon = polygon
-        self._value = value
         self._location = location
-
-    def value(self) -> float:
-        return self._value
 
     def polygon(self) -> Polygon:
         return self._polygon
@@ -29,10 +25,10 @@ class CustomPolygon:
         return self._location
 
     def __hash__(self):
-        return hash((self._polygon.wkt, self._value, self._location))
+        return hash((self._polygon.wkt, self._location))
 
     def __eq__(self, other):
-        return self._polygon == other._polygon and self._value == other._value and self._location == other._location
+        return self._polygon == other._polygon and self._location == other._location
 
 
 def inner_tiles(clipping_parts: List[CustomPolygon], tiles: List[CustomPolygon]) -> Iterable[CustomPolygon]:
@@ -52,7 +48,7 @@ def edge_tiles(clipping_parts: List[CustomPolygon], tiles: List[CustomPolygon]) 
         for tile in tiles:
             if nz_part.polygon().intersects(tile.polygon()):
                 try:
-                    clipped = CustomPolygon(nz_part.polygon().intersection(tile.polygon()), tile.value(), tile.location())
+                    clipped = CustomPolygon(nz_part.polygon().intersection(tile.polygon()), tile.location())
                     if not clipped.polygon().geom_type == 'Point':
                         yield clipped
                     else:
@@ -69,7 +65,7 @@ def nz_simplified_polgons() -> Iterable[Polygon]:
     # try to remove holes
     nz_parts_whole = []
     for part in nz_parts:
-        nz_parts_whole.append(CustomPolygon(Polygon(part.exterior.coords), 0, tuple([part.centroid.x, part.centroid.y])))
+        nz_parts_whole.append(CustomPolygon(Polygon(part.exterior.coords),tuple([part.centroid.x, part.centroid.y])))
     return tuple(nz_parts_whole)
 
 
@@ -89,4 +85,4 @@ def clip_tiles(clipping_parts: Tuple[CustomPolygon], tiles: Tuple[CustomPolygon]
     log.info('clipped %s edge tiles to %s in %s' % (len(outer_tiles), len(clipped_tiles), dt.utcnow() - t0))
 
     new_geometry = covered_tiles + clipped_tiles
-    return new_geometry
+    return tuple(new_geometry)
