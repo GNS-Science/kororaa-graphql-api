@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.5.1] - 2022-09-19
+### Changed
+ # better performance on hazard_map query
+
 ## [0.5.0] - 2022-09-16
 ### Changed
  * hazard_map geojson is clipped to NZ outline
