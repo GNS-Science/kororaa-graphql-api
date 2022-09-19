@@ -35,24 +35,24 @@ class CustomPolygon:
         return self._polygon == other._polygon and self._value == other._value and self._location == other._location
 
 
-def inner_tiles(clipping_parts: List[Polygon], tiles: List[CustomPolygon]) -> Iterable[CustomPolygon]:
+def inner_tiles(clipping_parts: List[CustomPolygon], tiles: List[CustomPolygon]) -> Iterable[CustomPolygon]:
     """Filter tiles, yielding only those that are completely covered by a clipping part.
 
     This can yield a tile more than once if the clipping_parts overlap can to cover that tile.
     """
     for nz_part in clipping_parts:
         for tile in tiles:
-            if nz_part.covers(tile.polygon()):
+            if nz_part.polygon().covers(tile.polygon()):
                 yield tile
 
 
-def edge_tiles(clipping_parts: List[Polygon], tiles: List[CustomPolygon]) -> Iterable[CustomPolygon]:
+def edge_tiles(clipping_parts: List[CustomPolygon], tiles: List[CustomPolygon]) -> Iterable[CustomPolygon]:
     """Filter tiles, yielding only those that intersect a clipping_part and clipping them to that intersection."""
     for nz_part in clipping_parts:
         for tile in tiles:
-            if nz_part.intersects(tile.polygon()):
+            if nz_part.polygon().intersects(tile.polygon()):
                 try:
-                    clipped = CustomPolygon(nz_part.intersection(tile.polygon()), tile.value(), tile.location())
+                    clipped = CustomPolygon(nz_part.polygon().intersection(tile.polygon()), tile.value(), tile.location())
                     if not clipped.polygon().geom_type == 'Point':
                         yield clipped
                     else:
@@ -69,11 +69,12 @@ def nz_simplified_polgons() -> Iterable[Polygon]:
     # try to remove holes
     nz_parts_whole = []
     for part in nz_parts:
-        nz_parts_whole.append(Polygon(part.exterior.coords))
-    return nz_parts_whole
+        nz_parts_whole.append(CustomPolygon(Polygon(part.exterior.coords), 0, tuple([part.centroid.x, part.centroid.y])))
+    return tuple(nz_parts_whole)
 
 
-def clip_tiles(clipping_parts: List[Polygon], tiles: List[Polygon]):
+@lru_cache
+def clip_tiles(clipping_parts: Tuple[CustomPolygon], tiles: Tuple[CustomPolygon]):
     t0 = dt.utcnow()
     covered_tiles: List[CustomPolygon] = list(inner_tiles(clipping_parts, tiles))
     db_metrics.put_duration(__name__, 'filter_inner_tiles', dt.utcnow() - t0)

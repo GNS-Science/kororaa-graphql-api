@@ -12,7 +12,7 @@ import matplotlib as mpl
 from nzshm_common.geometry.geometry import create_square_tile
 from nzshm_common.grids import RegionGrid
 from toshi_hazard_store import query
-
+from typing import Tuple, Any
 from kororaa_graphql_api.cloudwatch import ServerlessMetricWriter
 
 from .gridded_hazard_helpers import CustomPolygon, clip_tiles, nz_simplified_polgons
@@ -52,6 +52,21 @@ def get_colour_scale(cmap: mpl.cm, norm: mpl.colors.Normalize, vmax: float) -> H
     hexrgb = HexRgbValueMapping(levels=levels, hexrgbs=hexrgbs)
     return hexrgb
 
+@lru_cache
+def get_tile_polygons(grid_id: str, poes: Tuple[Any]) -> Tuple[CustomPolygon]:
+    # build the hazard_map
+    t0 = dt.utcnow()
+    region_grid = RegionGrid[grid_id]
+    grid = region_grid.load()
+    geometry = []
+    for idx, pt in enumerate(grid):
+        tile = CustomPolygon(
+            create_square_tile(region_grid.resolution, pt[1], pt[0]), value=poes[idx], location=(pt[1], pt[0])
+        )
+        geometry.append(tile)
+    log.debug('built %s tiles in %s' % (len(geometry), dt.utcnow() - t0))
+    return tuple(geometry)
+
 
 class GeoJsonHazardMap(graphene.ObjectType):
     geojson = graphene.JSONString()
@@ -87,41 +102,55 @@ class GriddedHazard(graphene.ObjectType):
         t0 = dt.utcnow()
         log.info('resolve_geojson args: %s' % args)
 
+        """
+        kwargs {'grid_id': RegionGridEntry(region_name='NZ', resolution=0.1, neighbours=1,
+            grid=<nzshm_common.grids.nz_0_1_nb_1_v1.NZ01nb1v1 object at 0x7f5032d24c70>, version=1),
+        'hazard_model_ids': ['SLT_v8_gmm_v2_FINAL'],
+        'imts': ['SA(0.3)'],
+        'aggs': ['mean'],
+        'vs30s': [200.0],
+        'poes': [0.1]}
+        """
+
         # get the query arguments
         color_scale_vmax = args.get('color_scale_vmax')
         color_scale_vmin = args.get('color_scale_vmin')
         color_scale_normalise = args.get('color_scale_normalise', COLOR_SCALE_NORMALISE_LOG)
         color_scale = args['color_scale']
+
+        #these arguments should not require recald of colour scale
         fill_opacity = args['fill_opacity']
         stroke_opacity = args['stroke_opacity']
         stroke_width = args['stroke_width']
 
-        # TODO: is the a simpler way to access the base Enum class method?
-        region_grid = RegionGrid[RegionGridEnum.get(root.grid_id).name]
-        grid = region_grid.load()
-        geometry = []
         cmap = mpl.cm.get_cmap(color_scale)
 
         def fix_nan(poes):
-            for i in range(len(poes)):
-                if poes[i] is None:
-                    log.info('Nan at %s' % i)
-                    poes[i] = 0.0
-            return poes
+            res = []
+            for poe_value in poes:
+                if poe_value is None:
+                    # log.info('Nan at %s' % i)
+                    res.append(0.0)
+                else:
+                    res.append(poe_value)
+            return tuple(res)
 
+        grid_id = str(root.grid_id.name)
+        #root.value is already cached
         poes = fix_nan(root.values)
-        nz_parts = nz_simplified_polgons()
+        nz_parts = nz_simplified_polgons() #cached
 
-        # build the hazard_map
-        for idx, pt in enumerate(grid):
-            tile = CustomPolygon(
-                create_square_tile(region_grid.resolution, pt[1], pt[0]), value=poes[idx], location=(pt[1], pt[0])
-            )
-            geometry.append(tile)
+        polygons = get_tile_polygons(grid_id, poes)
+        print('get_tile_polygon cache_info')
+        print(get_tile_polygons.cache_info())
 
-        log.debug('built %s tiles in %s' % (len(geometry), dt.utcnow() - t0))
+        new_geometry = clip_tiles(nz_parts, polygons)
+        print('clip_tiles cache_info')
+        print(clip_tiles.cache_info())
 
-        new_geometry = clip_tiles(nz_parts, geometry)
+        t1 = dt.utcnow()
+        log.debug('resolve_geojson to build geom took %s' %  (t1 - t0))
+
         poes = [g.value() for g in new_geometry]
 
         # grid colours
@@ -139,6 +168,10 @@ class GriddedHazard(graphene.ObjectType):
 
         color_values = [mpl.colors.to_hex(cmap(norm(v)), keep_alpha=True) for v in poes]
 
+
+        t2 = dt.utcnow()
+        log.debug('resolve_geojson colour map took  %s' %  (t2 - t1))
+
         gdf = gpd.GeoDataFrame(
             data=dict(
                 loc=[g.location() for g in new_geometry],
@@ -155,7 +188,9 @@ class GriddedHazard(graphene.ObjectType):
             columns={'fill_opacity': 'fill-opacity', 'stroke_width': 'stroke-width', 'stroke_opacity': 'stroke-opacity'}
         )
 
-        db_metrics.put_duration(__name__, 'resolve_geojson', dt.utcnow() - t0)
+        t1 = dt.utcnow()
+        log.debug('resolve_geojson took %s' %  (t1 - t0))
+        db_metrics.put_duration(__name__, 'resolve_geojson', t1 - t0)
         return GeoJsonHazardMap(
             geojson=json.loads(gdf.to_json()), colour_scale=get_colour_scale(cmap, norm, vmax=color_scale_vmax)
         )
@@ -165,14 +200,31 @@ class GriddedHazardResult(graphene.ObjectType):
     gridded_hazard = graphene.Field(graphene.List(GriddedHazard))
     ok = graphene.Boolean()
 
+@lru_cache
+def cacheable_gridded_hazard_query(
+    hazard_model_ids: Tuple[str],
+    location_grid_ids: Tuple[str],
+    vs30s: Tuple[int],
+    imts: Tuple[str],
+    aggs: Tuple[str],
+    poes: Tuple[float],
+    ):
+    return list(query.get_gridded_hazard(
+        hazard_model_ids,
+        location_grid_ids,
+        vs30s,
+        imts,
+        aggs,
+        poes,
+    ))
 
 def query_gridded_hazard(kwargs):
     """Run query against dynamoDB."""
     t0 = dt.utcnow()
     log.info('query_gridded_hazard args: %s' % kwargs)
 
-    def build_response_from_query(result):
-        log.info("build_response_from_query %s" % result)
+    def build_hazard_from_query_response(result):
+        log.info("build_hazard_from_query_response %s" % result)
         for obj in result:
             yield GriddedHazard(
                 grid_id=RegionGridEnum[obj.location_grid_id],
@@ -184,14 +236,15 @@ def query_gridded_hazard(kwargs):
                 values=obj.grid_poes,
             )
 
-    response = query.get_gridded_hazard(
-        hazard_model_ids=kwargs['hazard_model_ids'],
-        location_grid_ids=[RegionGridEnum.get(kwargs['grid_id']).name],  # wrapped in list as we receive just a singular
-        vs30s=kwargs['vs30s'],
-        imts=kwargs['imts'],
-        aggs=kwargs['aggs'],
-        poes=kwargs['poes'],
+    response = cacheable_gridded_hazard_query(
+        hazard_model_ids=tuple(kwargs['hazard_model_ids']),
+        location_grid_ids=tuple([RegionGridEnum.get(kwargs['grid_id']).name]),  # wrapped in list as we receive just a singular
+        vs30s=tuple(kwargs['vs30s']),
+        imts=tuple(kwargs['imts']),
+        aggs=tuple(kwargs['aggs']),
+        poes=tuple(kwargs['poes']),
     )
-    res = GriddedHazardResult(ok=True, gridded_hazard=build_response_from_query(response))
+
+    res = GriddedHazardResult(ok=True, gridded_hazard=build_hazard_from_query_response(response))
     db_metrics.put_duration(__name__, 'query_gridded_hazard', dt.utcnow() - t0)
     return res
