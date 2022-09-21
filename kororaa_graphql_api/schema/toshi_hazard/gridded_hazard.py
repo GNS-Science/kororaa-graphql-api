@@ -134,7 +134,6 @@ class GriddedHazard(graphene.ObjectType):
 
     grid_locations = graphene.List(GriddedLocation)
 
-    @lru_cache
     def resolve_hazard_map(root, info, **args):
         """Resolver gridded hazard to geojosn with formatting options."""
         t0 = dt.utcnow()
@@ -162,7 +161,7 @@ class GriddedHazard(graphene.ObjectType):
             return tuple(res)
 
         grid_id = str(root.grid_id.name)
-        # root.value is already cached
+        # root.values is already cached
         values = fix_nan(root.values)
         nz_parts = nz_simplified_polgons()  # cached
         log.debug('nz_simplified_polgons cache_info: %s' % str(nz_simplified_polgons.cache_info()))
@@ -186,7 +185,7 @@ class GriddedHazard(graphene.ObjectType):
         color_scale_vmax = color_scale_vmax if color_scale_vmax else math.ceil(max(values) * 2) / 2  # 0 ur None
         color_scale_vmin = color_scale_vmin or min(values)
 
-        print('color_scale_normalise', color_scale_normalise)
+        log.debug('color_scale_normalise %s' % color_scale_normalise)
         color_values = get_colour_values(color_scale, color_scale_vmax, color_scale_vmin, color_scale_normalise, values)
 
         t3 = dt.utcnow()
@@ -215,6 +214,8 @@ class GriddedHazard(graphene.ObjectType):
         gdf = gdf.rename(
             columns={'fill_opacity': 'fill-opacity', 'stroke_width': 'stroke-width', 'stroke_opacity': 'stroke-opacity'}
         )
+        t5 = dt.utcnow()
+        log.debug('build geojson took  %s' % (t5 - t4))
 
         t1 = dt.utcnow()
         log.debug('resolve_geojson took %s' % (t1 - t0))
