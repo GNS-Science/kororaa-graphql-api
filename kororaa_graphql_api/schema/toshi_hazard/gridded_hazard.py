@@ -229,21 +229,22 @@ class GriddedHazardResult(graphene.ObjectType):
 
 @lru_cache
 def cacheable_gridded_hazard_query(
-    hazard_model_ids: Tuple[str],
-    location_grid_ids: Tuple[str],
-    vs30s: Tuple[int],
-    imts: Tuple[str],
-    aggs: Tuple[str],
-    poes: Tuple[float],
+    hazard_model_id: str, location_grid_id: str, vs30: int, imt: str, agg: str, poe: float
 ):
+
+    log.debug(
+        'cacheable_gridded_hazard_query with %s %s %s %s %s %s'
+        % (hazard_model_id, location_grid_id, vs30, imt, agg, poe)
+    )
+
     return list(
-        query.get_gridded_hazard(
-            hazard_model_ids,
-            location_grid_ids,
-            vs30s,
-            imts,
-            aggs,
-            poes,
+        query.get_one_gridded_hazard(
+            hazard_model_id,
+            location_grid_id,
+            vs30,
+            imt,
+            agg,
+            poe,
         )
     )
 
@@ -267,12 +268,12 @@ def query_gridded_hazard(kwargs):
             )
 
     response = cacheable_gridded_hazard_query(
-        hazard_model_ids=tuple(kwargs['hazard_model_ids']),
-        location_grid_ids=tuple([RegionGridEnum.get(kwargs['grid_id']).name]),
-        vs30s=tuple(kwargs['vs30s']),
-        imts=tuple(kwargs['imts']),
-        aggs=tuple(kwargs['aggs']),
-        poes=tuple(kwargs['poes']),
+        hazard_model_id=kwargs['hazard_model_id'],
+        location_grid_id=RegionGridEnum.get(kwargs['grid_id']).name,
+        vs30=kwargs['vs30'],
+        imt=kwargs['imt'],
+        agg=kwargs['agg'],
+        poe=kwargs['poe'],
     )
 
     res = GriddedHazardResult(ok=True, gridded_hazard=build_hazard_from_query_response(response))

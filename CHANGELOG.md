@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.6.0] - 2022-09-21
+
+### Changed
+ - scheme change making all gridded_hazard queries unary
+
 ## [0.5.1] - 2022-09-19
 ### Changed
  # better performance on hazard_map query

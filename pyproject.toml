@@ -32,7 +32,7 @@ pandas = "^1.4.3"
 geopandas = "^0.11.1"
 matplotlib = "^3.5.3"
 nzshm-common = {extras = ["geometry"], version = "^0.3.2"}
-toshi-hazard-store = {git = "https://github.com/GNS-Science/toshi-hazard-store.git", rev = "f491e4167b4840ef8e36512f72480a737290aa5f"}
+toshi-hazard-store = {git = "https://github.com/GNS-Science/toshi-hazard-store.git", rev = "163b1d6bfa84d9140d81951a3509ec2ee9ef1e1c"}
 boto3 = "^1.24.57"
 python-dateutil = "^2.8.2"
 pyproj = "3.3.0"
