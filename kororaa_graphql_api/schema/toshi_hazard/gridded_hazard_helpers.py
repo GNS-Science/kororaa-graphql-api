@@ -14,13 +14,9 @@ db_metrics = ServerlessMetricWriter(metric_name="MethodDuration")
 
 
 class CustomPolygon:
-    def __init__(self, polygon: Polygon, value: float, location: Tuple[float, float]):
+    def __init__(self, polygon: Polygon, location: Tuple[float, float]):
         self._polygon = polygon
-        self._value = value
         self._location = location
-
-    def value(self) -> float:
-        return self._value
 
     def polygon(self) -> Polygon:
         return self._polygon
@@ -29,30 +25,30 @@ class CustomPolygon:
         return self._location
 
     def __hash__(self):
-        return hash((self._polygon.wkt, self._value, self._location))
+        return hash((self._polygon.wkt, self._location))
 
     def __eq__(self, other):
-        return self._polygon == other._polygon and self._value == other._value and self._location == other._location
+        return self._polygon == other._polygon and self._location == other._location
 
 
-def inner_tiles(clipping_parts: List[Polygon], tiles: List[CustomPolygon]) -> Iterable[CustomPolygon]:
+def inner_tiles(clipping_parts: Iterable[CustomPolygon], tiles: Iterable[CustomPolygon]) -> Iterable[CustomPolygon]:
     """Filter tiles, yielding only those that are completely covered by a clipping part.
 
     This can yield a tile more than once if the clipping_parts overlap can to cover that tile.
     """
     for nz_part in clipping_parts:
         for tile in tiles:
-            if nz_part.covers(tile.polygon()):
+            if nz_part.polygon().covers(tile.polygon()):
                 yield tile
 
 
-def edge_tiles(clipping_parts: List[Polygon], tiles: List[CustomPolygon]) -> Iterable[CustomPolygon]:
+def edge_tiles(clipping_parts: Iterable[CustomPolygon], tiles: Iterable[CustomPolygon]) -> Iterable[CustomPolygon]:
     """Filter tiles, yielding only those that intersect a clipping_part and clipping them to that intersection."""
     for nz_part in clipping_parts:
         for tile in tiles:
-            if nz_part.intersects(tile.polygon()):
+            if nz_part.polygon().intersects(tile.polygon()):
                 try:
-                    clipped = CustomPolygon(nz_part.intersection(tile.polygon()), tile.value(), tile.location())
+                    clipped = CustomPolygon(nz_part.polygon().intersection(tile.polygon()), tile.location())
                     if not clipped.polygon().geom_type == 'Point':
                         yield clipped
                     else:
@@ -69,11 +65,14 @@ def nz_simplified_polgons() -> Iterable[Polygon]:
     # try to remove holes
     nz_parts_whole = []
     for part in nz_parts:
-        nz_parts_whole.append(Polygon(part.exterior.coords))
-    return nz_parts_whole
+        nz_parts_whole.append(
+            CustomPolygon(Polygon(part.exterior.coords), (float(part.centroid.x), float(part.centroid.y)))
+        )
+    return tuple(nz_parts_whole)
 
 
-def clip_tiles(clipping_parts: List[Polygon], tiles: List[Polygon]):
+@lru_cache
+def clip_tiles(clipping_parts: Tuple[CustomPolygon], tiles: Tuple[CustomPolygon]):
     t0 = dt.utcnow()
     covered_tiles: List[CustomPolygon] = list(inner_tiles(clipping_parts, tiles))
     db_metrics.put_duration(__name__, 'filter_inner_tiles', dt.utcnow() - t0)
@@ -88,4 +87,4 @@ def clip_tiles(clipping_parts: List[Polygon], tiles: List[Polygon]):
     log.info('clipped %s edge tiles to %s in %s' % (len(outer_tiles), len(clipped_tiles), dt.utcnow() - t0))
 
     new_geometry = covered_tiles + clipped_tiles
-    return new_geometry
+    return tuple(new_geometry)

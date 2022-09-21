@@ -57,19 +57,19 @@ class QueryRoot(graphene.ObjectType):
         imts=graphene.Argument(graphene.List(graphene.String)),
         locs=graphene.Argument(graphene.List(graphene.String)),
         aggs=graphene.Argument(graphene.List(graphene.String)),
-        vs30s=graphene.Argument(graphene.List(graphene.Float)),
+        vs30s=graphene.Argument(graphene.List(graphene.Int)),
         resolution=graphene.Argument(graphene.Float, required=False, default_value=0.1),
     )
 
     gridded_hazard = graphene.Field(
         GriddedHazardResult,
         grid_id=graphene.Argument(RegionGridEnum),
-        hazard_model_ids=graphene.Argument(graphene.List(graphene.String)),
-        imts=graphene.Argument(graphene.List(graphene.String)),
-        locs=graphene.Argument(graphene.List(graphene.String)),
-        aggs=graphene.Argument(graphene.List(graphene.String)),
-        vs30s=graphene.Argument(graphene.List(graphene.Float)),
-        poes=graphene.Argument(graphene.List(graphene.Float)),
+        hazard_model_id=graphene.Argument(graphene.String),
+        imt=graphene.Argument(graphene.String),
+        loc=graphene.Argument(graphene.String),
+        agg=graphene.Argument(graphene.String),
+        vs30=graphene.Argument(graphene.Int),
+        poe=graphene.Argument(graphene.Float),
     )
 
     def resolve_disaggregation_reports(root, info, **kwargs):

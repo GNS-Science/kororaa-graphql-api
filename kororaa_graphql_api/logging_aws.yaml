@@ -60,3 +60,8 @@ loggers:
     level: INFO
     handlers: [console_handler]
     propagate: no
+
+  toshi_hazard_store:
+    level: DEBUG
+    handlers: [console_handler]
+    propagate: no
