@@ -56,7 +56,7 @@ def get_colour_scale(color_scale: str, color_scale_normalise, vmax: float, vmin:
     # build the colour_scale
     assert vmax * 2 == int(vmax * 2)  # make sure we have a value on a 0.5 interval
     levels, hexrgbs = [], []
-    cmap = mpl.cm.get_cmap(color_scale)
+    cmap = mpl.colormaps[color_scale]
     norm = get_normaliser(vmax, vmin, color_scale_normalise)
     for level in range(0, int(vmax * 10) + 1):
         levels.append(level / 10)
@@ -70,7 +70,7 @@ def get_colour_values(color_scale, color_scale_vmax, color_scale_vmin, color_sca
     # grid colours
     log.debug('color_scale_vmax: %s' % color_scale_vmax)
     norm = get_normaliser(color_scale_vmax, color_scale_vmin, color_scale_normalise)
-    cmap = mpl.cm.get_cmap(color_scale)
+    cmap = mpl.colormaps[color_scale]
     return [mpl.colors.to_hex(cmap(norm(v)), keep_alpha=True) for v in poes]
 
 
@@ -106,6 +106,99 @@ def values_for_clipped_tiles(clipped_tiles, polygons, poes):
     return tuple(res)
 
 
+@lru_cache
+def cacheable_hazard_map(
+        hazard_model:str,
+        grid_id: str,
+        vs30: int,
+        poe: float,agg: str,
+        imt: str,
+        values: Tuple[float],
+        color_scale: str,
+        color_scale_vmax: float,
+        color_scale_vmin :float,
+        color_scale_normalise: str,
+        fill_opacity: float,
+        stroke_opacity: float,
+        stroke_width: float
+    ):
+    t0 = dt.utcnow()
+    log.info('cacheable_hazard_map() vs30: %s, imt: %s, poe: %s, agg: %s, hazard_model: %s, grid_id: %s' % (vs30, imt, poe, agg, hazard_model, grid_id))
+
+    def fix_nan(poes):
+        res = []
+        for poe_value in poes:
+            if poe_value is None:
+                # log.info('Nan at %s' % i)
+                res.append(0.0)
+            else:
+                res.append(poe_value)
+        return tuple(res)
+
+    # grid_id = str(root.grid_id.name)
+    # root.values is already cached
+    values = fix_nan(values)
+    nz_parts = nz_simplified_polgons()  # cached
+    log.debug('nz_simplified_polgons cache_info: %s' % str(nz_simplified_polgons.cache_info()))
+
+    polygons = get_tile_polygons(grid_id, values)
+    # print('get_tile_polygon cache_info')
+    log.debug('get_tile_polygon cache_info: %s' % str(get_tile_polygons.cache_info()))
+
+    new_geometry = clip_tiles(nz_parts, polygons)
+    log.debug('clip_tiles cache_info: %s' % str(clip_tiles.cache_info()))
+
+    t1 = dt.utcnow()
+    log.debug('time to build geom took %s' % (t1 - t0))
+
+    values = values_for_clipped_tiles(new_geometry, polygons, values)
+    assert len(new_geometry) == len(values)
+    t2 = dt.utcnow()
+    log.debug('values_for_clipped_tiles cache_info: %s' % str(values_for_clipped_tiles.cache_info()))
+    log.debug('time to build values %s' % (t2 - t1))
+
+    color_scale_vmax = color_scale_vmax if color_scale_vmax else math.ceil(max(values) * 2) / 2  # 0 ur None
+    color_scale_vmin = color_scale_vmin or min(values)
+
+    log.debug('color_scale_normalise %s' % color_scale_normalise)
+    color_values = get_colour_values(color_scale, color_scale_vmax, color_scale_vmin, color_scale_normalise, values)
+
+    t3 = dt.utcnow()
+    log.debug('cacheable_hazard_map colour map took  %s' % (t3 - t2))
+    log.debug('get_colour_values cache_info: %s' % str(get_colour_values.cache_info()))
+
+    colour_scale = get_colour_scale(
+        color_scale, color_scale_normalise, vmax=color_scale_vmax, vmin=color_scale_vmin
+    )
+    t4 = dt.utcnow()
+    log.debug('get_colour_scale took  %s' % (t4 - t3))
+    log.debug('get_colour_scale cache_info: %s' % str(get_colour_scale.cache_info()))
+
+    gdf = gpd.GeoDataFrame(
+        data=dict(
+            loc=[g.location() for g in new_geometry],
+            geometry=[g.polygon() for g in new_geometry],
+            value=values,
+            fill=color_values,
+            fill_opacity=[fill_opacity for n in values],
+            stroke=color_values,
+            stroke_width=[stroke_width for n in values],
+            stroke_opacity=[stroke_opacity for n in values],
+        )
+    )
+    gdf = gdf.rename(
+        columns={'fill_opacity': 'fill-opacity', 'stroke_width': 'stroke-width', 'stroke_opacity': 'stroke-opacity'}
+    )
+    t5 = dt.utcnow()
+    log.debug('build geojson took  %s' % (t5 - t4))
+
+    t1 = dt.utcnow()
+    log.debug('cacheable_hazard_map took %s' % (t1 - t0))
+    db_metrics.put_duration(__name__, 'cacheable_hazard_map', t1 - t0)
+    return GeoJsonHazardMap(geojson=json.loads(gdf.to_json()), colour_scale=colour_scale)
+
+
+
 class GeoJsonHazardMap(graphene.ObjectType):
     geojson = graphene.JSONString()
     colour_scale = graphene.Field(HexRgbValueMapping)
@@ -135,98 +228,31 @@ class GriddedHazard(graphene.ObjectType):
     grid_locations = graphene.List(GriddedLocation)
 
     def resolve_hazard_map(root, info, **args):
-        """Resolver gridded hazard to geojosn with formatting options."""
+        """Resolve gridded hazard to geojson with formatting options."""
         t0 = dt.utcnow()
-        log.info('resolve_geojson args: %s' % args)
-
-        # get the query arguments
-        color_scale_vmax = args.get('color_scale_vmax')
-        color_scale_vmin = args.get('color_scale_vmin')
-        color_scale_normalise = args.get('color_scale_normalise', COLOR_SCALE_NORMALISE_LOG)
-        color_scale = args['color_scale']
-
-        # these arguments should not require recalc of colour scale
-        fill_opacity = args['fill_opacity']
-        stroke_opacity = args['stroke_opacity']
-        stroke_width = args['stroke_width']
-
-        def fix_nan(poes):
-            res = []
-            for poe_value in poes:
-                if poe_value is None:
-                    # log.info('Nan at %s' % i)
-                    res.append(0.0)
-                else:
-                    res.append(poe_value)
-            return tuple(res)
-
-        grid_id = str(root.grid_id.name)
-        # root.values is already cached
-        values = fix_nan(root.values)
-        nz_parts = nz_simplified_polgons()  # cached
-        log.debug('nz_simplified_polgons cache_info: %s' % str(nz_simplified_polgons.cache_info()))
-
-        polygons = get_tile_polygons(grid_id, values)
-        # print('get_tile_polygon cache_info')
-        log.debug('get_tile_polygon cache_info: %s' % str(get_tile_polygons.cache_info()))
-
-        new_geometry = clip_tiles(nz_parts, polygons)
-        log.debug('clip_tiles cache_info: %s' % str(clip_tiles.cache_info()))
-
+        hazmap = cacheable_hazard_map(root.hazard_model,
+            root.grid_id.name,
+            root.vs30,
+            root.poe,
+            root.agg,
+            root.imt,
+            tuple(root.values),
+            color_scale = args['color_scale'],
+            color_scale_vmax = args.get('color_scale_vmax'),
+            color_scale_vmin = args.get('color_scale_vmin'),
+            color_scale_normalise = args.get('color_scale_normalise', COLOR_SCALE_NORMALISE_LOG),
+            fill_opacity = args['fill_opacity'],
+            stroke_opacity = args['stroke_opacity'],
+            stroke_width = args['stroke_width'],
+        )
         t1 = dt.utcnow()
-        log.debug('time to build geom took %s' % (t1 - t0))
-
-        values = values_for_clipped_tiles(new_geometry, polygons, values)
-        assert len(new_geometry) == len(values)
-        t2 = dt.utcnow()
-        log.debug('values_for_clipped_tiles cache_info: %s' % str(values_for_clipped_tiles.cache_info()))
-        log.debug('time to build values %s' % (t2 - t1))
-
-        color_scale_vmax = color_scale_vmax if color_scale_vmax else math.ceil(max(values) * 2) / 2  # 0 ur None
-        color_scale_vmin = color_scale_vmin or min(values)
-
-        log.debug('color_scale_normalise %s' % color_scale_normalise)
-        color_values = get_colour_values(color_scale, color_scale_vmax, color_scale_vmin, color_scale_normalise, values)
-
-        t3 = dt.utcnow()
-        log.debug('resolve_geojson colour map took  %s' % (t3 - t2))
-        log.debug('get_colour_values cache_info: %s' % str(get_colour_values.cache_info()))
-
-        colour_scale = get_colour_scale(
-            color_scale, color_scale_normalise, vmax=color_scale_vmax, vmin=color_scale_vmin
-        )
-        t4 = dt.utcnow()
-        log.debug('get_colour_scale took  %s' % (t4 - t3))
-        log.debug('get_colour_scale cache_info: %s' % str(get_colour_scale.cache_info()))
-
-        gdf = gpd.GeoDataFrame(
-            data=dict(
-                loc=[g.location() for g in new_geometry],
-                geometry=[g.polygon() for g in new_geometry],
-                value=values,
-                fill=color_values,
-                fill_opacity=[fill_opacity for n in values],
-                stroke=color_values,
-                stroke_width=[stroke_width for n in values],
-                stroke_opacity=[stroke_opacity for n in values],
-            )
-        )
-        gdf = gdf.rename(
-            columns={'fill_opacity': 'fill-opacity', 'stroke_width': 'stroke-width', 'stroke_opacity': 'stroke-opacity'}
-        )
-        t5 = dt.utcnow()
-        log.debug('build geojson took  %s' % (t5 - t4))
-
-        t1 = dt.utcnow()
-        log.debug('resolve_geojson took %s' % (t1 - t0))
-        db_metrics.put_duration(__name__, 'resolve_geojson', t1 - t0)
-        return GeoJsonHazardMap(geojson=json.loads(gdf.to_json()), colour_scale=colour_scale)
-
+        log.debug('cacheable_hazard_map cache_info: %s' % str(cacheable_hazard_map.cache_info()))
+        db_metrics.put_duration(__name__, 'resolve_hazard_map', t1 - t0)
+        return hazmap
 
 class GriddedHazardResult(graphene.ObjectType):
     gridded_hazard = graphene.Field(graphene.List(GriddedHazard))
     ok = graphene.Boolean()
-
 
 @lru_cache
 def cacheable_gridded_hazard_query(
@@ -248,7 +274,6 @@ def cacheable_gridded_hazard_query(
             poe,
         )
     )
-
 
 def query_gridded_hazard(kwargs):
     """Run query against dynamoDB."""
