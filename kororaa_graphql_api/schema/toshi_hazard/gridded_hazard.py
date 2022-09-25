@@ -108,22 +108,26 @@ def values_for_clipped_tiles(clipped_tiles, polygons, poes):
 
 @lru_cache
 def cacheable_hazard_map(
-        hazard_model:str,
-        grid_id: str,
-        vs30: int,
-        poe: float,agg: str,
-        imt: str,
-        values: Tuple[float],
-        color_scale: str,
-        color_scale_vmax: float,
-        color_scale_vmin :float,
-        color_scale_normalise: str,
-        fill_opacity: float,
-        stroke_opacity: float,
-        stroke_width: float
-    ):
+    hazard_model: str,
+    grid_id: str,
+    vs30: int,
+    poe: float,
+    agg: str,
+    imt: str,
+    values: Tuple[float],
+    color_scale: str,
+    color_scale_vmax: float,
+    color_scale_vmin: float,
+    color_scale_normalise: str,
+    fill_opacity: float,
+    stroke_opacity: float,
+    stroke_width: float,
+):
     t0 = dt.utcnow()
-    log.info('cacheable_hazard_map() vs30: %s, imt: %s, poe: %s, agg: %s, hazard_model: %s, grid_id: %s' % (vs30, imt, poe, agg, hazard_model, grid_id))
+    log.info(
+        'cacheable_hazard_map() vs30: %s, imt: %s, poe: %s, agg: %s, hazard_model: %s, grid_id: %s'
+        % (vs30, imt, poe, agg, hazard_model, grid_id)
+    )
 
     def fix_nan(poes):
         res = []
@@ -167,9 +171,7 @@ def cacheable_hazard_map(
     log.debug('cacheable_hazard_map colour map took  %s' % (t3 - t2))
     log.debug('get_colour_values cache_info: %s' % str(get_colour_values.cache_info()))
 
-    colour_scale = get_colour_scale(
-        color_scale, color_scale_normalise, vmax=color_scale_vmax, vmin=color_scale_vmin
-    )
+    colour_scale = get_colour_scale(color_scale, color_scale_normalise, vmax=color_scale_vmax, vmin=color_scale_vmin)
     t4 = dt.utcnow()
     log.debug('get_colour_scale took  %s' % (t4 - t3))
     log.debug('get_colour_scale cache_info: %s' % str(get_colour_scale.cache_info()))
@@ -196,7 +198,6 @@ def cacheable_hazard_map(
     log.debug('cacheable_hazard_map took %s' % (t1 - t0))
     db_metrics.put_duration(__name__, 'cacheable_hazard_map', t1 - t0)
     return GeoJsonHazardMap(geojson=json.loads(gdf.to_json()), colour_scale=colour_scale)
-
 
 
 class GeoJsonHazardMap(graphene.ObjectType):
@@ -230,29 +231,32 @@ class GriddedHazard(graphene.ObjectType):
     def resolve_hazard_map(root, info, **args):
         """Resolve gridded hazard to geojson with formatting options."""
         t0 = dt.utcnow()
-        hazmap = cacheable_hazard_map(root.hazard_model,
+        hazmap = cacheable_hazard_map(
+            root.hazard_model,
             root.grid_id.name,
             root.vs30,
             root.poe,
             root.agg,
             root.imt,
             tuple(root.values),
-            color_scale = args['color_scale'],
-            color_scale_vmax = args.get('color_scale_vmax'),
-            color_scale_vmin = args.get('color_scale_vmin'),
-            color_scale_normalise = args.get('color_scale_normalise', COLOR_SCALE_NORMALISE_LOG),
-            fill_opacity = args['fill_opacity'],
-            stroke_opacity = args['stroke_opacity'],
-            stroke_width = args['stroke_width'],
+            color_scale=args['color_scale'],
+            color_scale_vmax=args.get('color_scale_vmax'),
+            color_scale_vmin=args.get('color_scale_vmin'),
+            color_scale_normalise=args.get('color_scale_normalise', COLOR_SCALE_NORMALISE_LOG),
+            fill_opacity=args['fill_opacity'],
+            stroke_opacity=args['stroke_opacity'],
+            stroke_width=args['stroke_width'],
         )
         t1 = dt.utcnow()
         log.debug('cacheable_hazard_map cache_info: %s' % str(cacheable_hazard_map.cache_info()))
         db_metrics.put_duration(__name__, 'resolve_hazard_map', t1 - t0)
         return hazmap
 
+
 class GriddedHazardResult(graphene.ObjectType):
     gridded_hazard = graphene.Field(graphene.List(GriddedHazard))
     ok = graphene.Boolean()
+
 
 @lru_cache
 def cacheable_gridded_hazard_query(
@@ -274,6 +278,7 @@ def cacheable_gridded_hazard_query(
             poe,
         )
     )
+
 
 def query_gridded_hazard(kwargs):
     """Run query against dynamoDB."""

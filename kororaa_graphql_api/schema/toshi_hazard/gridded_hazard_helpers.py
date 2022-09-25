@@ -58,7 +58,7 @@ def edge_tiles(clipping_parts: Iterable[CustomPolygon], tiles: Iterable[CustomPo
 
 
 @lru_cache
-def nz_simplified_polgons() -> Iterable[Polygon]:
+def nz_simplified_polgons() -> Tuple[CustomPolygon, ...]:
     small_nz = Path(__file__).parent.parent.parent / 'resources' / 'small-nz.wkt.csv.zip'
     nzdf = load_polygon_file(str(small_nz))
     nz_parts = nzdf['geometry'].tolist()
