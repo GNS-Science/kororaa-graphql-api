@@ -36,7 +36,7 @@ boto3 = "^1.24.57"
 python-dateutil = "^2.8.2"
 pyproj = "3.3.0"
 toshi-hazard-store = "^0.5.4"
-nzshm-grid-loc = {git = "https://github.com/GNS-Science/nzshm-grid-loc.git"}
+nzshm-grid-loc = {git = "https://github.com/GNS-Science/nzshm-grid-loc.git", rev = "main"}
 
 [tool.poetry.dev-dependencies]
 

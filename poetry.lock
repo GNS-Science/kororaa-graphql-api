@@ -983,7 +983,7 @@ test = []
 [package.source]
 type = "git"
 url = "https://github.com/GNS-Science/nzshm-grid-loc.git"
-reference = "HEAD"
+reference = "main"
 resolved_reference = "3460edabcbc6c9e5f93567c435e42fcb464f970d"
 
 [[package]]
@@ -1714,7 +1714,7 @@ test = []
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.8,<4.0"
-content-hash = "248c2a54e10440ae9be581d606c212d47745df0ada35cdc16f301d306880bbfd"
+content-hash = "f1fb78bf2a3e700a68c398f14cb0d579ad2814f851fc2dab68b44539bfe9c5a2"
 
 [metadata.files]
 aniso8601 = [
