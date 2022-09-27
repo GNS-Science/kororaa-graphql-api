@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.6.1] - 2022-09-28
+### Changed
+ - updated versions for nzshm-grid-loc, nzshm-common, toshi-hazard-store
+
 ## [0.6.0] - 2022-09-21
 
 ### Changed
