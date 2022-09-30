@@ -69,6 +69,7 @@ def get_science_reports(kwargs):
             yield ScienceReport(
                 topic=obj['Report Topic'],
                 title=obj['Title'],
+                filename=obj['filename'],
                 lead_author=Person(name=obj['Lead Author']),
                 reviewers=reviewers,
                 area=build_area(obj),

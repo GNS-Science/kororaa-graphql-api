@@ -52,6 +52,10 @@
       {
         "name":"Associated data set",
         "type":"string"
+      },
+      {
+        "name":"filename",
+        "type":"string"
       }
     ],
     "primaryKey":[
@@ -73,7 +77,8 @@
       "Title":"New Zealand National Seismic Hazard Model Framework Plan",
       "Bibliographic Reference":"Gerstenberger MC, Van Houtte C, Abbott ER, Van Dissen RJ, Kaiser\u00a0AE, Bradley B, Nicol A, Rhoades DA, Stirling MW, Thingbaijam\u00a0KKS, NSHM Team. 2020. New Zealand National Seismic Hazard Model framework plan. Lower Hutt (NZ): GNS\u00a0Science. 25\u00a0p. (GNS Science report; 2020\/38). doi:10.21420\/NB8W-GA79.",
       "Report Number":"SR 2020\/38",
-      "Associated data set":"none"
+      "Associated data set":"none",
+      "filename":"SR2020-38 NSHM Framework Plan_FINAL.pdf"
     },
     {
       "index":1,
@@ -88,7 +93,8 @@
       "Title":null,
       "Bibliographic Reference":null,
       "Report Number":null,
-      "Associated data set":null
+      "Associated data set":null,
+      "filename":null
     },
     {
       "index":2,
@@ -103,7 +109,8 @@
       "Title":null,
       "Bibliographic Reference":null,
       "Report Number":null,
-      "Associated data set":null
+      "Associated data set":null,
+      "filename":null
     },
     {
       "index":3,
@@ -118,7 +125,8 @@
       "Title":"Average Coseismic Slip Profiles",
       "Bibliographic Reference":"Thingbaijam KKS, Van Dissen RJ, Shaw BE, Gerstenberger MC. 2022. Average coseismic slip profiles. Lower Hutt (NZ): GNS Science. 33\u00a0p. (GNS Science report; 2021\/24). doi:10.21420\/S6ED-JN06.",
       "Report Number":"SR 2021\/24",
-      "Associated data set":null
+      "Associated data set":null,
+      "filename":"SR2021-24 NSHM Average Coseismic Slip Profiles_FINAL.pdf"
     },
     {
       "index":4,
@@ -133,7 +141,8 @@
       "Title":"New Zealand Community Fault Model \u2013 version 1.0",
       "Bibliographic Reference":"Seebeck H, Van Dissen RJ, Litchfield NJ, Barnes PM, Nicol A, Langridge RM, Barrell DJA, Villamor P, Ellis SM, Rattenbury MS, Bannister S, Gerstenberger MC, Ghisetti F, Sutherland R, Fraser J, Nodder SD, Stirling MW, Humphrey J, Bland KJ, Howell A, Mountjoy JJ, Moon V, Stahl T, Spinardi F, Townsend DB, Clark KJ, Hamling IJ, Cox SC, de Lange W, Wopereis P, Johnston M, Morgenstern R, Coffey GL, Eccles JD, Little TA, Fry B, Griffin J, Townend J, Mortimer N, Alcaraz SA, Massiot C, Rowland J, Muirhead J, Upton P, Hirschberg H, Lee JM. 2022. New Zealand Community Fault Model \u2013 version 1.0. Lower Hutt (NZ): GNS Science. 97 p. (GNS Science report; 2021\/57). doi:10.21420\/GA7S-BS61.",
       "Report Number":"SR 2021\/57",
-      "Associated data set":"CFM"
+      "Associated data set":"CFM",
+      "filename":"SR2021-57 Community Fault Model.pdf"
     },
     {
       "index":5,
@@ -148,7 +157,8 @@
       "Title":"New Zealand Paleoseismic Site Database: Data Dictionary",
       "Bibliographic Reference":"Litchfield NJ. 2022. New Zealand Paleoseismic Site Database: data dictionary. Lower Hutt (NZ): GNS Science. 42\u00a0p. (GNS Science report; 2021\/40). doi:10.21420\/G5K4-ES33.",
       "Report Number":"SR 2021\/40",
-      "Associated data set":null
+      "Associated data set":null,
+      "filename":"SR2021-40 NSHM Paleoseismic Site Database Dictionary_FINAL.pdf"
     },
     {
       "index":6,
@@ -163,7 +173,8 @@
       "Title":"New Zealand Paleoseismic Site Database: Design and Overview of Version 1.0",
       "Bibliographic Reference":"Litchfield NJ, Humphrey J, Morgenstern R, Langridge RM, Coffey GL, Van Dissen RJ. 2022. New Zealand Paleoseismic Site Database: design and overview of version 1.0. Lower Hutt (NZ): GNS Science. 27\u00a0p. (GNS Science report; 2021\/52). doi:10.21420\/VTPT-KB52.",
       "Report Number":"SR 2021\/52",
-      "Associated data set":null
+      "Associated data set":null,
+      "filename":"SR2021-52 NSHM Paleoseismic DB Design and Overview_FINAL.pdf"
     },
     {
       "index":7,
@@ -178,7 +189,8 @@
       "Title":"A Seismogenic Slab Source Model for New Zealand",
       "Bibliographic Reference":"Thingbaijam KKS, Gerstenberger MC, Rollins C, Christophersen A, Williams CA, Ristau J, Rastin SJ, Fraser J, Van Dissen RJ. 2022. A seismogenic slab source model for New Zealand. Lower Hutt (NZ): GNS Science. [XX] p. (GNS Science report; 2021\/50). doi:10.21420\/CDMK-3F30.",
       "Report Number":"SR 2021\/50",
-      "Associated data set":null
+      "Associated data set":null,
+      "filename":null
     },
     {
       "index":8,
@@ -193,7 +205,8 @@
       "Title":"New Zealand National Seismic Hazard Model 2022: Treatment of Earthquake Depths",
       "Bibliographic Reference":"Rollins C. 2022. New Zealand National Seismic Hazard Model 2022: treatment of earthquake depths. Lower Hutt (NZ): GNS Science. [XX] p. (GNS Science report; 2021\/58). doi:10.21420\/XT4Y-WY45.",
       "Report Number":"SR 2021\/58",
-      "Associated data set":null
+      "Associated data set":null,
+      "filename":null
     },
     {
       "index":9,
@@ -208,7 +221,8 @@
       "Title":"Spatial distribution of earthquake occurrence for the New Zealand National Seismic Hazard Model revision",
       "Bibliographic Reference":"Rastin\u00a0SJ, Rhoades\u00a0DA, Rollins\u00a0C, Gerstenberger\u00a0MC, Christophersen\u00a0A, Thingbaijam KKS. 2022. Spatial distribution of earthquake occurrence for the New Zealand National Seismic Hazard Model Revision. Lower Hutt (NZ): GNS Science. [XX] p. (GNS Science report; 2021\/51). doi:10.21420\/YKQ8-1C41.",
       "Report Number":"SR 2021\/51",
-      "Associated data set":null
+      "Associated data set":null,
+      "filename":null
     },
     {
       "index":10,
@@ -223,7 +237,8 @@
       "Title":"Impact of Directivity on Probabilistic Seismic Hazard Calculations in New Zealand",
       "Bibliographic Reference":"Weatherill G. 2022. Impact of directivity on probabilistic seismic hazard calculations in New Zealand. Lower Hutt (NZ): GNS Science. [XX] p. (GNS Science report; 2022\/01). doi:10.21420\/RETZ-D556.",
       "Report Number":"SR 2022\/01",
-      "Associated data set":null
+      "Associated data set":null,
+      "filename":null
     },
     {
       "index":11,
@@ -238,7 +253,8 @@
       "Title":"New Zealand National Seismic Hazard Model 2022: Earthquake Recurrence Derivation from Paleoseismic Data and Probability of Detection",
       "Bibliographic Reference":"Coffey GL, Rollins C, Van Dissen RJ, Rhoades DA, Thingbaijam KKS, Clark KJ, Gerstenberger MC, Litchfield NJ, Nicol A. 2022. New Zealand National Seismic Hazard Model 2022: earthquake recurrence derivation from paleoseismic data and probability of detection. Lower Hutt (NZ): GNS Science. [XX] p. (GNS Science report; 2022\/32). doi:10.21420\/2YWK-ZE30.",
       "Report Number":"SR 2022\/32",
-      "Associated data set":null
+      "Associated data set":null,
+      "filename":null
     },
     {
       "index":12,
@@ -253,7 +269,8 @@
       "Title":"Geodetic Deformation Model for the 2022 update of the New Zealand National Seismic Hazard Model",
       "Bibliographic Reference":"Johnson KM, Wallace LM, Maurer J, Hamling IJ, Williams CA, Rollins\u00a0C, Gerstenberger MC, Van Dissen RJ. 2022. Geodetic deformation model for the 2022 update of the New Zealand National Seismic Hazard Model. Lower Hutt (NZ): GNS Science. [XX] p. (GNS Science report; 2021\/37). doi:10.21420\/P93X-8293.",
       "Report Number":"SR 2021\/37",
-      "Associated data set":null
+      "Associated data set":null,
+      "filename":null
     },
     {
       "index":13,
@@ -268,7 +285,8 @@
       "Title":"A Simple Model of Faulting Patterns for Distributed Seismicity in New Zealand",
       "Bibliographic Reference":"Thingbaijam KKS, Rattenbury MS, Van Dissen RJ, Gerstenberger MC, Ristau J. 2022. A simple model of faulting patterns for distributed seismicity in New Zealand. Lower Hutt (NZ): GNS Science. [XX] p. (GNS\u00a0Science report; 2022\/10). doi:10.21420\/3ADY-7150.",
       "Report Number":"SR 2022\/10",
-      "Associated data set":null
+      "Associated data set":null,
+      "filename":null
     },
     {
       "index":14,
@@ -283,7 +301,8 @@
       "Title":"Consistent magnitudes over time for the revision of the New Zealand National Seismic Hazard Model",
       "Bibliographic Reference":"Christophersen A, Bourguignon S, Rhoades DA, Allen TI, Rollins JC, Salichon J, Ristau J, Gerstenberger MC. 2022. Consistent magnitudes over time for the revision of the New Zealand National Seismic Hazard Model. Lower Hutt (NZ): GNS Science. [XX] p. (GNS Science report; 2021\/42). doi:10.21420\/A2SN-XM76.",
       "Report Number":"SR 2021\/42",
-      "Associated data set":null
+      "Associated data set":null,
+      "filename":null
     },
     {
       "index":15,
@@ -298,7 +317,8 @@
       "Title":"2021 New Zealand Strong Ground Motion Database",
       "Bibliographic Reference":"Hutchinson J, Bradley BA, Lee R, Wotherspoon L, Dupuis M, Schill\u00a0C, Motha J, Kaiser AE, Manea EF. 2022. 2021 New Zealand Strong Ground Motion Database. Lower Hutt (NZ): GNS Science. [XX] p. (GNS Science report; 2021\/56). doi:10.21420\/Z20E-5507.",
       "Report Number":"SR 2021\/56",
-      "Associated data set":null
+      "Associated data set":null,
+      "filename":null
     },
     {
       "index":16,
@@ -313,7 +333,8 @@
       "Title":"Evaluation of Existing Empirical Ground-Motion Models for New Zealand Application",
       "Bibliographic Reference":"Lee RL, Bradley BA, Manea EF, Hutchinson JA. 2022. Evaluation of existing empirical ground-motion models for New Zealand application. Lower Hutt (NZ): GNS Science. [XX] p. (GNS Science report; 2021\/61). doi:10.21420\/W2M5-YC09.",
       "Report Number":"SR 2021\/61",
-      "Associated data set":null
+      "Associated data set":null,
+      "filename":null
     },
     {
       "index":17,
@@ -328,7 +349,8 @@
       "Title":"Accounting for earthquake rates\u2019 temporal and spatial variability through least-information Uniform Rate Zone forecasts",
       "Bibliographic Reference":"Iturrieta P, Gerstenberger MC, Rollins C, Van Dissen RJ, Wang T, Schorlemmer D. 2022. Accounting for earthquake rates\u2019 temporal and spatial variability through least-information uniform rate zone forecasts. Lower Hutt (NZ): GNS Science. [XX] p. (GNS Science report; 2022\/14). doi:10.21420\/HYDZ-8W17.",
       "Report Number":"SR 2022\/14",
-      "Associated data set":null
+      "Associated data set":null,
+      "filename":null
     },
     {
       "index":18,
@@ -343,7 +365,8 @@
       "Title":"A model for the distribution of response spectral ordinates from New Zealand crustal earthquakes based upon adjustments to the Chiou and Youngs (2014) response spectral model",
       "Bibliographic Reference":"A model for the distribution of response spectral ordinates from New Zealand crustal earthquakes based upon adjustments to the Chiou and Youngs (2014) response spectral model. Lower Hutt (NZ): GNS Science. [XX] p. (GNS Science report; 2022\/15). doi:10.21420\/5098-0S19.",
       "Report Number":"SR 2022\/15",
-      "Associated data set":null
+      "Associated data set":null,
+      "filename":null
     },
     {
       "index":19,
@@ -358,7 +381,8 @@
       "Title":"Backbone Ground-Motion Models for Crustal, Interface and Slab Earthquakes in New Zealand",
       "Bibliographic Reference":"Atkinson\u00a0GM. 2022. Backbone ground-motion models for crustal, interface and slab earthquakes in New Zealand. Lower Hutt (NZ): GNS Science. [XX] p. (GNS Science report; 2022\/11). doi:10.21420\/QMJ6-P189.",
       "Report Number":"SR 2022\/11",
-      "Associated data set":null
+      "Associated data set":null,
+      "filename":null
     },
     {
       "index":20,
@@ -373,7 +397,8 @@
       "Title":"National Seismic Hazard Model: Site Characterisation Database Summary Report",
       "Bibliographic Reference":"Wotherspoon LM, Kaiser AE, Manea EF, Stolte AC. 2022. National Seismic Hazard Model: Site Characterisation Database summary report. Lower Hutt (NZ): GNS Science. [XX] p. (GNS Science report; 2022\/28). doi:10.21420\/363X-CK83.",
       "Report Number":"SR 2022\/28",
-      "Associated data set":null
+      "Associated data set":null,
+      "filename":null
     },
     {
       "index":21,
@@ -388,7 +413,8 @@
       "Title":"3D geological modelling of Wellington Quaternary sediments and basin geometry",
       "Bibliographic Reference":"Hill MP, Kaiser AE, Wotherspoon LM, Manea EF, Lee RL, de la Torre CA, Bradley BA. 2022. 3D geological modelling of Wellington Quaternary sediments and basin geometry. Lower Hutt (NZ): GNS\u00a0Science. [XX] p. (GNS Science report; 2022\/33). doi:10.21420\/TS0B-8A37.",
       "Report Number":"SR 2022\/33",
-      "Associated data set":null
+      "Associated data set":null,
+      "filename":null
     },
     {
       "index":22,
@@ -403,7 +429,8 @@
       "Title":"New Zealand National Seismic Hazard Model 2022: Geologic and Subduction Interface Models",
       "Bibliographic Reference":"Van Dissen RJ, Seebeck H, Wallace LM, Rollins C, Gerstenberger MC, Howell A, DiCaprio C, Williams CA. 2022. New Zealand National Seismic Hazard Model 2022: geologic and subduction interface models. Lower Hutt (NZ): GNS Science. [XX] p. (GNS Science report; 2022\/31). doi:10.21420\/CEXY-AB93.",
       "Report Number":"SR 2022\/31",
-      "Associated data set":null
+      "Associated data set":null,
+      "filename":null
     },
     {
       "index":23,
@@ -418,7 +445,8 @@
       "Title":null,
       "Bibliographic Reference":null,
       "Report Number":null,
-      "Associated data set":null
+      "Associated data set":null,
+      "filename":null
     },
     {
       "index":24,
@@ -433,7 +461,8 @@
       "Title":"The magnitude-frequency distributions of earthquakes in the greater New Zealand region and along the Hikurangi\u2013Kermadec and Puysegur subduction zones, and their uncertainties, with application to the 2022 New\u00a0Zealand National Seismic Hazard Model",
       "Bibliographic Reference":"Rollins C, Rhoades DA, Rastin SJ, Gerstenberger MC, Christophersen\u00a0A, Thingbaijam KKS, Van Dissen RJ. 2022. The magnitude-frequency distributions of earthquakes in the greater New Zealand region and along the Hikurangi\u2013Kermadec and Puysegur subduction zones, and their uncertainties, with application to the 2022 New Zealand National Seismic Hazard Model. Lower Hutt (NZ): GNS Science. [XX] p. (GNS Science report; 2022\/48). doi:10.21420\/SXPX-8C68.",
       "Report Number":"SR 2022\/48",
-      "Associated data set":null
+      "Associated data set":null,
+      "filename":null
     },
     {
       "index":25,
@@ -448,7 +477,8 @@
       "Title":"Combining Observed Linear Basin Amplification Factors with 1D Nonlinear Site-Response Analyses to Predict Site Response for Strong Ground Motions: Application to Wellington, New Zealand",
       "Bibliographic Reference":"de la Torre CA, Bradley BA, Kuncar F, Lee RL, Wotherspoon LM, Kaiser AE. 2022. Combining observed linear basin amplification factors with 1D nonlinear site-response analyses to predict site response for strong ground motions: application to Wellington, New\u00a0Zealand. Lower Hutt (NZ): GNS Science. [XX] p. (GNS Science report; 2022\/37). doi:10.21420\/0XB3-0266.",
       "Report Number":"SR 2022\/37",
-      "Associated data set":null
+      "Associated data set":null,
+      "filename":null
     },
     {
       "index":26,
@@ -463,7 +493,8 @@
       "Title":"3D Ground Motion Simulation-based Site Amplification Considering Multiple Basin Geometries: A Wellington, New Zealand, Case Study",
       "Bibliographic Reference":"Lee RL, ... 2022. 3D ground motion simulation-based site amplification considering multiple basin geometries: a Wellington, New Zealand, case study. Lower Hutt (NZ): GNS Science. [XX] p. (GNS\u00a0Science report; 2022\/40). doi:10.21420\/R21F-3C28.",
       "Report Number":"SR 2022\/40",
-      "Associated data set":null
+      "Associated data set":null,
+      "filename":null
     },
     {
       "index":27,
@@ -478,7 +509,8 @@
       "Title":"The Seismicity Rate Model for the 2022 New Zealand National Seismic Hazard Model",
       "Bibliographic Reference":"Gerstenberger MC, Van Dissen RJ, Rollins C, DiCaprio C, Chamberlain C, Christophersen A, Coffey GL, Ellis SM, Iturrieta P, Johnson KM, et al. 2022. The Seismicity Rate Model for the 2022 New\u00a0Zealand National Seismic Hazard Model. Lower Hutt (NZ): GNS Science. [XX] p. (GNS Science report; 2022\/47). doi:10.21420\/2EXG-NP48.",
       "Report Number":"SR 2022\/47",
-      "Associated data set":null
+      "Associated data set":null,
+      "filename":null
     },
     {
       "index":28,
@@ -493,7 +525,8 @@
       "Title":"TBA",
       "Bibliographic Reference":"Bradley BA, ... 2022. TBA. Lower Hutt (NZ): GNS Science. [XX] p. (GNS Science report; 2022\/46). doi:10.21420\/9BMK-ZK64.",
       "Report Number":"SR 2022\/46",
-      "Associated data set":null
+      "Associated data set":null,
+      "filename":null
     },
     {
       "index":29,
@@ -508,7 +541,8 @@
       "Title":null,
       "Bibliographic Reference":null,
       "Report Number":null,
-      "Associated data set":null
+      "Associated data set":null,
+      "filename":null
     },
     {
       "index":30,
@@ -523,7 +557,8 @@
       "Title":null,
       "Bibliographic Reference":null,
       "Report Number":null,
-      "Associated data set":null
+      "Associated data set":null,
+      "filename":null
     },
     {
       "index":31,
@@ -538,7 +573,8 @@
       "Title":null,
       "Bibliographic Reference":null,
       "Report Number":null,
-      "Associated data set":null
+      "Associated data set":null,
+      "filename":null
     },
     {
       "index":32,
@@ -553,7 +589,8 @@
       "Title":null,
       "Bibliographic Reference":null,
       "Report Number":null,
-      "Associated data set":null
+      "Associated data set":null,
+      "filename":null
     },
     {
       "index":33,
@@ -568,7 +605,8 @@
       "Title":null,
       "Bibliographic Reference":null,
       "Report Number":null,
-      "Associated data set":null
+      "Associated data set":null,
+      "filename":null
     }
   ]
 }
