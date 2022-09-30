@@ -43,6 +43,7 @@ class ScienceReport(graphene.ObjectType):
 
     title = graphene.String(required=False)
     topic = graphene.String()
+    filename = graphene.String()
     area = graphene.Field(ProjectAreaEnum)
     status = graphene.Field(ReportStatusEnum)
     notes = graphene.String(description="Internal notes, not for UI.")
