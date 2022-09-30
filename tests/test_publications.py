@@ -49,7 +49,9 @@ from kororaa_graphql_api.config import S3_BUCKET_NAME, PUBLICATIONS_KEY
 # PUBS = json.loads(raw)
 
 
-json_dataframe = Path(__file__).parent / 'fixtures' / 'nshm_science_reports_metadata_table.json'
+json_dataframe = (
+    Path(__file__).parent.parent / 'seed_data' / 'PUBLICATIONS' / 'nshm_science_reports_metadata_table.json'
+)
 PUBS = json.load(open(json_dataframe, 'r'))
 
 
@@ -104,6 +106,7 @@ class TestDisaggsWithS3(unittest.TestCase):
                         publication_date
                         bibliographic_ref
                         # related_datasets { name }
+                        filename
                     }
                 }
             }
@@ -124,6 +127,7 @@ class TestDisaggsWithS3(unittest.TestCase):
         self.assertEqual(res[7]['status'], 'Review')
         self.assertEqual(res[7]['notes'], 'done pending final references and cover sheet')
         self.assertEqual(res[0]['bibliographic_ref'], biblio)
+        self.assertEqual(res[0]['filename'], "SR2020-38 NSHM Framework Plan_FINAL.pdf")
 
         self.assertEqual(res[0]['report_number'], "SR 2020/38")
         pubdate = dateutil.parser.isoparse("2021-10-01T00:00:00.000Z")
