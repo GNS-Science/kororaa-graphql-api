@@ -1,8 +1,11 @@
 # Changelog
 
-## [0.6.1] - 2022-09-28
+## [0.6.1] - 2022-09-30
 ### Changed
  - updated versions for nzshm-grid-loc, nzshm-common, toshi-hazard-store
+### Added
+ - added filename field on science_publications
+ - script to update json
 
 ## [0.6.0] - 2022-09-21
 
