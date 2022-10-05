@@ -4,6 +4,7 @@ import pandas as pd
 import numpy as np
 import math
 import json
+
 from pathlib import Path
 from typing import List
 
@@ -11,15 +12,22 @@ from typing import List
 
 def searching_all_files(directory: Path):
     file_list = [] # A list for storing files existing in directories
-
+    skips = ["SR2021-OU1 StirlingScalingReportMEANMw=logA+C equations.pdf",
+    "New Zealand Fault-Rupture Depth Model v1.0: a provisional estimate of the maximum depth of seismic rupture on New Zealand's active faults"
+    ]
     for x in directory.iterdir():
-        if x.is_file():
+        if x.is_file() and x.name not in skips:
            file_list.append(x)
         # else:
         #    file_list.append(searching_all_files(directory/x))
     return file_list
+seed_folder = Path(Path(__file__).parent.parent, "seed_data", "PUBLICATIONS")
+table_df1 = pd.read_json(Path(seed_folder, "nshm_science_reports_metadata_table.json"), orient='table')
+table_df = pd.read_csv(Path(seed_folder, "NSHM Science Report Metadata - Sheet1.csv"))
 
-table_df = pd.read_json(Path(Path(__file__).parent, "nshm_science_reports_metadata_table.json"), orient='table')
+# print(table_df1)
+# print()
+# print(table_df2)
 
 folder_path=Path('/home/chrisbc/Downloads/finals')
 found_reports = searching_all_files(folder_path)
@@ -54,12 +62,8 @@ df2 = pd.DataFrame(report_names, columns=['filename'])
 
 table_df = table_df.merge(df2, left_index=True, right_index=True)
 
-# print(table_df)
+print(table_df)
+# assert 0
 # print(table_df['filename'])
 
-
 table_df.to_json('nshm_science_reports_metadata_table_new.json', orient='table', indent=2)
-
-# with open("nshm_science_reports_metadata_table_new.json", 'w') as f:
-#     f.write(json.dumps(jsondata, indent=2))
-
