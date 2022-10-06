@@ -3,7 +3,6 @@
 ## [0.6.2] - 2022-10-07
 ### Changed
  - update toshi-hazard-store=0.5.5 for vs30 fix
- - update json seed data for science reports
 
 ## [0.6.1] - 2022-09-30
 ### Changed
