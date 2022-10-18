@@ -142,19 +142,6 @@ def cacheable_hazard_map(
         % (vs30, imt, poe, agg, hazard_model, grid_id)
     )
 
-    # def fix_nan(poes):
-    #     res = []
-    #     for poe_value in poes:
-    #         if poe_value is None:
-    #             # log.info('Nan at %s' % i)
-    #             res.append(0.0)
-    #         else:
-    #             res.append(poe_value)
-    #     return tuple(res)
-
-    # # grid_id = str(root.grid_id.name)
-    # # root.values is already cached
-    # values = fix_nan(values)
     nz_parts = nz_simplified_polgons()  # cached
     log.debug('nz_simplified_polgons cache_info: %s' % str(nz_simplified_polgons.cache_info()))
 
@@ -178,7 +165,7 @@ def cacheable_hazard_map(
         color_scale_vmax
         if color_scale_vmax
         else math.ceil(max((v for v in values if v is not None), default=1) * 2) / 2
-    )  # 0 ur None
+    )
     color_scale_vmin = color_scale_vmin or min((v for v in values if v is not None), default=0)
 
     log.debug('color_scale_normalise %s' % color_scale_normalise)
