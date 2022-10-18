@@ -5,7 +5,7 @@ import math
 import os
 from datetime import datetime as dt
 from functools import lru_cache
-from typing import Any, Tuple
+from typing import Any, Iterable, Tuple, Union
 
 import geopandas as gpd
 import graphene
@@ -66,12 +66,25 @@ def get_colour_scale(color_scale: str, color_scale_normalise, vmax: float, vmin:
 
 
 @lru_cache
-def get_colour_values(color_scale, color_scale_vmax, color_scale_vmin, color_scale_normalise, poes):
+def get_colour_values(
+    color_scale: str,
+    color_scale_vmax: float,
+    color_scale_vmin: float,
+    color_scale_normalise: str,
+    values: Tuple[Union[float, None]],
+) -> Iterable[str]:
     # grid colours
     log.debug('color_scale_vmax: %s' % color_scale_vmax)
     norm = get_normaliser(color_scale_vmax, color_scale_vmin, color_scale_normalise)
     cmap = mpl.colormaps[color_scale]
-    return [mpl.colors.to_hex(cmap(norm(v)), keep_alpha=True) for v in poes]
+    colors = []
+    # Some grids have missing values, we'll set these to black
+    for i, v in enumerate(values):
+        if v is None:
+            colors.append("x000000")
+        else:
+            colors.append(mpl.colors.to_hex(cmap(norm(v)), keep_alpha=True))
+    return colors
 
 
 @lru_cache
@@ -129,19 +142,6 @@ def cacheable_hazard_map(
         % (vs30, imt, poe, agg, hazard_model, grid_id)
     )
 
-    def fix_nan(poes):
-        res = []
-        for poe_value in poes:
-            if poe_value is None:
-                # log.info('Nan at %s' % i)
-                res.append(0.0)
-            else:
-                res.append(poe_value)
-        return tuple(res)
-
-    # grid_id = str(root.grid_id.name)
-    # root.values is already cached
-    values = fix_nan(values)
     nz_parts = nz_simplified_polgons()  # cached
     log.debug('nz_simplified_polgons cache_info: %s' % str(nz_simplified_polgons.cache_info()))
 
@@ -161,8 +161,12 @@ def cacheable_hazard_map(
     log.debug('values_for_clipped_tiles cache_info: %s' % str(values_for_clipped_tiles.cache_info()))
     log.debug('time to build values %s' % (t2 - t1))
 
-    color_scale_vmax = color_scale_vmax if color_scale_vmax else math.ceil(max(values) * 2) / 2  # 0 ur None
-    color_scale_vmin = color_scale_vmin or min(values)
+    color_scale_vmax = (
+        color_scale_vmax
+        if color_scale_vmax
+        else math.ceil(max((v for v in values if v is not None), default=1) * 2) / 2
+    )
+    color_scale_vmin = color_scale_vmin or min((v for v in values if v is not None), default=0)
 
     log.debug('color_scale_normalise %s' % color_scale_normalise)
     color_values = get_colour_values(color_scale, color_scale_vmax, color_scale_vmin, color_scale_normalise, values)
@@ -191,6 +195,10 @@ def cacheable_hazard_map(
     gdf = gdf.rename(
         columns={'fill_opacity': 'fill-opacity', 'stroke_width': 'stroke-width', 'stroke_opacity': 'stroke-opacity'}
     )
+
+    # filter out polygons with missing values
+    gdf = gdf[~gdf["value"].isnull()]
+
     t5 = dt.utcnow()
     log.debug('build geojson took  %s' % (t5 - t4))
 

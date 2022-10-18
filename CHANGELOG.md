@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.6.3] - 2022-10-18
+### Changed
+ - omit hazard_map tiles where value is None
+
 ## [0.6.2] - 2022-10-07
 ### Changed
  - update toshi-hazard-store=0.5.5 for vs30 fix
