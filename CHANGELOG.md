@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.7.0] - 2022-12-15
+### Added
+ - new schema resource nzshm_model with logic_tree structure
+
 ## [0.6.3] - 2022-10-18
 ### Changed
  - omit hazard_map tiles where value is None

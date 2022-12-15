@@ -20,8 +20,9 @@ from .toshi_hazard import (
     query_gridded_hazard,
 )
 
-log = logging.getLogger(__name__)
+from .nzshm_model import NzshmModelResult, NzshmModel, get_nzshm_models, get_nzshm_model
 
+log = logging.getLogger(__name__)
 
 class QueryRoot(graphene.ObjectType):
     """This is the entry point for all graphql query operations"""
@@ -29,6 +30,13 @@ class QueryRoot(graphene.ObjectType):
     node = relay.Node.Field()
 
     about = graphene.String(description='About this API ')
+
+    nzshm_model = graphene.Field(
+        NzshmModel,
+        version=graphene.Argument(graphene.String)
+    )
+
+    nzshm_models = graphene.List(NzshmModel) # Result,
 
     disaggregation_reports = graphene.Field(
         DisaggregationReportResult,
@@ -71,6 +79,14 @@ class QueryRoot(graphene.ObjectType):
         vs30=graphene.Argument(graphene.Int),
         poe=graphene.Argument(graphene.Float),
     )
+
+    def resolve_nzshm_model(root, info, **kwargs):
+        log.info("resolve_nzshm_model kwargs %s" % kwargs)
+        return get_nzshm_model(kwargs)
+
+    def resolve_nzshm_models(root, info, **kwargs):
+        log.info("resolve_nzshm_models kwargs %s" % kwargs)
+        return get_nzshm_models(kwargs)
 
     def resolve_disaggregation_reports(root, info, **kwargs):
         log.info("resolve_disaggregation_reports kwargs %s" % kwargs)
