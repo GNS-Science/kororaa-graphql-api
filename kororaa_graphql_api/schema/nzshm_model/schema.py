@@ -62,6 +62,6 @@ class NzshmModel(graphene.ObjectType):
 
 
 class NzshmModelResult(graphene.ObjectType):
+    model = graphene.Field(NzshmModel)
     ok = graphene.Boolean()
-    models = graphene.List(NzshmModel)
 

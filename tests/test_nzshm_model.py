@@ -29,17 +29,19 @@ class TestNzshmModel(unittest.TestCase):
         QUERY = """
         query get_models_query {
             nzshm_models {
-                version
-                title
+                model {
+                    version
+                    title
+                }
             }
         }
         """
 
         executed = self.client.execute(QUERY)
         print(executed)
-        res = executed['data']['nzshm_models']
-        self.assertEqual(res[0]['version'], 'NSHM_1.0.0')
-        self.assertEqual(res[0]['title'], 'Initial version')
+        res = executed['data']['nzshm_models'][0]['model']
+        self.assertEqual(res['version'], 'NSHM_1.0.0')
+        self.assertEqual(res['title'], 'Initial version')
 
     def test_get_models_with_slt(self):
 
@@ -49,18 +51,20 @@ class TestNzshmModel(unittest.TestCase):
         QUERY = """
         query get_models_query {
             nzshm_models {
-                version
-                source_logic_tree
+                model {
+                    version
+                    source_logic_tree
+                }
             }
         }
         """
 
         executed = self.client.execute(QUERY)
         # print(executed)
-        res = executed['data']['nzshm_models']
-        self.assertEqual(res[0]['version'], 'NSHM_1.0.0')
+        res = executed['data']['nzshm_models'][0]['model']
+        self.assertEqual(res['version'], 'NSHM_1.0.0')
 
-        slt = dacite.from_dict(data_class=SourceLogicTree, data=json.loads(res[0]['source_logic_tree']))
+        slt = dacite.from_dict(data_class=SourceLogicTree, data=json.loads(res['source_logic_tree']))
         self.assertEqual(slt.version, 'SLT_v8')
         self.assertEqual(slt.fault_system_branches[0].short_name,  'PUY')
         self.assertEqual(slt.fault_system_branches[0].branches[-1].values[0].name,  'dm')
@@ -72,16 +76,18 @@ class TestNzshmModel(unittest.TestCase):
         QUERY = """
         query get_models_query {
             nzshm_models {
-                version
-                title
-                source_logic_tree_spec {
-                    fault_system_branches {
-                        short_name
-                        long_name
-                        branches {
-                            name
+                model {
+                    version
+                    title
+                    source_logic_tree_spec {
+                        fault_system_branches {
+                            short_name
                             long_name
-                            value_options
+                            branches {
+                                name
+                                long_name
+                                value_options
+                            }
                         }
                     }
                 }
@@ -91,29 +97,31 @@ class TestNzshmModel(unittest.TestCase):
 
         executed = self.client.execute(QUERY)
         print(executed)
-        res = executed['data']['nzshm_models']
-        self.assertEqual(res[0]['version'], 'NSHM_1.0.0')
-        self.assertEqual(res[0]['source_logic_tree_spec']['fault_system_branches'][0]['short_name'], 'PUY')
-        self.assertEqual(res[0]['source_logic_tree_spec']['fault_system_branches'][0]['branches'][0]['long_name'], 'deformation model')
-        self.assertEqual(res[0]['source_logic_tree_spec']['fault_system_branches'][0]['branches'][0]['value_options'], json.dumps(['0.7']))
+        res = executed['data']['nzshm_models'][0]['model']
+        self.assertEqual(res['version'], 'NSHM_1.0.0')
+        self.assertEqual(res['source_logic_tree_spec']['fault_system_branches'][0]['short_name'], 'PUY')
+        self.assertEqual(res['source_logic_tree_spec']['fault_system_branches'][0]['branches'][0]['long_name'], 'deformation model')
+        self.assertEqual(res['source_logic_tree_spec']['fault_system_branches'][0]['branches'][0]['value_options'], json.dumps(['0.7']))
 
-        self.assertEqual(res[0]['source_logic_tree_spec']['fault_system_branches'][0]['branches'][1]['name'], 'bN')
-        self.assertEqual(res[0]['source_logic_tree_spec']['fault_system_branches'][0]['branches'][1]['value_options'], json.dumps([(0.902, 4.6)]))
+        self.assertEqual(res['source_logic_tree_spec']['fault_system_branches'][0]['branches'][1]['name'], 'bN')
+        self.assertEqual(res['source_logic_tree_spec']['fault_system_branches'][0]['branches'][1]['value_options'], json.dumps([(0.902, 4.6)]))
 
     def test_get_model_version(self):
         QUERY = """
         query get_model_query {
             nzshm_model (version: "NSHM_1.0.0" ) {
-                version
-                title
-                source_logic_tree_spec {
-                    fault_system_branches {
-                        short_name
-                        long_name
-                        branches {
-                            name
+                model {
+                    version
+                    title
+                    source_logic_tree_spec {
+                        fault_system_branches {
+                            short_name
                             long_name
-                            value_options
+                            branches {
+                                name
+                                long_name
+                                value_options
+                            }
                         }
                     }
                 }
@@ -124,7 +132,7 @@ class TestNzshmModel(unittest.TestCase):
         executed = self.client.execute(QUERY)
 
         print(executed)
-        res = executed['data']['nzshm_model']
+        res = executed['data']['nzshm_model']['model']
         self.assertEqual(res['version'], 'NSHM_1.0.0')
         self.assertEqual(res['source_logic_tree_spec']['fault_system_branches'][0]['short_name'], 'PUY')
         self.assertEqual(res['source_logic_tree_spec']['fault_system_branches'][0]['branches'][0]['long_name'], 'deformation model')

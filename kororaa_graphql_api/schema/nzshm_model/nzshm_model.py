@@ -16,7 +16,7 @@ def get_nzshm_models(kwargs) -> Iterator:
     t0 = dt.utcnow()
 
     for model_version, model in nzshm_model.versions.items():
-        yield NzshmModel(version=model.version, title=model.title)
+        yield NzshmModelResult(model=NzshmModel(version=model.version, title=model.title), ok = True)
     db_metrics.put_duration(__name__, 'get_nzshm_models', dt.utcnow() - t0)
 
 
@@ -24,6 +24,6 @@ def get_nzshm_model(kwargs) -> NzshmModel:
     t0 = dt.utcnow()
     version = kwargs.get('version')
     model = nzshm_model.get_model_version(version)
-    res = NzshmModel(version=model.version, title=model.title)
+    res = NzshmModelResult(model=NzshmModel(version=model.version, title=model.title), ok = True)
     db_metrics.put_duration(__name__, 'get_nzshm_model', dt.utcnow() - t0)
     return res

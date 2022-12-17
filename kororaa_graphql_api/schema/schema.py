@@ -20,7 +20,7 @@ from .toshi_hazard import (
     query_gridded_hazard,
 )
 
-from .nzshm_model import NzshmModelResult, NzshmModel, get_nzshm_models, get_nzshm_model
+from .nzshm_model import NzshmModelResult, get_nzshm_models, get_nzshm_model
 
 log = logging.getLogger(__name__)
 
@@ -32,11 +32,11 @@ class QueryRoot(graphene.ObjectType):
     about = graphene.String(description='About this API ')
 
     nzshm_model = graphene.Field(
-        NzshmModel,
+        NzshmModelResult,
         version=graphene.Argument(graphene.String)
     )
 
-    nzshm_models = graphene.List(NzshmModel) # Result,
+    nzshm_models = graphene.List(NzshmModelResult) # Result,
 
     disaggregation_reports = graphene.Field(
         DisaggregationReportResult,
