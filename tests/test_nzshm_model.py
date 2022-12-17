@@ -82,7 +82,6 @@ class TestNzshmModel(unittest.TestCase):
                             name
                             long_name
                             value_options
-                            value_type
                         }
                     }
                 }
@@ -96,16 +95,11 @@ class TestNzshmModel(unittest.TestCase):
         self.assertEqual(res[0]['version'], 'NSHM_1.0.0')
         self.assertEqual(res[0]['source_logic_tree_spec']['fault_system_branches'][0]['short_name'], 'PUY')
         self.assertEqual(res[0]['source_logic_tree_spec']['fault_system_branches'][0]['branches'][0]['long_name'], 'deformation model')
-        self.assertEqual(res[0]['source_logic_tree_spec']['fault_system_branches'][0]['branches'][0]['value_options'], ['0.7'])
-        self.assertEqual(res[0]['source_logic_tree_spec']['fault_system_branches'][0]['branches'][0]['value_type'], 'FLOAT')
+        self.assertEqual(res[0]['source_logic_tree_spec']['fault_system_branches'][0]['branches'][0]['value_options'], json.dumps(['0.7']))
 
         self.assertEqual(res[0]['source_logic_tree_spec']['fault_system_branches'][0]['branches'][1]['name'], 'bN')
-        self.assertEqual(res[0]['source_logic_tree_spec']['fault_system_branches'][0]['branches'][1]['value_options'], ['(0.902, 4.6)'])
-        self.assertEqual(res[0]['source_logic_tree_spec']['fault_system_branches'][0]['branches'][1]['value_type'], 'TUPLE_FLOAT_FLOAT')
+        self.assertEqual(res[0]['source_logic_tree_spec']['fault_system_branches'][0]['branches'][1]['value_options'], json.dumps([(0.902, 4.6)]))
 
-        # assert 0
-
-    #@unittest.skip('not implemented')
     def test_get_model_version(self):
         QUERY = """
         query get_model_query {
@@ -120,7 +114,6 @@ class TestNzshmModel(unittest.TestCase):
                             name
                             long_name
                             value_options
-                            value_type
                         }
                     }
                 }
@@ -129,6 +122,13 @@ class TestNzshmModel(unittest.TestCase):
         """
 
         executed = self.client.execute(QUERY)
+
         print(executed)
         res = executed['data']['nzshm_model']
         self.assertEqual(res['version'], 'NSHM_1.0.0')
+        self.assertEqual(res['source_logic_tree_spec']['fault_system_branches'][0]['short_name'], 'PUY')
+        self.assertEqual(res['source_logic_tree_spec']['fault_system_branches'][0]['branches'][0]['long_name'], 'deformation model')
+        self.assertEqual(res['source_logic_tree_spec']['fault_system_branches'][0]['branches'][0]['value_options'], json.dumps(['0.7']))
+
+        self.assertEqual(res['source_logic_tree_spec']['fault_system_branches'][0]['branches'][1]['name'], 'bN')
+        self.assertEqual(res['source_logic_tree_spec']['fault_system_branches'][0]['branches'][1]['value_options'], json.dumps([(0.902, 4.6)]))

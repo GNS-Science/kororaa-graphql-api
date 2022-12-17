@@ -13,22 +13,10 @@ log = logging.getLogger(__name__)
 
 db_metrics = ServerlessMetricWriter(metric_name="MethodDuration")
 
-class BranchAttributeValueType(graphene.Union):
-    class Meta:
-        types = (graphene.String, graphene.Int, graphene.Float)
-
-class BranchAttributeValueTypeEnum(graphene.Enum):
-    STRING = "str"
-    FLOAT = "float"
-    INT = "int"
-    BOOL = "bool"
-    TUPLE_FLOAT_FLOAT = 'Tuple[float, float]'
-
 class BranchAttributeValue(graphene.ObjectType):
     name = graphene.String()
     long_name = graphene.String()
-    value_options = graphene.List(graphene.String)
-    value_type = graphene.Field(BranchAttributeValueTypeEnum)
+    value_options = graphene.JSONString()
 
 class FaultSystemLogicTreeSpec(graphene.ObjectType):
     short_name = graphene.String()
@@ -62,26 +50,9 @@ class NzshmModel(graphene.ObjectType):
         # print(spec)
 
         def build_branch_attribute_values(fslt_branches) -> Iterable:
-
-            def get_value_type(fslt):
-                try:
-                    # vt = parse_tuple(fslt.value_options[0])  # parse first value
-                    vt = ast.literal_eval(str(fslt.value_options[0]))
-                    if type(vt) == tuple:
-                        return BranchAttributeValueTypeEnum.TUPLE_FLOAT_FLOAT
-                    if type(vt) == float:
-                        return BranchAttributeValueTypeEnum.FLOAT
-                    if type(vt) == str:
-                        return BranchAttributeValueTypeEnum.STRING
-                    if type(vt) == bool:
-                        return BranchAttributeValueTypeEnum.BOOL
-                    if type(vt) == int:
-                        return BranchAttributeValueTypeEnum.INT
-                except:
-                    return None
-
             for fslt in fslt_branches:
-                yield BranchAttributeValue(name = fslt.name, long_name = fslt.long_name, value_options = fslt.value_options, value_type = get_value_type(fslt))
+                yield BranchAttributeValue(name = fslt.name, long_name = fslt.long_name, # value_options = get_values(fslt), value_type = get_value_type(fslt),
+                    value_options = fslt.value_options)
 
         def build_fault_system_branches(spec) -> Iterable:
             for fslt in spec.fault_system_branches:
