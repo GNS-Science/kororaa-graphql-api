@@ -16,7 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [17.x]
+        node-version: [18.x]
     steps:
       - uses: actions/checkout@master
 
@@ -28,12 +28,12 @@ jobs:
           installer-parallel: true
 
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
 
       - name: upgrade NPM
-        run: npm install -g npm@latest
+        run: npm install --location=global npm@latest
 
       - name: Verify NPM
         run: npm doctor
