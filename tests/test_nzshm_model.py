@@ -1,24 +1,9 @@
 import json
 import unittest
-import boto3
-import io
 from graphene.test import Client
-from moto import mock_s3
 
 from kororaa_graphql_api.schema import schema_root
-from kororaa_graphql_api.config import S3_BUCKET_NAME, DISAGGS_KEY
-
-
-#used for test comparisons only
 import nzshm_model
-import dacite
-from nzshm_model.source_logic_tree.logic_tree import (
-    Branch,
-    BranchAttributeSpec,
-    BranchAttributeValue,
-    FaultSystemLogicTree,
-    SourceLogicTree,
-)
 
 class TestNzshmModel(unittest.TestCase):
 
@@ -53,24 +38,42 @@ class TestNzshmModel(unittest.TestCase):
             nzshm_models {
                 model {
                     version
-                    source_logic_tree
+                    source_logic_tree {
+                        fault_system_branches {
+                            short_name
+                            long_name
+                            branches {
+                                weight
+                                onfault_nrml_id
+                                values {
+                                    name
+                                    long_name
+                                    json_value
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }
         """
 
         executed = self.client.execute(QUERY)
-        # print(executed)
+        print(executed)
         res = executed['data']['nzshm_models'][0]['model']
         self.assertEqual(res['version'], 'NSHM_1.0.0')
 
-        slt = dacite.from_dict(data_class=SourceLogicTree, data=json.loads(res['source_logic_tree']))
-        self.assertEqual(slt.version, 'SLT_v8')
-        self.assertEqual(slt.fault_system_branches[0].short_name,  'PUY')
-        self.assertEqual(slt.fault_system_branches[0].branches[-1].values[0].name,  'dm')
-        self.assertEqual(slt.fault_system_branches[0].branches[-1].values[0].value,  '0.7')
-        self.assertEqual(slt.fault_system_branches[0].branches[-1].values[1].name,  'bN')
-        self.assertEqual(slt.fault_system_branches[0].branches[-1].values[1].value,  [0.902, 4.6])
+        # slt = dacite.from_dict(data_class=SourceLogicTree, data=json.loads(res['source_logic_tree']))
+        self.assertEqual(res['source_logic_tree']['fault_system_branches'][0]['short_name'],  'PUY')
+        self.assertEqual(res['source_logic_tree']['fault_system_branches'][0]['branches'][-1]['values'][0]['name'],  'dm')
+        self.assertEqual(res['source_logic_tree']['fault_system_branches'][0]['branches'][-1]['values'][0]['json_value'],  json.dumps('0.7'))
+        self.assertEqual(res['source_logic_tree']['fault_system_branches'][0]['branches'][-1]['values'][1]['name'],  'bN')
+        self.assertEqual(res['source_logic_tree']['fault_system_branches'][0]['branches'][-1]['values'][1]['json_value'],  json.dumps([0.902, 4.6]))
+        self.assertEqual(res['source_logic_tree']['fault_system_branches'][0]['branches'][-1]['onfault_nrml_id'], "SW52ZXJzaW9uU29sdXRpb25Ocm1sOjExODcyOQ==")
+        # "distributed_nrml_id": "RmlsZToxMzA3NTM=",
+        # "inversion_solution_id": "U2NhbGVkSW52ZXJzaW9uU29sdXRpb246MTE4NTQ2",
+        # "inversion_solution_type": "ScaledInversionSolution"
+
 
     def test_get_models_with_spec(self):
         QUERY = """

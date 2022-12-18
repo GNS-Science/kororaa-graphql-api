@@ -1745,7 +1745,7 @@ test = []
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.8,<4.0"
-content-hash = "9e78c3331d9b079ec94e5995f1dab1b0c84831b8052e3ba7c6c35b9ab8c056a2"
+content-hash = "9e5879b330e976e5a516373ac527e2c17c2ee3467411cbf64ddf9f6390b3480d"
 
 [metadata.files]
 aniso8601 = [
