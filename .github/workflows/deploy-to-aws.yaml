@@ -25,6 +25,10 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
+      - uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+
       - name: Install and configure Poetry
         uses: GNS-Science/install-poetry@main
         with:
