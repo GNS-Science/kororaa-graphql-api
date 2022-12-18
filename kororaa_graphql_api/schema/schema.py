@@ -6,6 +6,7 @@ import graphene
 from graphene import relay
 from nzshm_common.location import CodedLocation
 
+from .nzshm_model import NzshmModelResult, get_nzshm_model, get_nzshm_models
 from .publications import ScienceReportResult, get_science_reports
 from .textual_content import TextualContentResult, get_textual_content
 from .toshi_hazard import (
@@ -20,9 +21,8 @@ from .toshi_hazard import (
     query_gridded_hazard,
 )
 
-from .nzshm_model import NzshmModelResult, get_nzshm_models, get_nzshm_model
-
 log = logging.getLogger(__name__)
+
 
 class QueryRoot(graphene.ObjectType):
     """This is the entry point for all graphql query operations"""
@@ -31,12 +31,9 @@ class QueryRoot(graphene.ObjectType):
 
     about = graphene.String(description='About this API ')
 
-    nzshm_model = graphene.Field(
-        NzshmModelResult,
-        version=graphene.Argument(graphene.String)
-    )
+    nzshm_model = graphene.Field(NzshmModelResult, version=graphene.Argument(graphene.String))
 
-    nzshm_models = graphene.List(NzshmModelResult) # Result,
+    nzshm_models = graphene.List(NzshmModelResult)  # Result,
 
     disaggregation_reports = graphene.Field(
         DisaggregationReportResult,
