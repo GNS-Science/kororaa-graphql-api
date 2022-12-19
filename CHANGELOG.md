@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.8.0] - 2022-
+### Added
+ - new schema resource nzshm_model with logic_tree structure
+
 ## [0.7.0] - 2023-05-17
 ### Changed
  - named locations have 0.001 precision
