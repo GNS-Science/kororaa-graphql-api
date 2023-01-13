@@ -39,7 +39,7 @@ nzshm-grid-loc = {git = "https://github.com/GNS-Science/nzshm-grid-loc.git", rev
 toshi-hazard-store = "^0.5.5"
 nzshm-model = "^0.1.1"
 
-[tool.poetry.dev-dependencies]
+[tool.poetry.group.dev.dependencies]
 tox = "^4.2.8"
 black  = { version = "^22.3"}
 isort  = { version = "^5.8.0"}
