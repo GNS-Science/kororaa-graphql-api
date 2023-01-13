@@ -37,9 +37,9 @@ class BranchAttributeValue(graphene.ObjectType):
 
 class SourceLogicTreeBranch(graphene.ObjectType):
     weight = graphene.Float()
-    onfault_nrml_id = graphene.String()
-    distributed_nrml_id = graphene.String()
-    inversion_solution_id = graphene.String()
+    onfault_nrml_id = graphene.ID()
+    distributed_nrml_id = graphene.ID()
+    inversion_solution_id = graphene.ID()
     inversion_solution_type = graphene.String()
     values = graphene.List(BranchAttributeValue)
 
