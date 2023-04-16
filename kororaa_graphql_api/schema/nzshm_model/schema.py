@@ -83,7 +83,7 @@ class NzshmModel(graphene.ObjectType):
                 )
 
         def build_fault_system_branches(slt) -> Iterable:
-            for fslt in slt.fault_system_branches:
+            for fslt in slt.fault_system_lts:
                 yield FaultSystemLogicTree(
                     short_name=fslt.short_name, long_name=fslt.long_name, branches=build_source_branches(fslt)
                 )
@@ -104,7 +104,7 @@ class NzshmModel(graphene.ObjectType):
                 )
 
         def build_fault_system_branches(spec) -> Iterable:
-            for fslt in spec.fault_system_branches:
+            for fslt in spec.fault_system_lts:
                 yield FaultSystemLogicTreeSpec(
                     short_name=fslt.short_name, long_name=fslt.long_name, branches=build_branch_attribute_values(fslt)
                 )

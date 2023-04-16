@@ -4,13 +4,17 @@ from graphene.test import Client
 
 from kororaa_graphql_api.schema import schema_root
 import nzshm_model
+import pytest
 
 
-class TestNzshmModel(unittest.TestCase):
-    def setUp(self):
-        self.client = Client(schema_root)
+@pytest.fixture(scope='module')
+def client():
+    return Client(schema_root)
 
-    def test_get_models(self):
+
+class TestNzshmModel():
+
+    def test_get_models(self, client):
         QUERY = """
         query get_models_query {
             nzshm_models {
@@ -22,13 +26,13 @@ class TestNzshmModel(unittest.TestCase):
         }
         """
 
-        executed = self.client.execute(QUERY)
+        executed = client.execute(QUERY)
         print(executed)
         res = executed['data']['nzshm_models'][0]['model']
-        self.assertEqual(res['version'], 'NSHM_1.0.0')
-        self.assertEqual(res['title'], 'Initial version')
+        assert res['version'] == 'NSHM_1.0.0'
+        assert res['title'] == 'Initial version'
 
-    def test_get_models_with_slt(self):
+    def test_get_models_with_slt(self, client):
 
         for version in nzshm_model.versions.keys():
             print(version)
@@ -58,36 +62,24 @@ class TestNzshmModel(unittest.TestCase):
         }
         """
 
-        executed = self.client.execute(QUERY)
+        executed = client.execute(QUERY)
         print(executed)
         res = executed['data']['nzshm_models'][0]['model']
-        self.assertEqual(res['version'], 'NSHM_1.0.0')
+        assert res['version'] == 'NSHM_1.0.0'
 
         # slt = dacite.from_dict(data_class=SourceLogicTree, data=json.loads(res['source_logic_tree']))
-        self.assertEqual(res['source_logic_tree']['fault_system_branches'][0]['short_name'], 'PUY')
-        self.assertEqual(
-            res['source_logic_tree']['fault_system_branches'][0]['branches'][-1]['values'][0]['name'], 'dm'
-        )
-        self.assertEqual(
-            res['source_logic_tree']['fault_system_branches'][0]['branches'][-1]['values'][0]['json_value'],
-            json.dumps('0.7'),
-        )
-        self.assertEqual(
-            res['source_logic_tree']['fault_system_branches'][0]['branches'][-1]['values'][1]['name'], 'bN'
-        )
-        self.assertEqual(
-            res['source_logic_tree']['fault_system_branches'][0]['branches'][-1]['values'][1]['json_value'],
-            json.dumps([0.902, 4.6]),
-        )
-        self.assertEqual(
-            res['source_logic_tree']['fault_system_branches'][0]['branches'][-1]['onfault_nrml_id'],
-            "SW52ZXJzaW9uU29sdXRpb25Ocm1sOjExODcyOQ==",
-        )
+        assert res['source_logic_tree']['fault_system_branches'][0]['short_name'] == 'PUY'
+        assert res['source_logic_tree']['fault_system_branches'][0]['branches'][-1]['values'][0]['name'] == 'dm'
+        assert res['source_logic_tree']['fault_system_branches'][0]['branches'][-1]['values'][0]['json_value'] == json.dumps('0.7')
+
+        assert res['source_logic_tree']['fault_system_branches'][0]['branches'][-1]['values'][1]['name'] == 'bN'
+        assert res['source_logic_tree']['fault_system_branches'][0]['branches'][-1]['values'][1]['json_value'] == json.dumps([0.902, 4.6])
+        assert res['source_logic_tree']['fault_system_branches'][0]['branches'][-1]['onfault_nrml_id'] == "SW52ZXJzaW9uU29sdXRpb25Ocm1sOjExODcyOQ=="
         # "distributed_nrml_id": "RmlsZToxMzA3NTM=",
         # "inversion_solution_id": "U2NhbGVkSW52ZXJzaW9uU29sdXRpb246MTE4NTQ2",
         # "inversion_solution_type": "ScaledInversionSolution"
 
-    def test_get_models_with_spec(self):
+    def test_get_models_with_spec(self, client):
         QUERY = """
         query get_models_query {
             nzshm_models {
@@ -110,29 +102,26 @@ class TestNzshmModel(unittest.TestCase):
         }
         """
 
-        executed = self.client.execute(QUERY)
+        executed = client.execute(QUERY)
         print(executed)
         res = executed['data']['nzshm_models'][0]['model']
-        self.assertEqual(res['version'], 'NSHM_1.0.0')
-        self.assertEqual(res['source_logic_tree_spec']['fault_system_branches'][0]['short_name'], 'PUY')
-        self.assertEqual(
-            res['source_logic_tree_spec']['fault_system_branches'][0]['branches'][0]['long_name'], 'deformation model'
-        )
-        self.assertEqual(
-            res['source_logic_tree_spec']['fault_system_branches'][0]['branches'][0]['value_options'],
-            json.dumps(['0.7']),
-        )
+        assert res['version'], 'NSHM_1.0.0'
+        assert res['source_logic_tree_spec']['fault_system_branches'][0]['short_name'] == 'PUY'
+        assert res['source_logic_tree_spec']['fault_system_branches'][0]['branches'][0]['long_name'] == 'deformation model'
+        assert res['source_logic_tree_spec']['fault_system_branches'][0]['branches'][0]['value_options'] == json.dumps(['0.7'])
 
-        self.assertEqual(res['source_logic_tree_spec']['fault_system_branches'][0]['branches'][1]['name'], 'bN')
-        self.assertEqual(
-            res['source_logic_tree_spec']['fault_system_branches'][0]['branches'][1]['value_options'],
-            json.dumps([(0.902, 4.6)]),
-        )
+        assert res['source_logic_tree_spec']['fault_system_branches'][0]['branches'][1]['name'] ==  'bN'
+        assert res['source_logic_tree_spec']['fault_system_branches'][0]['branches'][1]['value_options'] == json.dumps([(0.902, 4.6)])
 
-    def test_get_model_version(self):
+    @pytest.mark.parametrize(
+    "model_id,expected", [
+        ("NSHM_1.0.0", json.dumps([(0.902, 4.6)]) ),
+        ("NSHM_1.0.4", json.dumps([(0.902, 4.6)]) )
+        ])
+    def test_get_model_version(self, client, model_id, expected):
         QUERY = """
-        query get_model_query {
-            nzshm_model (version: "NSHM_1.0.0" ) {
+        query get_model_query( $model_id: String!) {
+            nzshm_model (version: $model_id ) {
                 model {
                     version
                     title
@@ -152,22 +141,13 @@ class TestNzshmModel(unittest.TestCase):
         }
         """
 
-        executed = self.client.execute(QUERY)
+        executed = client.execute(QUERY, variable_values={"model_id": model_id})
 
         print(executed)
         res = executed['data']['nzshm_model']['model']
-        self.assertEqual(res['version'], 'NSHM_1.0.0')
-        self.assertEqual(res['source_logic_tree_spec']['fault_system_branches'][0]['short_name'], 'PUY')
-        self.assertEqual(
-            res['source_logic_tree_spec']['fault_system_branches'][0]['branches'][0]['long_name'], 'deformation model'
-        )
-        self.assertEqual(
-            res['source_logic_tree_spec']['fault_system_branches'][0]['branches'][0]['value_options'],
-            json.dumps(['0.7']),
-        )
-
-        self.assertEqual(res['source_logic_tree_spec']['fault_system_branches'][0]['branches'][1]['name'], 'bN')
-        self.assertEqual(
-            res['source_logic_tree_spec']['fault_system_branches'][0]['branches'][1]['value_options'],
-            json.dumps([(0.902, 4.6)]),
-        )
+        assert res['version'] == model_id
+        assert res['source_logic_tree_spec']['fault_system_branches'][0]['short_name'] == 'PUY'
+        assert res['source_logic_tree_spec']['fault_system_branches'][0]['branches'][0]['long_name'] == 'deformation model'
+        assert res['source_logic_tree_spec']['fault_system_branches'][0]['branches'][0]['value_options'] == json.dumps(['0.7'])
+        assert res['source_logic_tree_spec']['fault_system_branches'][0]['branches'][1]['name'] == 'bN'
+        assert res['source_logic_tree_spec']['fault_system_branches'][0]['branches'][1]['value_options'] == expected

@@ -37,7 +37,7 @@ python-dateutil = "^2.8.2"
 pyproj = "3.3.0"
 nzshm-grid-loc = {git = "https://github.com/GNS-Science/nzshm-grid-loc.git", rev = "main"}
 toshi-hazard-store = "^0.5.5"
-nzshm-model = "^0.1.1"
+nzshm-model = "^0.2.0"
 
 [tool.poetry.group.dev.dependencies]
 tox = "^4.2.8"
