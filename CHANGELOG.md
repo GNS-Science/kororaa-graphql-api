@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.7.1] - 2023-04-17
+### Changed
+ - updated dependencies nzshm_common, geopandas, toshi_hazard_s
+
 ## [0.7.0] - 2022-12-15
 ### Added
  - new schema resource nzshm_model with logic_tree structure

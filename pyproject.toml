@@ -29,15 +29,15 @@ Flask-GraphQL = "^2.0.1"
 graphene = "<3"
 PyYAML = "^6.0"
 pandas = "^1.4.3"
-geopandas = "^0.11.1"
+geopandas = "^0.12.0"
 matplotlib = "^3.5.3"
-nzshm-common = {extras = ["geometry"], version = "^0.4.0"}
 boto3 = "^1.24.57"
 python-dateutil = "^2.8.2"
 pyproj = "3.3.0"
 nzshm-grid-loc = {git = "https://github.com/GNS-Science/nzshm-grid-loc.git", rev = "main"}
-toshi-hazard-store = "^0.5.5"
+nzshm-common = {extras = ["geometry"], version = "^0.5.0"}
 nzshm-model = "^0.2.0"
+toshi-hazard-store = "^0.7.0"
 
 [tool.poetry.group.dev.dependencies]
 tox = "^4.2.8"

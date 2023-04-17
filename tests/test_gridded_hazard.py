@@ -21,7 +21,7 @@ from nzshm_common.grids import RegionGrid
 HAZARD_MODEL_ID = 'GRIDDED_THE_THIRD'
 vs30s = [250, 400]
 imts = ['PGA', 'SA(0.5)']
-aggs = ['mean', '0.10']
+aggs = ['mean', '0.1']
 
 
 def build_hazard_aggregation_models(*args, **kwargs):

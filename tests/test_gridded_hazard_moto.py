@@ -15,7 +15,8 @@ HAZARD_MODEL_ID = 'GRIDDED_THE_THIRD'
 GRID_ID = "WLG_0_01_nb_1_1"
 vs30s = [250, 400]
 imts = ['PGA', 'SA(0.5)']
-aggs = ['mean', '0.10']
+aggs = ['mean', '0.1']
+# aggs = [model.AggregationEnum.MEAN.value, model.AggregationEnum._10.value]
 
 
 def build_gridded_hazard_models(**kwargs):
