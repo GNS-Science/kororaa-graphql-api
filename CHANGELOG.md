@@ -1,5 +1,13 @@
 # Changelog
 
+
+## [0.6.4] - 2023-05-15
+### Changed
+ - bumpversion to force redeploy
+ - update GHA scripts
+ - pin nzshm-grid-loc dependency
+ - update tox
+
 ## [0.6.3] - 2022-10-18
 ### Changed
  - omit hazard_map tiles where value is None

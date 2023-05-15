@@ -16,21 +16,22 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [17.x]
+        node-version: [18]
     steps:
-      - uses: actions/checkout@master
+      - uses: actions/checkout@v3
 
       - name: Install and configure Poetry
-        uses: snok/install-poetry@v1
+        uses: GNS-Science/install-poetry@main
         with:
           virtualenvs-create: true
           virtualenvs-in-project: true
           installer-parallel: true
 
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
+          check-latest: true
 
       - name: upgrade NPM
         run: npm install -g npm@latest
