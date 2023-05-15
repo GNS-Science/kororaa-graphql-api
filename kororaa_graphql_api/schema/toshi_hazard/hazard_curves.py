@@ -18,12 +18,15 @@ db_metrics = ServerlessMetricWriter(metric_name="MethodDuration")
 
 def match_named_location_coord_code(location_code: str, resolution: float = 0.01) -> CodedLocation:
     """Attempt to match a Named Location ."""
+
+    log.debug("match_named_location_coord_code %s res: %s" % (location_code, resolution))
+
     tloc = CodedLocation(*[float(x) for x in location_code.split('~')], resolution)  # .resample(0.001)
+
     for loc in location.LOCATIONS_BY_ID:
         site = location.LOCATIONS_BY_ID[loc]
-        named_location = CodedLocation(site['latitude'], site['longitude'], resolution)  # .resample(0.001)
 
-        # print('test', tloc, 'named', named_location, loc)
+        named_location = CodedLocation(site['latitude'], site['longitude'], resolution)  # .resample(0.001)
 
         if tloc == named_location:
             # tloc = tloc.resample(0.001)
@@ -54,8 +57,9 @@ def normalise_locations(locations: Iterable[str], resolution: float = 0.01) -> I
             continue
 
         # do these coordinates match a named location?, if so convert to the legit code.
-        matched = match_named_location_coord_code(loc, 0.01)
+        matched = match_named_location_coord_code(loc, resolution)
         if matched:
+            log.debug('normalise_locations got named location: %s code: %s' % (matched.name, matched.code))
             yield matched
             continue
 
@@ -79,10 +83,12 @@ def hazard_curves(kwargs):
     def build_response_from_query(result, resolution):
         log.info("build_response_from_query")
         for obj in result:
-            named = match_named_location_coord_code(obj.nloc_001, 0.01)
+            named = match_named_location_coord_code(obj.nloc_001, resolution)
             if named:
+                log.debug('build_response_from_query got named location: %s' % named)
                 loc_code = named.code
             else:
+                log.debug('resolve with : %s degrees of precision' % resolution)
                 loc_code = CodedLocation(*[float(x) for x in obj.nloc_001.split('~')], resolution).code
 
             yield ToshiHazardResult(
@@ -96,6 +102,7 @@ def hazard_curves(kwargs):
 
     gridded_locations = list(normalise_locations(kwargs['locs'], kwargs['resolution']))
     coded_locations = [CodedLocation(lat=loc.lat, lon=loc.lon, resolution=0.001).code for loc in gridded_locations]
+
     res = query_v3.get_hazard_curves(
         coded_locations, kwargs['vs30s'], [kwargs['hazard_model']], kwargs['imts'], aggs=kwargs['aggs']
     )

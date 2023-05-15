@@ -101,6 +101,7 @@ class TestHazardCurves(unittest.TestCase):
                 locs: ["WLG", "DUD"]
                 aggs: ["mean", "0.005", "0.995", "0.1", "0.9"]
                 vs30s: [400, 250]
+                resolution: 0.01
                 )
             {
                 ok
@@ -167,7 +168,7 @@ class TestHazardCurves(unittest.TestCase):
                 locs: ["WLG", "DUD"]
                 aggs: ["mean", "0.005", "0.995", "0.1", "0.9"]
                 vs30s: [400, 250]
-                resolution: 0.1 #ignot
+                # resolution: 0.1 #ignot
                 )
             {
                 ok
