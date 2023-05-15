@@ -5,6 +5,7 @@
 ### Changed
  - bumpversion to force redeploy
  - update GHA scripts
+ - pin nzshm-grid-loc dependency
 
 ## [0.6.3] - 2022-10-18
 ### Changed
