@@ -17,8 +17,12 @@ jobs:
     strategy:
       matrix:
         node-version: [18]
+        python-version: [3.9]
     steps:
       - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
 
       - name: Install and configure Poetry
         uses: GNS-Science/install-poetry@main
