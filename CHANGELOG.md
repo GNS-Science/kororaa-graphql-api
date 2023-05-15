@@ -9,6 +9,7 @@
  - update tox
  - update serverless packages
  - use python3.9 runtime
+ - remove nzshm-grid-loc dependency
 
 ## [0.6.3] - 2022-10-18
 ### Changed
