@@ -35,7 +35,6 @@ nzshm-common = {extras = ["geometry"], version = "^0.4.0"}
 boto3 = "^1.24.57"
 python-dateutil = "^2.8.2"
 pyproj = "3.3.0"
-nzshm-grid-loc = {git = "https://github.com/GNS-Science/nzshm-grid-loc.git", rev = "3460edabcbc6c9e5f93567c435e42fcb464f970d"}
 toshi-hazard-store = "^0.5.5"
 
 [tool.poetry.dev-dependencies]
