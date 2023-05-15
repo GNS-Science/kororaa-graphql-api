@@ -962,18 +962,11 @@ python-versions = ">=3.8"
 
 [[package]]
 name = "nzshm-common"
-version = "0.4.0"
+version = "0.6.0"
 description = "A small pure python library for shared NZ NSHM data like locations."
 category = "main"
 optional = false
 python-versions = ">=3.8,<4.0.0"
-
-[package.dependencies]
-geopandas = {version = ">=0.11.1,<0.12.0", extras = ["geometry"], optional = true, markers = "extra == \"geometry\""}
-Shapely = {version = ">=1.8.3,<2.0.0", extras = ["geometry"], optional = true, markers = "extra == \"geometry\""}
-
-[package.extras]
-geometry = ["Shapely[geometry] (>=1.8.3,<2.0.0)", "geopandas[geometry] (>=0.11.1,<0.12.0)"]
 
 [[package]]
 name = "packaging"
@@ -1165,7 +1158,7 @@ markdown = ">=3.2"
 
 [[package]]
 name = "pynamodb"
-version = "5.2.1"
+version = "5.5.0"
 description = "A Pythonic Interface to DynamoDB"
 category = "main"
 optional = false
@@ -1506,7 +1499,7 @@ python-versions = ">=3.7"
 
 [[package]]
 name = "toshi-hazard-store"
-version = "0.5.5"
+version = "0.7.2"
 description = "Library for saving and retrieving NZHSM openquake hazard results with convenience (uses AWS Dynamodb)."
 category = "main"
 optional = false
@@ -1514,10 +1507,13 @@ python-versions = ">=3.8,<4.0"
 
 [package.dependencies]
 numpy = ">=1.23.1,<2.0.0"
-nzshm-common = ">=0.4.0"
+nzshm-common = ">=0.6.0,<0.7.0"
 pandas = ">=1.4.3,<2.0.0"
 pynamodb = ">=5.2.1,<6.0.0"
 pynamodb-attributes = ">=0.3.2,<0.4.0"
+
+[package.extras]
+openquake = ["openquake-engine (>=3.16,<4.0)"]
 
 [[package]]
 name = "tox"
@@ -1703,7 +1699,7 @@ test = []
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.8,<4.0"
-content-hash = "42de4622e8debc16e85252e339630186ea30dff633d75ed2aafce4b21d4bf2af"
+content-hash = "3b16899529c50a069eb766ffd1fbef5e351b05a8b5ef6f567318fe7a3dbd2f15"
 
 [metadata.files]
 aniso8601 = [
@@ -2417,8 +2413,8 @@ numpy = [
     {file = "numpy-1.23.3.tar.gz", hash = "sha256:51bf49c0cd1d52be0a240aa66f3458afc4b95d8993d2d04f0d91fa60c10af6cd"},
 ]
 nzshm-common = [
-    {file = "nzshm-common-0.4.0.tar.gz", hash = "sha256:f0f7d303548c70be0f12c7894b75fcf59a7019f068e9ab71f9c950b9ec63740b"},
-    {file = "nzshm_common-0.4.0-py3-none-any.whl", hash = "sha256:78572dde972362ee3b0c3b5e2633950cf9befcc7ada03a382ad5084e5c148ef1"},
+    {file = "nzshm_common-0.6.0-py3-none-any.whl", hash = "sha256:5f3e1e95a48758f39ff26b3c6b17b0bb03b623a9c14a1f5db5f71aef1b3e1761"},
+    {file = "nzshm_common-0.6.0.tar.gz", hash = "sha256:a449c9114814aad3e1751b49a290fb46f4fd6e916e5efced1560dac7ac81fa46"},
 ]
 packaging = [
     {file = "packaging-23.1-py3-none-any.whl", hash = "sha256:994793af429502c4ea2ebf6bf664629d07c1a9fe974af92966e4b8d2df7edc61"},
@@ -2569,8 +2565,8 @@ pymdown-extensions = [
     {file = "pymdown_extensions-9.6.tar.gz", hash = "sha256:b956b806439bbff10f726103a941266beb03fbe99f897c7d5e774d7170339ad9"},
 ]
 pynamodb = [
-    {file = "pynamodb-5.2.1-py3-none-any.whl", hash = "sha256:bb93bd86061c91508c44668c219d51d080d011f665153fa9a471ced06b2f2ee7"},
-    {file = "pynamodb-5.2.1.tar.gz", hash = "sha256:c7a9c557b52364bc09257edd00378eebc75258bbdaa0fe050fcce2356149f90a"},
+    {file = "pynamodb-5.5.0-py3-none-any.whl", hash = "sha256:a44fb486fc3e66a25b58d921e07f016f62416e323b381b96c1b725105868dacf"},
+    {file = "pynamodb-5.5.0.tar.gz", hash = "sha256:82f77bb0c21a12756e6781df735ca841f543337847d8522a4ab8db6df7bbfc9f"},
 ]
 pynamodb-attributes = [
     {file = "pynamodb-attributes-0.3.2.tar.gz", hash = "sha256:d149df26c2568ffbb2f8ed43efefff480911b7ec127a98867101c28bb57a190f"},
@@ -2769,8 +2765,8 @@ tomli = [
     {file = "tomli-2.0.1.tar.gz", hash = "sha256:de526c12914f0c550d15924c62d72abc48d6fe7364aa87328337a31007fe8a4f"},
 ]
 toshi-hazard-store = [
-    {file = "toshi-hazard-store-0.5.5.tar.gz", hash = "sha256:f1658dc98830001148b78a1acbf96225e51fb78777848b6df548464b7923ff7e"},
-    {file = "toshi_hazard_store-0.5.5-py3-none-any.whl", hash = "sha256:ee8b9ceeae40cda394beda7f9d44c17dd925de0d6b43609db04cb772685beb83"},
+    {file = "toshi_hazard_store-0.7.2-py3-none-any.whl", hash = "sha256:512b98917a1b86b4ef7a7aaf2f93f14d345a5a38473d1643bbf9ee24cb0bc2ad"},
+    {file = "toshi_hazard_store-0.7.2.tar.gz", hash = "sha256:2b0056565321cbb66cadc22b393c5f767dc578edab75bdb60d01999f3f6c96c3"},
 ]
 tox = [
     {file = "tox-4.5.1-py3-none-any.whl", hash = "sha256:d25a2e6cb261adc489604fafd76cd689efeadfa79709965e965668d6d3f63046"},
