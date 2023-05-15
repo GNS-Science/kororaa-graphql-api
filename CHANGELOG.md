@@ -1,6 +1,5 @@
 # Changelog
 
-
 ## [0.6.4] - 2023-05-15
 ### Changed
  - bumpversion to force redeploy
@@ -10,6 +9,7 @@
  - update serverless packages
  - use python3.9 runtime
  - remove nzshm-grid-loc dependency
+ - update nzshm-common and toshi-hazard-store dependencies
 
 ## [0.6.3] - 2022-10-18
 ### Changed

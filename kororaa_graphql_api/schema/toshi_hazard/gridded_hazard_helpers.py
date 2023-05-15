@@ -1,17 +1,16 @@
-import logging
-import csv
 import io
+import logging
 import zipfile
 from datetime import datetime as dt
 from functools import lru_cache
 from pathlib import Path
-from typing import Iterable, List, Tuple
+from typing import Iterable, List, Tuple, Union
 
 # from nzshm_grid_loc.io import load_polygon_file
 import geopandas as gpd
 import pandas as pd
-from shapely.geometry import Polygon
 from shapely import wkt
+from shapely.geometry import Polygon
 
 from kororaa_graphql_api.cloudwatch import ServerlessMetricWriter
 
@@ -62,6 +61,7 @@ def edge_tiles(clipping_parts: Iterable[CustomPolygon], tiles: Iterable[CustomPo
                 except (Exception) as err:
                     log.warning("edge_tiles raised error: %s" % err)
 
+
 def load_zip(file_name: str) -> Tuple[str, io.BytesIO]:
     """
     Extracts a file from a zip file. The file that is extracted must have a file name equal to the name of the zip file
@@ -75,6 +75,7 @@ def load_zip(file_name: str) -> Tuple[str, io.BytesIO]:
             data = io.BytesIO(fz.read(inner_file_name))
     return inner_file_name, data
 
+
 def load_wkt_csv(file_name_or_file):
     """
     Loads a CSV with a "geometry" column that has WKT values in a GeoDataFrame
@@ -85,6 +86,7 @@ def load_wkt_csv(file_name_or_file):
     df['geometry'] = df['geometry'].apply(wkt.loads)
     gdf = gpd.GeoDataFrame(df, crs='epsg:4326')
     return gdf
+
 
 def load_polygon_file(file_name: str) -> gpd.GeoDataFrame:
     """
@@ -101,9 +103,9 @@ def load_polygon_file(file_name: str) -> gpd.GeoDataFrame:
     else:
         return gpd.read_file(file)
 
+
 @lru_cache
 def nz_simplified_polgons() -> Tuple[CustomPolygon, ...]:
-
 
     small_nz = Path(__file__).parent.parent.parent / 'resources' / 'small-nz.wkt.csv.zip'
     nzdf = load_polygon_file(str(small_nz))
