@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.7.0] - 2023-05-17
+### Changed
+ - named locations have 0.001 precision
+
 ## [0.6.4] - 2023-05-15
 ### Changed
  - bumpversion to force redeploy
