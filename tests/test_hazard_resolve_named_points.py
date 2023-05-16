@@ -221,3 +221,83 @@ class TestHazardCurvesNamed(unittest.TestCase):
             ['PGA'],
             aggs=["mean"],
         )
+
+    def test_get_franz_josef_by_latlon_no_hazard_resolution(self, mocked_qry):
+        QUERY = """
+        query {
+            hazard_curves (
+                locs: ["-43.376~170.188"]
+                hazard_model: "%s"
+                imts: ["PGA"]
+                aggs: ["mean"]
+                vs30s: [400]
+                # resolution: 0.001
+                )
+            {
+                ok
+                curves {
+                    hazard_model
+                    curve {
+                        levels
+                        values
+                    }
+                }
+            }
+        }
+        """ % (
+            HAZARD_MODEL_ID
+        )  # , json.dumps(locs))
+
+        executed = self.client.execute(QUERY)
+        res = executed['data']['hazard_curves']
+        print(executed)
+
+        self.assertEqual(res['ok'], True)
+        self.assertEqual(mocked_qry.call_count, 1)
+        mocked_qry.assert_called_with(
+            ["-43.376~170.188"],  # the resolved codes for the respective cities by ID
+            [400.0],
+            ['GRIDDED_THE_THIRD'],
+            ['PGA'],
+            aggs=["mean"],
+        )
+
+    def test_get_franz_josef_by_latlon_low_hazard_resolution(self, mocked_qry):
+        QUERY = """
+        query {
+            hazard_curves (
+                locs: ["-43.376~170.188"]
+                hazard_model: "%s"
+                imts: ["PGA"]
+                aggs: ["mean"]
+                vs30s: [400]
+                resolution: 0.1
+                )
+            {
+                ok
+                curves {
+                    hazard_model
+                    curve {
+                        levels
+                        values
+                    }
+                }
+            }
+        }
+        """ % (
+            HAZARD_MODEL_ID
+        )  # , json.dumps(locs))
+
+        executed = self.client.execute(QUERY)
+        res = executed['data']['hazard_curves']
+        print(executed)
+
+        self.assertEqual(res['ok'], True)
+        self.assertEqual(mocked_qry.call_count, 1)
+        mocked_qry.assert_called_with(
+            ["-43.376~170.188"],  # the resolved codes for the respective cities by ID
+            [400.0],
+            ['GRIDDED_THE_THIRD'],
+            ['PGA'],
+            aggs=["mean"],
+        )
