@@ -101,6 +101,7 @@ class TestHazardCurves(unittest.TestCase):
                 locs: ["WLG", "DUD"]
                 aggs: ["mean", "0.005", "0.995", "0.1", "0.9"]
                 vs30s: [400, 250]
+                resolution: 0.01
                 )
             {
                 ok
@@ -146,7 +147,7 @@ class TestHazardCurves(unittest.TestCase):
         )
 
         wlg = LOCATIONS_BY_ID['WLG']
-        expected_res = 0.01
+        expected_res = 0.001
         expected = CodedLocation(wlg['latitude'], wlg['longitude'], expected_res)  # .resample(0.001)
 
         self.assertEqual(res['locations'][0]['lon'], expected.lon)
@@ -167,7 +168,7 @@ class TestHazardCurves(unittest.TestCase):
                 locs: ["WLG", "DUD"]
                 aggs: ["mean", "0.005", "0.995", "0.1", "0.9"]
                 vs30s: [400, 250]
-                resolution: 0.1 #ignot
+                # resolution: 0.1 #ignot
                 )
             {
                 ok
@@ -213,7 +214,7 @@ class TestHazardCurves(unittest.TestCase):
         )
 
         wlg = LOCATIONS_BY_ID['WLG']
-        expected_res = 0.01
+        expected_res = 0.001
         expected = CodedLocation(wlg['latitude'], wlg['longitude'], expected_res)  # .resample(0.001)
 
         self.assertEqual(res['locations'][0]['lon'], expected.lon)
@@ -273,7 +274,7 @@ class TestHazardCurves(unittest.TestCase):
         )
 
         wlg = LOCATIONS_BY_ID['WLG']
-        expected_res = 0.01
+        expected_res = 0.001
         expected = CodedLocation(wlg['latitude'], wlg['longitude'], expected_res)
 
         self.assertEqual(res['locations'][0]['lon'], expected.lon)
