@@ -63,7 +63,7 @@ class TestNzshmModel:
         executed = client.execute(QUERY)
         print(executed)
         res = executed['data']['nzshm_models'][0]['model']
-        fsb = res['source_logic_tree_spec']['fault_system_branches']
+        fsb = res['source_logic_tree']['fault_system_branches']
         assert res['version'] == 'NSHM_1.0.0'
 
         assert fsb[0]['short_name'] == 'PUY'
