@@ -25,15 +25,19 @@ log = logging.getLogger(__name__)
 # from https://docs.python.org/3/library/importlib.html#importing-programmatically
 def check_import(name):
     spec = importlib.util.find_spec(name)
-    log.info('module %s has spec" %s ' % (name, spec))
+    if spec:
+        log.info('module %s has spec" %s ' % (name, spec))
+    else:
+        log.warning('unable to find_spec for module %s' % name)
+        return
+
     module = importlib.util.module_from_spec(spec)
     sys.modules[name] = module
     spec.loader.exec_module(module)
-    return module
+    log.info('library: "%s" has version: %s' % (name, module.__version__))
 
 
 def log_library_info(lib_names: List[str] = None):
     lib_names = lib_names or ['botocore', 'boto3']
     for name in lib_names:
-        lib = check_import(name)
-        log.info('library: "%s" has version: %s' % (name, lib.__version__))
+        check_import(name)
