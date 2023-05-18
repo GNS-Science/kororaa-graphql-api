@@ -9,11 +9,16 @@ from flask import Flask
 from flask_cors import CORS
 from flask_graphql import GraphQLView
 
-from kororaa_graphql_api import library_version_check  # noqa: F401 unuused import
+from kororaa_graphql_api.library_version_check import log_library_info
 from kororaa_graphql_api.schema import schema_root
 
 LOGGING_CFG = os.getenv('LOGGING_CFG', 'kororaa_graphql_api/logging_aws.yaml')
 logger = logging.getLogger(__name__)
+
+TESTING = os.getenv('TESTING', False)
+if not TESTING:
+    # because in testing, this screws up moto mocking
+    log_library_info(['botocore', 'boto3', 'fiona'])
 
 
 def create_app():
