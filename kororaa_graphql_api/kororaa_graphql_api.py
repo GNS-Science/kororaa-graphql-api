@@ -9,6 +9,7 @@ from flask import Flask
 from flask_cors import CORS
 from flask_graphql import GraphQLView
 
+from kororaa_graphql_api import library_version_check  # noqa: F401 unuused import
 from kororaa_graphql_api.schema import schema_root
 
 LOGGING_CFG = os.getenv('LOGGING_CFG', 'kororaa_graphql_api/logging_aws.yaml')
