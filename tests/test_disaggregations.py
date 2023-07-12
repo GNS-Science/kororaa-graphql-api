@@ -1,13 +1,16 @@
 import json
 import unittest
-import boto3
 import io
+import os
 from graphene.test import Client
-from moto import mock_s3
+import boto3
 
-# from kororaa_graphql_api.datastore import *
-from kororaa_graphql_api.schema import schema_root
-from kororaa_graphql_api.config import S3_BUCKET_NAME, DISAGGS_KEY
+from moto import mock_s3, mock_cloudwatch
+import pytest
+
+with mock_cloudwatch():
+    from kororaa_graphql_api.schema import schema_root
+    from kororaa_graphql_api.config import S3_BUCKET_NAME, DISAGGS_KEY
 
 DISAGGS = [
     {
@@ -42,12 +45,19 @@ DISAGGS = [
     },
 ]
 
+# def test_create_bucket(s3):
+#     # s3 is a fixture defined above that yields a boto3 s3 client.
+#     # Feel free to instantiate another boto3 S3 client -- Keep note of the region though.
+#     s3.create_bucket(Bucket="somebucket")
+
+#     result = s3.list_buckets()
+#     assert len(result["Buckets"]) == 1
+#     assert result["Buckets"][0]["Name"] == "somebucket"
 
 def setup_disaggs():
     s3 = boto3.resource('s3')
     object = s3.Object(S3_BUCKET_NAME, DISAGGS_KEY)
     object.put(Body=json.dumps(DISAGGS))
-
 
 class TestDisaggsWithS3(unittest.TestCase):
     mock_s3 = mock_s3()

@@ -6,9 +6,9 @@ import itertools
 from unittest import mock
 
 from graphene.test import Client
-from kororaa_graphql_api.schema import schema_root
-
-# import pytest
+from moto import mock_cloudwatch
+with mock_cloudwatch():
+    from kororaa_graphql_api.schema import schema_root
 
 from nzshm_common.location import CodedLocation
 from nzshm_common.location.location import LOCATIONS_BY_ID

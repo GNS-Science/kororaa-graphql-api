@@ -1,7 +1,10 @@
 import json
 from graphene.test import Client
 
-from kororaa_graphql_api.schema import schema_root
+from moto import mock_cloudwatch
+with mock_cloudwatch():
+    from kororaa_graphql_api.schema import schema_root
+
 import nzshm_model
 import pytest
 
