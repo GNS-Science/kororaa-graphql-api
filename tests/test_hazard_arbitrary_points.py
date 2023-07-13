@@ -6,9 +6,9 @@ from unittest import mock
 
 from graphene.test import Client
 from moto import mock_cloudwatch
+
 with mock_cloudwatch():
     from kororaa_graphql_api.schema import schema_root
-    from kororaa_graphql_api.config import S3_BUCKET_NAME, DISAGGS_KEY
 
 from toshi_hazard_store import model
 

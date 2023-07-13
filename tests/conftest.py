@@ -1,8 +1,9 @@
-import boto3
+# import boto3
 import os
 import pytest
 
-from moto import mock_s3 #, mock_cloudwatch
+# from moto import mock_s3  # , mock_cloudwatch
+
 
 @pytest.fixture(scope="module")
 def aws_credentials():
@@ -14,6 +15,7 @@ def aws_credentials():
     os.environ["AWS_SECURITY_TOKEN"] = "testing"
     os.environ["AWS_SESSION_TOKEN"] = "testing"
     os.environ["AWS_DEFAULT_REGION"] = "us-east-1"
+
 
 # @pytest.fixture(scope="module")
 # def s3(aws_credentials):

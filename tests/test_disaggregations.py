@@ -1,12 +1,11 @@
 import json
 import unittest
 import io
-import os
 from graphene.test import Client
 import boto3
 
 from moto import mock_s3, mock_cloudwatch
-import pytest
+
 
 with mock_cloudwatch():
     from kororaa_graphql_api.schema import schema_root
@@ -54,10 +53,12 @@ DISAGGS = [
 #     assert len(result["Buckets"]) == 1
 #     assert result["Buckets"][0]["Name"] == "somebucket"
 
+
 def setup_disaggs():
     s3 = boto3.resource('s3')
     object = s3.Object(S3_BUCKET_NAME, DISAGGS_KEY)
     object.put(Body=json.dumps(DISAGGS))
+
 
 class TestDisaggsWithS3(unittest.TestCase):
     mock_s3 = mock_s3()

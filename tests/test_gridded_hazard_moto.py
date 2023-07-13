@@ -3,7 +3,7 @@
 import unittest
 import itertools
 import random
-from moto import mock_dynamodb,  mock_cloudwatch
+from moto import mock_dynamodb, mock_cloudwatch
 
 from graphene.test import Client
 
