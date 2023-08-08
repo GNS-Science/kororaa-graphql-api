@@ -105,7 +105,7 @@ def load_polygon_file(file_name: str) -> gpd.GeoDataFrame:
 
 
 @lru_cache
-def nz_simplified_polgons() -> Tuple[CustomPolygon, ...]:
+def nz_simplified_polygons() -> Tuple[CustomPolygon, ...]:
 
     small_nz = Path(__file__).parent.parent.parent / 'resources' / 'small-nz.wkt.csv.zip'
     nzdf = load_polygon_file(str(small_nz))
@@ -122,17 +122,17 @@ def nz_simplified_polgons() -> Tuple[CustomPolygon, ...]:
 @lru_cache
 def clip_tiles(clipping_parts: Tuple[CustomPolygon], tiles: Tuple[CustomPolygon]):
     t0 = dt.utcnow()
-    covered_tiles: List[CustomPolygon] = list(inner_tiles(clipping_parts, tiles))
+    covered_tiles = set(inner_tiles(clipping_parts, tiles))
     db_metrics.put_duration(__name__, 'filter_inner_tiles', dt.utcnow() - t0)
 
-    outer_tiles: List[CustomPolygon] = list(set(tiles).difference(set(covered_tiles)))
+    outer_tiles = set(tiles).difference(covered_tiles)
 
     t0 = dt.utcnow()
-    clipped_tiles: List[CustomPolygon] = list(edge_tiles(clipping_parts, outer_tiles))
+    clipped_tiles = set(edge_tiles(clipping_parts, outer_tiles))
     db_metrics.put_duration(__name__, 'clip_outer_tiles', dt.utcnow() - t0)
 
     log.info('filtered %s tiles to %s inner in %s' % (len(tiles), len(covered_tiles), dt.utcnow() - t0))
     log.info('clipped %s edge tiles to %s in %s' % (len(outer_tiles), len(clipped_tiles), dt.utcnow() - t0))
 
-    new_geometry = covered_tiles + clipped_tiles
+    new_geometry = covered_tiles.union(clipped_tiles)
     return tuple(new_geometry)
