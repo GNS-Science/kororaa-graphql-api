@@ -4,10 +4,12 @@ import boto3
 import io
 import dateutil.parser
 from graphene.test import Client
-from moto import mock_s3
+from moto import mock_s3, mock_cloudwatch
 from pathlib import Path, PurePath
-from kororaa_graphql_api.schema import schema_root
-from kororaa_graphql_api.config import S3_BUCKET_NAME, TEXT_CONTENT_INDEX_KEY, TEXT_CONTENT_FOLDER_KEY
+
+with mock_cloudwatch():
+    from kororaa_graphql_api.schema import schema_root
+    from kororaa_graphql_api.config import S3_BUCKET_NAME, TEXT_CONTENT_INDEX_KEY, TEXT_CONTENT_FOLDER_KEY
 
 json_index = Path(__file__).parent / 'fixtures' / 'textual_content_index.json'
 TC_INDEX = json.load(open(json_index, 'r'))

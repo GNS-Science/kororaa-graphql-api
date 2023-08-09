@@ -3,8 +3,11 @@
 import unittest
 from graphene.test import Client
 
-from kororaa_graphql_api.schema import schema_root
-from kororaa_graphql_api.kororaa_graphql_api import create_app
+from moto import mock_cloudwatch
+
+with mock_cloudwatch():
+    from kororaa_graphql_api.schema import schema_root
+    from kororaa_graphql_api.kororaa_graphql_api import create_app
 
 
 class TestFlaskApp(unittest.TestCase):

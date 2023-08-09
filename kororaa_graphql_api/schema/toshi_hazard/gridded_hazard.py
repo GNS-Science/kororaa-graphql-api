@@ -16,7 +16,7 @@ from toshi_hazard_store import query
 
 from kororaa_graphql_api.cloudwatch import ServerlessMetricWriter
 
-from .gridded_hazard_helpers import CustomPolygon, clip_tiles, nz_simplified_polgons
+from .gridded_hazard_helpers import CustomPolygon, clip_tiles, nz_simplified_polygons
 from .hazard_schema import GriddedLocation
 
 log = logging.getLogger(__name__)
@@ -88,7 +88,7 @@ def get_colour_values(
 
 
 @lru_cache
-def get_tile_polygons(grid_id: str, poes: Tuple[Any]) -> Tuple[CustomPolygon, ...]:
+def get_tile_polygons(grid_id: str) -> Tuple[CustomPolygon, ...]:
     # build the hazard_map
     t0 = dt.utcnow()
     region_grid = RegionGrid[grid_id]
@@ -142,24 +142,25 @@ def cacheable_hazard_map(
         % (vs30, imt, poe, agg, hazard_model, grid_id)
     )
 
-    nz_parts = nz_simplified_polgons()  # cached
-    log.debug('nz_simplified_polgons cache_info: %s' % str(nz_simplified_polgons.cache_info()))
+    nz_parts = nz_simplified_polygons()  # cached
+    log.debug('nz_simplified_polygons cache_info: %s' % str(nz_simplified_polygons.cache_info()))
 
-    polygons = get_tile_polygons(grid_id, values)
-    # print('get_tile_polygon cache_info')
+    polygons = get_tile_polygons(grid_id)
     log.debug('get_tile_polygon cache_info: %s' % str(get_tile_polygons.cache_info()))
 
     new_geometry = clip_tiles(nz_parts, polygons)
     log.debug('clip_tiles cache_info: %s' % str(clip_tiles.cache_info()))
 
+    log.debug('len(values) %s; len(polygons) %s; len(new_geometry) %s' % (len(values), len(polygons), len(new_geometry)))
+
     t1 = dt.utcnow()
-    log.debug('time to build geom took %s' % (t1 - t0))
+    log.debug('time to build geometry of %s polygons took %s' % (len(new_geometry), (t1 - t0)))
 
     values = values_for_clipped_tiles(new_geometry, polygons, values)
     assert len(new_geometry) == len(values)
     t2 = dt.utcnow()
     log.debug('values_for_clipped_tiles cache_info: %s' % str(values_for_clipped_tiles.cache_info()))
-    log.debug('time to build values %s' % (t2 - t1))
+    log.debug('time to build %s values %s' % (len(values), (t2 - t1)))
 
     color_scale_vmax = (
         color_scale_vmax

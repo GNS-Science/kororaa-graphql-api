@@ -4,10 +4,12 @@ import boto3
 import io
 import dateutil.parser
 from graphene.test import Client
-from moto import mock_s3
+from moto import mock_s3, mock_cloudwatch
 from pathlib import Path
-from kororaa_graphql_api.schema import schema_root
-from kororaa_graphql_api.config import S3_BUCKET_NAME, PUBLICATIONS_KEY
+
+with mock_cloudwatch():
+    from kororaa_graphql_api.schema import schema_root
+    from kororaa_graphql_api.config import S3_BUCKET_NAME, PUBLICATIONS_KEY
 
 # raw = '''
 # [

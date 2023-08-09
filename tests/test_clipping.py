@@ -4,12 +4,16 @@ import unittest
 from datetime import datetime as dt
 from nzshm_common.grids import RegionGrid
 from nzshm_common.geometry.geometry import create_square_tile
-from kororaa_graphql_api.schema.toshi_hazard.gridded_hazard_helpers import (
-    CustomPolygon,
-    clip_tiles,
-    nz_simplified_polgons,
-)
+
+from moto import mock_cloudwatch
 from shapely.geometry import Polygon
+
+with mock_cloudwatch():
+    from kororaa_graphql_api.schema.toshi_hazard.gridded_hazard_helpers import (
+        CustomPolygon,
+        clip_tiles,
+        nz_simplified_polygons,
+    )
 
 GRID = 'WLG_0_01_nb_1_1'
 
@@ -44,7 +48,7 @@ class TestGriddedHazard(unittest.TestCase):
             geometry.append(tile)
         print('built %s tiles in %s' % (len(geometry), dt.utcnow() - t0))
 
-        nz_parts = nz_simplified_polgons()
+        nz_parts = nz_simplified_polygons()
 
         new_geometry = clip_tiles(nz_parts, tuple(geometry))
         self.assertEqual(len(new_geometry), 763)

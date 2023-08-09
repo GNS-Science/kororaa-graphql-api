@@ -1,13 +1,15 @@
 import json
 import unittest
-import boto3
 import io
 from graphene.test import Client
-from moto import mock_s3
+import boto3
 
-# from kororaa_graphql_api.datastore import *
-from kororaa_graphql_api.schema import schema_root
-from kororaa_graphql_api.config import S3_BUCKET_NAME, DISAGGS_KEY
+from moto import mock_s3, mock_cloudwatch
+
+
+with mock_cloudwatch():
+    from kororaa_graphql_api.schema import schema_root
+    from kororaa_graphql_api.config import S3_BUCKET_NAME, DISAGGS_KEY
 
 DISAGGS = [
     {
@@ -41,6 +43,15 @@ DISAGGS = [
         "report_url": "http://fake-plastic-trees/DATA/slt_v8_gmm_v2/diagreport_report/XXX",
     },
 ]
+
+# def test_create_bucket(s3):
+#     # s3 is a fixture defined above that yields a boto3 s3 client.
+#     # Feel free to instantiate another boto3 S3 client -- Keep note of the region though.
+#     s3.create_bucket(Bucket="somebucket")
+
+#     result = s3.list_buckets()
+#     assert len(result["Buckets"]) == 1
+#     assert result["Buckets"][0]["Name"] == "somebucket"
 
 
 def setup_disaggs():
