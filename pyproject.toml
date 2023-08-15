@@ -1,7 +1,7 @@
 [tool]
 [tool.poetry]
 name = "kororaa-graphql-api"
-version = "0.7.1"
+version = "0.8.1"
 homepage = "https://github.com/gns-science/kororaa-graphql-api"
 description = "A Grapql application API for NZHSM Kororaa UI.."
 authors = ["GNS Science New Zealand <chrisbc@artisan.co.nz>"]
