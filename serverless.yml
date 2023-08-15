@@ -38,6 +38,7 @@ custom:
     slimPatterns:
       - '**/*.egg-info*'
     noDeploy:
+      - boto3
       - botocore
       - fiona
       - Fiona.libs

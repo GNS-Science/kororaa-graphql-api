@@ -36,8 +36,9 @@ boto3 = "^1.24.57"
 python-dateutil = "^2.8.2"
 pyproj = "3.3.0"
 toshi-hazard-store = "^0.7.3"
+nzshm-model = "^0.2.0"
 
-[tool.poetry.dev-dependencies]
+[tool.poetry.group.dev.dependencies]
 tox = "^4.2.8"
 black  = { version = "^22.3"}
 isort  = { version = "^5.8.0"}

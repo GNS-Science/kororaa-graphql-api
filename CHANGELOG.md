@@ -1,9 +1,13 @@
 # Changelog
 
-## [0.7.1] - 2023-08-15
+## [0.8.1] - 2023-08-15
 ### Changed
- - using toshi-hazard-store>=0.7.3 for faster hazard queries
+ - use toshi-hazard-store>=0.7.3 for faster hazard queries
  - python versions, now support only 3.9, 3.10
+
+## [0.8.0] - 2022-
+### Added
+ - new schema resource nzshm_model with logic_tree structure
 
 ## [0.7.0] - 2023-05-17
 ### Changed

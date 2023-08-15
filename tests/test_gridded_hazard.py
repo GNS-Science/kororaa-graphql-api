@@ -29,7 +29,7 @@ def build_hazard_aggregation_models(*args, **kwargs):
     grid_id = args[1]['location_grid_id']
     grid = RegionGrid[grid_id].load()
 
-    grid_poes = [random.randint(0, 4.7e6) / 1e6 for x in range(len(grid))]
+    grid_poes = [random.randint(0, int(4.7e6)) / int(1e6) for x in range(len(grid))]
     grid_poes[0] = 0.1
 
     for (imt, vs30, agg) in itertools.product(imts, vs30s, aggs):
