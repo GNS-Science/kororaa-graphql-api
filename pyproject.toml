@@ -22,7 +22,7 @@ packages = [
 ]
 
 [tool.poetry.dependencies]
-python = ">=3.8,<4.0"
+python = ">=3.9,<3.13"
 Flask = "^2.1.2"
 Flask-Cors = "^3.0.10"
 Flask-GraphQL = "^2.0.1"
@@ -35,7 +35,7 @@ nzshm-common = "^0.6.0"
 boto3 = "^1.24.57"
 python-dateutil = "^2.8.2"
 pyproj = "3.3.0"
-toshi-hazard-store = "^0.7.2"
+toshi-hazard-store = "^0.7.3"
 
 [tool.poetry.dev-dependencies]
 tox = "^4.2.8"
@@ -97,7 +97,7 @@ doc = [
 [tool.black]
 line-length = 120
 skip-string-normalization = true
-target-version = ['py37', 'py38', 'py39']
+target-version = ['py39', 'py310']
 include = '\.pyi?$'
 exclude = '''
 /(

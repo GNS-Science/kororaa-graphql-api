@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.7.1] - 2023-08-15
+### Changed
+ - using toshi-hazard-store>=0.7.3 for faster hazard queries
+ - python versions, now support only 3.9, 3.10
+
 ## [0.7.0] - 2023-05-17
 ### Changed
  - named locations have 0.001 precision
