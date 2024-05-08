@@ -40,7 +40,14 @@ You'll problably see an error, if youtr AWS credentials are not thise required f
 
 
 ### API Feature tests
-`$>poetry run pytest`
+You need an environment variable set: `TESTING=1` othereise Moto mocking for S3 is clobbered.
+
+Using the `poetry-dotenv-plugin` you can create an .env file like so...
+```
+echo TESTING=1 > .env
+```
+
+then `$>poetry run pytest` sholud just work.
 
 
 

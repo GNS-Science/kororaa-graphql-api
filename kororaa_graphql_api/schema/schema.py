@@ -6,6 +6,7 @@ import graphene
 from graphene import relay
 from nzshm_common.location import CodedLocation
 
+from .nzshm_model import NzshmModelResult, get_nzshm_model, get_nzshm_models
 from .publications import ScienceReportResult, get_science_reports
 from .textual_content import TextualContentResult, get_textual_content
 from .toshi_hazard import (
@@ -29,6 +30,10 @@ class QueryRoot(graphene.ObjectType):
     node = relay.Node.Field()
 
     about = graphene.String(description='About this API ')
+
+    nzshm_model = graphene.Field(NzshmModelResult, version=graphene.Argument(graphene.String))
+
+    nzshm_models = graphene.List(NzshmModelResult)  # Result,
 
     disaggregation_reports = graphene.Field(
         DisaggregationReportResult,
@@ -71,6 +76,14 @@ class QueryRoot(graphene.ObjectType):
         vs30=graphene.Argument(graphene.Int),
         poe=graphene.Argument(graphene.Float),
     )
+
+    def resolve_nzshm_model(root, info, **kwargs):
+        log.info("resolve_nzshm_model kwargs %s" % kwargs)
+        return get_nzshm_model(kwargs)
+
+    def resolve_nzshm_models(root, info, **kwargs):
+        log.info("resolve_nzshm_models kwargs %s" % kwargs)
+        return get_nzshm_models(kwargs)
 
     def resolve_disaggregation_reports(root, info, **kwargs):
         log.info("resolve_disaggregation_reports kwargs %s" % kwargs)

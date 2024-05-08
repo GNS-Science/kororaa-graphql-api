@@ -82,6 +82,7 @@ def hazard_curves(kwargs):
 
     def build_response_from_query(result, resolution):
         log.info("build_response_from_query")
+        t0 = dt.utcnow()
         for obj in result:
             named = match_named_location_coord_code(obj.nloc_001)
             if named:
@@ -99,6 +100,7 @@ def hazard_curves(kwargs):
                 agg=obj.agg,
                 curve=get_curve(obj),
             )
+        db_metrics.put_duration(__name__, 'hazard_curves.build_response_from_query', dt.utcnow() - t0)
 
     gridded_locations: List[GriddedLocation] = list(normalise_locations(kwargs['locs'], kwargs['resolution']))
     coded_locations: List[str] = [
