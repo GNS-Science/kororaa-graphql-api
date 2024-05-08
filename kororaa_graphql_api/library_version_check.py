@@ -16,7 +16,7 @@ Hopefully logging output from this modulw will aid in diagnosing such issues in 
 import importlib.util
 import logging
 import sys
-from typing import List
+from typing import List, Optional
 
 logging.basicConfig(level=logging.INFO)
 log = logging.getLogger(__name__)
@@ -37,7 +37,7 @@ def check_import(name):
     log.info('library: "%s" has version: %s' % (name, module.__version__))
 
 
-def log_library_info(lib_names: List[str] = None):
+def log_library_info(lib_names: Optional[List[str]] = None):
     lib_names = lib_names or ['botocore', 'boto3']
     for name in lib_names:
         check_import(name)

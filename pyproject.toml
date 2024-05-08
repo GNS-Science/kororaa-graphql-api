@@ -38,13 +38,13 @@ pyproj = "3.3.0"
 toshi-hazard-store = "^0.7.3"
 nzshm-model = "^0.2.0"
 
+
 [tool.poetry.group.dev.dependencies]
 tox = "^4.2.8"
 black  = { version = "^22.3"}
 isort  = { version = "^5.8.0"}
 flake8  = { version = "^3.9.2"}
 flake8-docstrings = { version = "^1.6.0", optional = true }
-mypy = {version = "^0.900"}
 pytest = "^7.4.0"
 pytest-cov  = { version = "^2.12.0"}
 virtualenv  = { version = "^20.2.2", optional = true}
@@ -68,10 +68,11 @@ toml = {version = "^0.10.2", optional = true}
 bump2version = {version = "^1.0.1"}
 jinja2 = {version = "3.0.3"}
 #moto = "^3.1.10"
-types-python-dateutil = "^2.8.16"
-types-PyYAML = "^6.0.7"
 moto = "^4.1.14"
 
+mypy = "^1.10.0"
+types-python-dateutil = "^2.9.0.20240316"
+types-pyyaml = "^6.0.12.20240311"
 
 [tool.poetry.extras]
 test = [
