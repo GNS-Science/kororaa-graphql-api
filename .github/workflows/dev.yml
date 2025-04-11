@@ -9,9 +9,8 @@ on:
 
 jobs:
   call-test-workflow:
-    uses: GNS-Science/nshm-github-actions/.github/workflows/python-run-tests.yml@feature/create-test-workflow
+    uses: GNS-Science/nshm-github-actions/.github/workflows/python-run-tests.yml@main
     with:
-      # Windows disabled until https://github.com/GNS-Science/nzshm-model/issues/129 is fixed
       operating-systems: "['ubuntu-latest']"
       python-versions: "['3.10']"
     secrets: inherit
