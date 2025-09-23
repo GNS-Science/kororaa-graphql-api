@@ -6,7 +6,7 @@
  - `version` resolver
 
 ### Removed
- - hazard features migrated to nshm-hazrard-graphql-api
+ - hazard features migrated to nshm-hazard-graphql-api
 
 ### Changed
  - move to yarn2 for node package management
