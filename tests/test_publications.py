@@ -56,7 +56,7 @@ PUBS = json.load(open(json_dataframe, 'r'))
 
 
 def setup_publications():
-    s3 = boto3.resource('s3')
+    s3 = boto3.resource('s3', region_name='us-east-1')
     object = s3.Object(S3_BUCKET_NAME, PUBLICATIONS_KEY)
     object.put(Body=json.dumps(PUBS))
 
@@ -67,7 +67,7 @@ class TestDisaggsWithS3(unittest.TestCase):
     def setUp(self):
         self.client = Client(schema_root)
         self.mock_s3.start()
-        self._s3 = boto3.resource('s3')
+        self._s3 = boto3.resource('s3', region_name='us-east-1')
         self._s3.create_bucket(Bucket=S3_BUCKET_NAME)
         self._bucket = self._s3.Bucket(S3_BUCKET_NAME)
         setup_publications()
