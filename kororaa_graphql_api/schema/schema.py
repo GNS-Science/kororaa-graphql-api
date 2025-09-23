@@ -46,6 +46,14 @@ class QueryRoot(graphene.ObjectType):
         log.info("resolve_nzshm_models kwargs %s" % kwargs)
         return get_nzshm_models(kwargs)
 
+    def resolve_nzshm_model(root, info, **kwargs):
+        log.info("resolve_nzshm_model kwargs %s" % kwargs)
+        return get_nzshm_model(kwargs)
+
+    def resolve_nzshm_models(root, info, **kwargs):
+        log.info("resolve_nzshm_models kwargs %s" % kwargs)
+        return get_nzshm_models(kwargs)
+
     def resolve_disaggregation_reports(root, info, **kwargs):
         log.info("resolve_disaggregation_reports kwargs %s" % kwargs)
         return disaggregation_reports(kwargs)
