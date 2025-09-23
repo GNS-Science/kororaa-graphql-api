@@ -31,7 +31,7 @@ Support:     forum.serverless.com
 Bugs:        github.com/serverless/serverless/issue
 
 ```
-You'll problably see an error, if your AWS credentials are not thise required for SLS.
+You'll problably see an error, if your AWS credentials are not those required for SLS.
 
 ## TESTING
 
