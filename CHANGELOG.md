@@ -1,6 +1,10 @@
 # Changelog
 
 ## [0.9.0] - 2025-09-23
+### Added
+ - `about` resolver
+ - `version` resolver
+
 ### Removed
  - hazard features migrated to nshm-hazrard-graphql-api
 
