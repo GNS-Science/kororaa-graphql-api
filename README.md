@@ -7,9 +7,7 @@
 [![codecov](https://codecov.io/gh/gns-science/kororaa-graphql-api/branch/main/graphs/badge.svg)](https://codecov.io/github/gns-science/kororaa-graphql-api)
 
 
-
-A Grapql application API for NZHSM Kororaa UI.
-
+A Graphql application API for NZHSM Kororaa UI.
 
 * Documentation: <https://gns-science.github.io/kororaa-graphql-api>
 * GitHub: <https://github.com/gns-science/kororaa-graphql-api>

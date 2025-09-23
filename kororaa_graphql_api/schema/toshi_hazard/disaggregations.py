@@ -1,4 +1,5 @@
 """Build Hazard curves from the old dynamoDB models."""
+
 import io
 import json
 import logging

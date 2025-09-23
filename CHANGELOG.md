@@ -1,5 +1,12 @@
 # Changelog
 
+
+## [0.9.1] - 2025-09-23
+### Changed
+ - python security updates
+ - node serverless package updates
+ - move to `graphql-server` project for GraphQLView
+
 ## [0.9.0] - 2025-09-23
 ### Added
  - `about` resolver
