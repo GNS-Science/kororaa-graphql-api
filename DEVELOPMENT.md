@@ -1,7 +1,5 @@
 # DEVELOPMENT
 
-This applicaiton if serverless.com python.
-
 ### Environment setup
 
  - clone the repo
