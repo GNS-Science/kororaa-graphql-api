@@ -12,9 +12,6 @@ classifiers=[
     'Intended Audience :: Developers',
     'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
     'Natural Language :: English',
-    'Programming Language :: Python :: 3',
-    'Programming Language :: Python :: 3.8',
-    'Programming Language :: Python :: 3.9',
 ]
 packages = [
     { include = "kororaa_graphql_api" },
@@ -22,7 +19,7 @@ packages = [
 ]
 
 [tool.poetry.dependencies]
-python = ">=3.10,<3.13"
+python = "^3.10"
 flask = "^3.0.3"
 flask-cors = "^6.0"
 graphql-server = {extras = ["flask"], version = "3.0.0b7"}

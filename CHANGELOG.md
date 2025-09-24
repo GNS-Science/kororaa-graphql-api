@@ -5,7 +5,7 @@
  - `safety` vulnerablity scanner (use requires reg/login)
 
 ### Changed
- - remove python 3.9 support
+ - python 3.10 support only
  - update advisories (from dependabot/safety) `cryptography` and `urllib3`
 
 ## [0.9.2] - 2025-09-24
