@@ -40,6 +40,23 @@ You'll problably see an error, if your AWS credentials are not those required fo
 ENABLE_METRICS=0 poetry run yarn sls wsgi serve
 ```
 
+## Auditing requirements packages
+
+```
+poetry export --all-groups > audit.txt
+poetry run pip-audit -r audit.txt -s pypi --require-hashes
+poetry run pip-audit -r audit.txt -s osv --require-hashes
+
+poetry show {package-name}
+```
+### Node
+```
+yarn npm audit -R
+
+yarn why {package-name}
+yarn upgrade-interactive
+```
+
 ## DEPLOY DEV service
 
 ```

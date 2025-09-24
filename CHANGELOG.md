@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.9.2] - 2025-09-24
+### Changed
+ - poetry package update
+ - docs for use of audit tools
 
 ## [0.9.1] - 2025-09-23
 ### Changed
