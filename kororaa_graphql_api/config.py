@@ -1,6 +1,7 @@
 """
-This module exports comfiguration for the current system
+This module exports configuration for the current system
 """
+
 import os
 
 

@@ -5,6 +5,7 @@ from graphene.test import Client
 
 from kororaa_graphql_api.schema import schema_root
 from kororaa_graphql_api.kororaa_graphql_api import create_app
+import kororaa_graphql_api
 
 
 class TestFlaskApp(unittest.TestCase):
@@ -35,3 +36,15 @@ class TestSchemaAboutResolver(unittest.TestCase):
         executed = self.client.execute(QUERY)
         print(executed)
         self.assertTrue('Hello World' in executed['data']['about'])
+
+    def test_get_version(self):
+
+        QUERY = """
+        query {
+            version
+        }
+        """
+
+        executed = self.client.execute(QUERY)
+        print(executed)
+        self.assertEqual(executed['data']['version'], kororaa_graphql_api.__version__)

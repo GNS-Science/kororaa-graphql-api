@@ -1,11 +1,33 @@
 # Changelog
 
+## [0.9.2] - 2025-09-24
+### Changed
+ - poetry package update
+ - docs for use of audit tools
+
+## [0.9.1] - 2025-09-23
+### Changed
+ - python security updates
+ - node serverless package updates
+ - move to `graphql-server` project for GraphQLView
+
+## [0.9.0] - 2025-09-23
+### Added
+ - `about` resolver
+ - `version` resolver
+
+### Removed
+ - hazard features migrated to nshm-hazard-graphql-api
+
+### Changed
+ - move to yarn2 for node package management
+ - updated to shared workflows
+
 ## [0.8.1] - 2023-08-15
 ### Changed
  - use toshi-hazard-store>=0.7.3 for faster hazard queries
  - python versions, now support only 3.9, 3.10
 
-## [0.8.0] - 2022-
 ### Added
  - new schema resource nzshm_model with logic_tree structure
 
