@@ -49,6 +49,12 @@ poetry run pip-audit -r audit.txt -s osv --require-hashes
 
 poetry show {package-name}
 ```
+
+### `safety` requires user login registration, but seems closer to dependabot in detections.
+```
+poetry run safety scan
+```
+
 ### Node
 ```
 yarn npm audit -R

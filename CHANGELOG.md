@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.9.3] - 2025-09-25
+### Added
+ - `safety` vulnerablity scanner (use requires reg/login)
+
+### Changed
+ - python 3.10 support only
+ - update advisories (from dependabot/safety) `cryptography` and `urllib3`
+
 ## [0.9.2] - 2025-09-24
 ### Changed
  - poetry package update
