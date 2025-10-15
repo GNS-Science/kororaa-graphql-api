@@ -1,6 +1,6 @@
 # Changelog
 
-## [0.9.4] - 2025-10
+## [0.10.0] - 2025-10-16
 
 ### Changed
  - migrate to serverless 4
