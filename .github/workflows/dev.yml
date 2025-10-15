@@ -9,6 +9,7 @@ on:
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
+  # Allows us to call the workflow from another workflow
   workflow_call:
 
 jobs:
@@ -16,6 +17,7 @@ jobs:
     uses: GNS-Science/nshm-github-actions/.github/workflows/python-run-tests.yml@main
     with:
       operating-systems: "['ubuntu-latest']"
-      python-versions: "['3.10']"
+      python-versions: "['3.12']"
       delete-poetry-lock: ${{ github.event_name == 'schedule' }} # the scheduled build tests against newer dependencies
+      optional-dependency-groups: dev
     secrets: inherit
