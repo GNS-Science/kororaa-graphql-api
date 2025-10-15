@@ -28,7 +28,6 @@ dependencies = [
     "graphene (>=3.3)",
     "graphql-server (==3.0.0b7)",
     "nzshm-common (>=0.6.0)",
-    "nzshm-model (>=0.2.0)",
     "python-dateutil (>=2.8.2)",
     "pyyaml (>=6.0.1)",
 ]
@@ -46,7 +45,7 @@ dev = [
     "flake8-docstrings",
     "flake8",
     "isort",
-    "moto",
+    "moto (>=4.0.0, <5.0)",
     "mypy",
     "pip-audit",
     "pre-commit",
