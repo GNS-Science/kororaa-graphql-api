@@ -1,5 +1,14 @@
 # Changelog
 
+
+## [0.9.4] - 2025-10
+
+### Changed
+ - migrate to serverless 4
+ - set serverless to python 3.12
+ - migrate pyproject.toml to PEP508
+ - ensureCI/CD workflows use minimum install footprints
+
 ## [0.9.3] - 2025-09-25
 ### Added
  - `safety` vulnerablity scanner (use requires reg/login)
