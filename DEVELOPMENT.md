@@ -42,8 +42,10 @@ ENABLE_METRICS=0 poetry run yarn sls wsgi serve
 
 ## Auditing requirements packages
 
+NB this is now included in tox:audit step
+
 ```
-poetry export --all-groups > audit.txt
+poetry export --all-groups --oupty audit.txt
 poetry run pip-audit -r audit.txt -s pypi --require-hashes
 poetry run pip-audit -r audit.txt -s osv --require-hashes
 
@@ -58,7 +60,6 @@ poetry run safety scan
 ### Node
 ```
 yarn npm audit -R
-
 yarn why {package-name}
 yarn upgrade-interactive
 ```
@@ -66,7 +67,7 @@ yarn upgrade-interactive
 ## DEPLOY DEV service
 
 ```
-AWS_PROFILE=**** poetry run yarn sls  --region ap-southeast-2 --stage dev
+AWS_PROFILE=**** poetry run yarn sls deploy --region ap-southeast-2 --stage dev
 ```
 
 ### API Feature tests

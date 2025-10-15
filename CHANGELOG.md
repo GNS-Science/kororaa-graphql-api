@@ -1,6 +1,5 @@
 # Changelog
 
-
 ## [0.9.4] - 2025-10
 
 ### Changed
@@ -8,6 +7,14 @@
  - set serverless to python 3.12
  - migrate pyproject.toml to PEP508
  - ensureCI/CD workflows use minimum install footprints
+ - add package.json to bump2version 
+
+### Added
+ - docs will publish in release workflow
+ - tox audit step 
+
+### Remove
+ - unused nzshm-model schema (superceded by nshm-model-graphql-api)
 
 ## [0.9.3] - 2025-09-25
 ### Added
