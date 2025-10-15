@@ -1,6 +1,6 @@
 [project]
 name = "kororaa-graphql-api"
-version = "0.9.3"
+version = "0.10.0"
 homepage = "https://github.com/gns-science/kororaa-graphql-api"
 description = "A Grapql application API for NZHSM Kororaa UI.."
 authors = [
