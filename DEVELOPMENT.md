@@ -45,7 +45,7 @@ ENABLE_METRICS=0 poetry run yarn sls wsgi serve
 NB this is now included in tox:audit step
 
 ```
-poetry export --all-groups --oupty audit.txt
+poetry export --all-groups --output audit.txt
 poetry run pip-audit -r audit.txt -s pypi --require-hashes
 poetry run pip-audit -r audit.txt -s osv --require-hashes
 
