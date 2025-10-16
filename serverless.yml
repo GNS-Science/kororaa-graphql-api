@@ -1,3 +1,7 @@
+# "org" ensures this Service is used with the correct Serverless Framework Access Key.
+org: gnssciencenshm
+# "app" enables Serverless Framework Dashboard features and sharing them with other Services.
+app: kororaa-graphql-api
 service: nzshm22-kororaa-api
 
 plugins:
@@ -82,7 +86,7 @@ custom:
 
 provider:
   name: aws
-  runtime: python3.10
+  runtime: python3.12
   stage: ${opt:stage, 'dev'}
   region: ap-southeast-2
   apiGateway:

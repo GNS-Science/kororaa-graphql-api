@@ -7,7 +7,6 @@ from graphene import relay
 
 import kororaa_graphql_api
 
-from .nzshm_model import NzshmModelResult, get_nzshm_model, get_nzshm_models
 from .publications import ScienceReportResult, get_science_reports
 from .textual_content import TextualContentResult, get_textual_content
 from .toshi_hazard import DisaggregationReportResult, disaggregation_reports
@@ -24,10 +23,6 @@ class QueryRoot(graphene.ObjectType):
 
     version = graphene.String(description='API version')
 
-    nzshm_model = graphene.Field(NzshmModelResult, version=graphene.Argument(graphene.String))
-
-    nzshm_models = graphene.List(NzshmModelResult)  # Result,
-
     disaggregation_reports = graphene.Field(
         DisaggregationReportResult,
     )
@@ -41,14 +36,6 @@ class QueryRoot(graphene.ObjectType):
         index=graphene.Argument(graphene.String, required=False),
         tags=graphene.Argument(graphene.List(graphene.String), required=False),
     )
-
-    def resolve_nzshm_model(root, info, **kwargs):
-        log.info("resolve_nzshm_model kwargs %s" % kwargs)
-        return get_nzshm_model(kwargs)
-
-    def resolve_nzshm_models(root, info, **kwargs):
-        log.info("resolve_nzshm_models kwargs %s" % kwargs)
-        return get_nzshm_models(kwargs)
 
     def resolve_disaggregation_reports(root, info, **kwargs):
         log.info("resolve_disaggregation_reports kwargs %s" % kwargs)

@@ -6,6 +6,8 @@
 # Node
 node_modules/**
 package-lock.json
+.yarn/**
+.yarnrc.yml
 
 # serverless
 .serverless/**
@@ -36,6 +38,7 @@ wheels/
 *.egg-info/
 .installed.cfg
 *.egg
+audit.txt
 
 # PyInstaller
 #  Usually these files are written by a python script from a template
