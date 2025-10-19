@@ -3,7 +3,7 @@ import unittest
 import boto3
 import io
 from graphene.test import Client
-from moto import mock_s3
+from moto import mock_aws
 
 # from kororaa_graphql_api.datastore import *
 from kororaa_graphql_api.schema import schema_root
@@ -50,18 +50,18 @@ def setup_disaggs():
 
 
 class TestDisaggsWithS3(unittest.TestCase):
-    mock_s3 = mock_s3()
+    mock_aws = mock_aws()
 
     def setUp(self):
         self.client = Client(schema_root)
-        self.mock_s3.start()
+        self.mock_aws.start()
         self._s3 = boto3.resource('s3', region_name='us-east-1')
         self._s3.create_bucket(Bucket=S3_BUCKET_NAME)
         self._bucket = self._s3.Bucket(S3_BUCKET_NAME)
         setup_disaggs()
 
     def tearDown(self):
-        self.mock_s3.stop()
+        self.mock_aws.stop()
 
     def test_s3_create_disaggs(self):
 
