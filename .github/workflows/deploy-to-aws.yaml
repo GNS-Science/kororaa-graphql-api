@@ -20,7 +20,6 @@ jobs:
     with:
       python-version: '3.12'
       node-version: '22'
-      docker: true
       node-pkg-manager: 'yarn2'
       smoketest-query: 'query QueryRoot{about}'
     secrets: inherit
