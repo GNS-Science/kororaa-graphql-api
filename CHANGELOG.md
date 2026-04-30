@@ -1,5 +1,12 @@
 # Changelog
 
+## [Unreleased]
+
+### Changed
+ - migrate from poetry to uv
+ - migrate to ruff
+ - dependency upgrades
+
 ## [0.10.0] - 2025-10-16
 
 ### Changed

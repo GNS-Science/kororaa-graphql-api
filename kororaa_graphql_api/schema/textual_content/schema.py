@@ -41,7 +41,7 @@ class TextualContent(graphene.ObjectType):
     def resolve_text(root, info, **args):
         """Resolve text."""
         t0 = dt.utcnow()
-        log.info('resolve_text root.index: %s' % root.index)
+        log.info('resolve_text root.index: %s', root.index)
         s3 = boto3.resource('s3')
 
         s3obj = s3.Object(S3_BUCKET_NAME, str(PurePath(TEXT_CONTENT_FOLDER_KEY, root.index)))

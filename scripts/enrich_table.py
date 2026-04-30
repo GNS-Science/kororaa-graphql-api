@@ -1,9 +1,9 @@
 #! python3 enrich_table.py
 
-import pandas as pd
 import math
 from pathlib import Path
-from typing import List
+
+import pandas as pd
 
 
 def searching_all_files(directory: Path):
@@ -31,7 +31,7 @@ def normalise_report_number(repnum: str) -> str:
     return repnum.replace(' ', '').replace('/', '-')
 
 
-def match_report_number(report_names: List[Path], report_number: str):
+def match_report_number(report_names: list[Path], report_number: str):
     try:
         if math.isnan(float(report_number)):
             return None
