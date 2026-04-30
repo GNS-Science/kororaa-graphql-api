@@ -19,7 +19,7 @@ s3 = boto3.resource('s3')
 
 
 def fetch_index_data() -> Iterator:
-    log.debug(f"fetch_index_data() {TEXT_CONTENT_INDEX_KEY} from {S3_BUCKET_NAME} ")
+    log.debug("fetch_index_data() %s from %s ", TEXT_CONTENT_INDEX_KEY, S3_BUCKET_NAME)
     s3 = boto3.resource('s3')
     s3obj = s3.Object(S3_BUCKET_NAME, TEXT_CONTENT_INDEX_KEY)
     file_object = io.BytesIO()

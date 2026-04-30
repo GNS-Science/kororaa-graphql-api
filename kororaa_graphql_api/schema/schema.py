@@ -38,15 +38,15 @@ class QueryRoot(graphene.ObjectType):
     )
 
     def resolve_disaggregation_reports(root, info, **kwargs):
-        log.info(f"resolve_disaggregation_reports kwargs {kwargs}")
+        log.info("resolve_disaggregation_reports kwargs %s", kwargs)
         return disaggregation_reports(kwargs)
 
     def resolve_science_reports(root, info, **kwargs):
-        log.info(f"resolve_science_reports kwargs {kwargs}")
+        log.info("resolve_science_reports kwargs %s", kwargs)
         return get_science_reports(kwargs)
 
     def resolve_textual_content(root, info, **kwargs):
-        log.info(f"resolve_textual_content kwargs {kwargs}")
+        log.info("resolve_textual_content kwargs %s", kwargs)
         return get_textual_content(kwargs)
 
     def resolve_about(root, info, **args):

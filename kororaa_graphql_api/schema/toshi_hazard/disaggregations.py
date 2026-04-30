@@ -20,7 +20,7 @@ db_metrics = ServerlessMetricWriter(metric_name="MethodDuration")
 
 
 def fetch_data() -> Iterator:
-    log.debug(f"fetch_data() {DISAGGS_KEY} from {S3_BUCKET_NAME} ")
+    log.debug("fetch_data() %s from %s ", DISAGGS_KEY, S3_BUCKET_NAME)
     s3 = boto3.resource('s3')
     s3obj = s3.Object(S3_BUCKET_NAME, DISAGGS_KEY)
     file_object = io.BytesIO()
