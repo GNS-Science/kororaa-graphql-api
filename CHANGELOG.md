@@ -1,5 +1,10 @@
 # Changelog
 
+## [Unreleased]
+
+### Dependencies
+- deps: patch skipped (safety-schemas 0.0.16→0.0.18 blocked by 1-week age cutoff); graphql-server pinned (user declined); pip vuln GHSA-58qw-9mgm-455v (no fix available)
+
 ## [0.10.0] - 2025-10-16
 
 ### Changed
