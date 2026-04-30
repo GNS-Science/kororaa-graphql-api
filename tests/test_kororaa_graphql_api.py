@@ -1,11 +1,12 @@
 """Tests for `kororaa_graphql_api` package."""
 
 import unittest
+
 from graphene.test import Client
 
-from kororaa_graphql_api.schema import schema_root
-from kororaa_graphql_api.kororaa_graphql_api import create_app
 import kororaa_graphql_api
+from kororaa_graphql_api.kororaa_graphql_api import create_app
+from kororaa_graphql_api.schema import schema_root
 
 
 class TestFlaskApp(unittest.TestCase):

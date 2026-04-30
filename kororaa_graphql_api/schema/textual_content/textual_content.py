@@ -1,8 +1,8 @@
 import io
 import json
 import logging
+from collections.abc import Iterator
 from datetime import datetime as dt
-from typing import Dict, Iterator, List
 
 import boto3
 import dateutil.parser
@@ -19,7 +19,7 @@ s3 = boto3.resource('s3')
 
 
 def fetch_index_data() -> Iterator:
-    log.debug("fetch_index_data() %s from %s " % (TEXT_CONTENT_INDEX_KEY, S3_BUCKET_NAME))
+    log.debug(f"fetch_index_data() {TEXT_CONTENT_INDEX_KEY} from {S3_BUCKET_NAME} ")
     s3 = boto3.resource('s3')
     s3obj = s3.Object(S3_BUCKET_NAME, TEXT_CONTENT_INDEX_KEY)
     file_object = io.BytesIO()
@@ -32,16 +32,15 @@ def get_textual_content(kwargs):
     """Run query against S#"""
     t0 = dt.utcnow()
 
-    def build_date(obj: Dict):
+    def build_date(obj: dict):
         try:
             return dateutil.parser.isoparse(obj["created"])
         except:  # noqa
             return
 
-    def build_textual_content(index: str, tags: List[str]) -> Iterator[TextualContent]:
+    def build_textual_content(index: str, tags: list[str]) -> Iterator[TextualContent]:
         log.info("build_textual_content")
         for obj in fetch_index_data():
-
             # return everything
             if not index and not tags:
                 yield TextualContent(

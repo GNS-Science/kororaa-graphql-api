@@ -1,8 +1,8 @@
 import io
 import json
 import logging
+from collections.abc import Iterator
 from datetime import datetime as dt
-from typing import Dict, Iterator
 
 import boto3
 import dateutil.parser
@@ -18,7 +18,7 @@ db_metrics = ServerlessMetricWriter(metric_name="MethodDuration")
 
 
 def fetch_data() -> Iterator:
-    log.debug("fetch_data() %s from %s " % (PUBLICATIONS_KEY, S3_BUCKET_NAME))
+    log.debug(f"fetch_data() {PUBLICATIONS_KEY} from {S3_BUCKET_NAME} ")
     s3 = boto3.resource('s3')
     s3obj = s3.Object(S3_BUCKET_NAME, PUBLICATIONS_KEY)
     file_object = io.BytesIO()
@@ -31,13 +31,13 @@ def get_science_reports(kwargs):
     """Run query against S#"""
     t0 = dt.utcnow()
 
-    def build_reviewers(obj: Dict) -> Iterator[Person]:
+    def build_reviewers(obj: dict) -> Iterator[Person]:
         for f in ["TAG Reviewer", "TAG Reviewer.1"]:
             if obj[f]:
                 print("obj[f]", obj[f])
                 yield Person(name=obj[f])
 
-    def build_status_notes(obj: Dict):
+    def build_status_notes(obj: dict):
         status = obj['Status']
         try:
             if status == 'published':
@@ -48,13 +48,13 @@ def get_science_reports(kwargs):
             pass
         return (ReportStatusEnum.Undefined, status)
 
-    def build_date(obj: Dict):
+    def build_date(obj: dict):
         try:
             return dateutil.parser.isoparse(obj["Publication date"])
         except:  # noqa
             return
 
-    def build_area(obj: Dict):
+    def build_area(obj: dict):
         try:
             return ProjectAreaEnum.get(obj['Area'].upper())
         except:  # noqa

@@ -8,8 +8,8 @@
 
 - setup python env
 ```
-pyenv local 3.10
-poetry env use 3.10
+pyenv local 3.12
+uv python pin 3.12
 ```
 
 setup yarn 2 ...
@@ -37,7 +37,7 @@ You'll problably see an error, if your AWS credentials are not those required fo
 
 ### Run API locally
 ```
-ENABLE_METRICS=0 poetry run yarn sls wsgi serve
+ENABLE_METRICS=0 uv run yarn sls wsgi serve
 ```
 
 ## Auditing requirements packages
@@ -45,16 +45,16 @@ ENABLE_METRICS=0 poetry run yarn sls wsgi serve
 NB this is now included in tox:audit step
 
 ```
-poetry export --all-groups --output audit.txt
-poetry run pip-audit -r audit.txt -s pypi --require-hashes
-poetry run pip-audit -r audit.txt -s osv --require-hashes
+uv export --format requirements-txt --no-emit-project -o audit.txt
+uv run pip-audit -r audit.txt -s pypi --require-hashes
+uv run pip-audit -r audit.txt -s osv --require-hashes
 
-poetry show {package-name}
+uv tree {package-name}
 ```
 
 ### `safety` requires user login registration, but seems closer to dependabot in detections.
 ```
-poetry run safety scan
+uv run safety scan
 ```
 
 ### Node
@@ -67,18 +67,18 @@ yarn upgrade-interactive
 ## DEPLOY DEV service
 
 ```
-AWS_PROFILE=**** poetry run yarn sls deploy --region ap-southeast-2 --stage dev
+AWS_PROFILE=**** uv run yarn sls deploy --region ap-southeast-2 --stage dev
 ```
 
 ### API Feature tests
 You need an environment variable set: `TESTING=1` otherwise Moto mocking for S3 is clobbered.
 
-Using the `poetry-dotenv-plugin` you can create an .env file like so...
+Using the `uv dotenv` you can create an .env file like so...
 ```
 echo TESTING=1 > .env
 ```
 
-then `$>poetry run pytest` should just work.
+then `$>uv run pytest` should just work.
 
 
 
