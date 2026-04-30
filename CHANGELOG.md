@@ -3,6 +3,7 @@
 ## [Unreleased]
 
 ### Dependencies
+- deps: yarn patch (serverless 4.29.0→4.29.3 direct; @hapi/content 6.0.0→6.0.1, koa 2.16.2→2.16.3, lodash 4.17.21→4.17.23 transitive); minor (@smithy/config-resolver 4.2.2→4.4.0, brace-expansion 2.0.2→2.0.3, minimatch 9.0.5→9.0.7 transitive; axios/follow-redirects updated via serverless bump); major: fast-xml-parser 3.21.1→4.1.2, glob 7.2.3→10.5.0, uuid 9.0.1→14.0.0 (all transitive)
 - deps: patch skipped (safety-schemas 0.0.16→0.0.18 blocked by 1-week age cutoff); graphql-server pinned (user declined); pip vuln GHSA-58qw-9mgm-455v (no fix available)
 
 ## [0.10.0] - 2025-10-16
