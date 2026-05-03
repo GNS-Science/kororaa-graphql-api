@@ -1,5 +1,13 @@
 # Changelog
 
+## [Unreleased]
+
+### Changed
+ - migrate from poetry to uv
+ - migrate to ruff
+ - dependency upgrades
+ - deps: patch (koa 2.16.3→2.16.4, dicer 0.3.0→0.3.1); minor (lodash 4.17.23→4.18.1); major skipped: fast-xml-parser (s3rver compat)
+
 ## [0.10.0] - 2025-10-16
 
 ### Changed

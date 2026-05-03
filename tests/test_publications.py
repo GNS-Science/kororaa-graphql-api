@@ -1,13 +1,15 @@
+import io
 import json
 import unittest
+from pathlib import Path
+
 import boto3
-import io
 import dateutil.parser
 from graphene.test import Client
 from moto import mock_aws
-from pathlib import Path
+
+from kororaa_graphql_api.config import PUBLICATIONS_KEY, S3_BUCKET_NAME
 from kororaa_graphql_api.schema import schema_root
-from kororaa_graphql_api.config import S3_BUCKET_NAME, PUBLICATIONS_KEY
 
 # raw = '''
 # [
@@ -52,7 +54,7 @@ from kororaa_graphql_api.config import S3_BUCKET_NAME, PUBLICATIONS_KEY
 json_dataframe = (
     Path(__file__).parent.parent / 'seed_data' / 'PUBLICATIONS' / 'nshm_science_reports_metadata_table.json'
 )
-PUBS = json.load(open(json_dataframe, 'r'))
+PUBS = json.load(open(json_dataframe))
 
 
 def setup_publications():

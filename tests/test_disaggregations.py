@@ -1,13 +1,15 @@
+import io
 import json
 import unittest
+
 import boto3
-import io
 from graphene.test import Client
 from moto import mock_aws
 
+from kororaa_graphql_api.config import DISAGGS_KEY, S3_BUCKET_NAME
+
 # from kororaa_graphql_api.datastore import *
 from kororaa_graphql_api.schema import schema_root
-from kororaa_graphql_api.config import S3_BUCKET_NAME, DISAGGS_KEY
 
 DISAGGS = [
     {
