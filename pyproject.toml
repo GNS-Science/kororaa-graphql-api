@@ -1,6 +1,6 @@
 [project]
 name = "kororaa-graphql-api"
-version = "0.10.0"
+version = "0.10.1"
 description = "A Grapql application API for NZHSM Kororaa UI.."
 readme = "README.md"
 requires-python = ">=3.12,<4.0"
