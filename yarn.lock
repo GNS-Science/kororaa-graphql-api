@@ -3264,7 +3264,7 @@ __metadata:
   resolution: "nzshm22-kororaa-api@workspace:."
   dependencies:
     serverless: "npm:4.29.3"
-    serverless-plugin-warmup: "npm:^8.3.0"
+    serverless-plugin-warmup: "npm:^8.4.1"
     serverless-s3-local: "npm:^0.8.5"
     serverless-wsgi: "npm:^3.1.0"
   languageName: unknown
@@ -3586,10 +3586,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"serverless-plugin-warmup@npm:^8.3.0":
-  version: 8.3.0
-  resolution: "serverless-plugin-warmup@npm:8.3.0"
-  checksum: 10c0/22a89b12a64a010ad7ff36e181498ec38f336be805d1141931102415f4620ee034bbef07259a61ed3aa86a57d58d5d89a89c1fecda6d90d431fcbfbddbbfdd31
+"serverless-plugin-warmup@npm:^8.4.1":
+  version: 8.4.1
+  resolution: "serverless-plugin-warmup@npm:8.4.1"
+  checksum: 10c0/b82f81f1600764a57ea7775ecaec347052c27e080f49b17b50b6f66dc4449aa3de2cb7539cb1ff6f1f7e9aba4c1bad4a1acea826ddf48a6041a28eea20c19529
   languageName: node
   linkType: hard
 
