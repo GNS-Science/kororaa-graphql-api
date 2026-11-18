@@ -52,11 +52,6 @@ uv run pip-audit -r audit.txt -s osv --require-hashes
 uv tree {package-name}
 ```
 
-### `safety` requires user login registration, but seems closer to dependabot in detections.
-```
-uv run safety scan
-```
-
 ### Node
 ```
 yarn npm audit -R
