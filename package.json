@@ -28,7 +28,6 @@
   "resolutions": {
     "brace-expansion": "2.1.7",
     "minimatch": "9.0.7",
-    "s3rver/fast-xml-parser": "^3.21.1",
     "glob": "10.5.0",
     "uuid": "14.0.0",
     "dicer": "0.3.1",
