@@ -32,7 +32,7 @@ def create_app():
         '/graphql',
         view_func=GraphQLView.as_view(
             'graphql',
-            schema=schema_root.graphql_schema,
+            schema=schema_root,
             graphiql=True,
         ),
     )
