@@ -26,7 +26,6 @@
   },
   "packageManager": "yarn@4.14.1",
   "resolutions": {
-    "@smithy/config-resolver": "4.4.0",
     "brace-expansion": "2.1.7",
     "minimatch": "9.0.7",
     "s3rver/fast-xml-parser": "^3.21.1",
