@@ -38,7 +38,9 @@ class ServerlessMetricWriter:
         )
         log.debug(
             'ENABLE_METRICS for %s = %s (os: %s)',  # noqa: E501
-            self._metric_name, ENABLE_METRICS, bool(os.getenv('ENABLE_METRICS'))
+            self._metric_name,
+            ENABLE_METRICS,
+            bool(os.getenv('ENABLE_METRICS')),
         )
         if ENABLE_METRICS:
             self._client.put_metric_data(**rec)
