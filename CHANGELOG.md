@@ -9,6 +9,10 @@
  - deps: patch (koa 2.16.3→2.16.4, dicer 0.3.0→0.3.1); minor (lodash 4.17.23→4.18.1); major skipped: fast-xml-parser (s3rver compat)
  - deps (uv): major: backrefs 6→8, bracex 2→3, cryptography 46→50, mypy 1→2, pymdown-extensions 10→12, watchdog 6→7, wcmatch 10→12; minor/patch: all in-range updates
  - deps (yarn): resolutions bumped for @hapi/content, @hapi/wreck, follow-redirects, form-data, velocityjs, axios, ws, @smithy/smithy-client, brace-expansion
+ - deps: graphql-server 3.0.0b7→3.0.0 (Flask view import moved to `graphql_server.flask.views`; query validation errors now return HTTP 200 with `data: null`)
+ - deps: nzshm-common 0.10→0.11, serverless 4.29.3→4.46.0
+ - deps: removed `safety` dev dependency (and its tox audit command)
+ - CI: deploy workflow uses Node 24
 
 ## [0.10.0] - 2025-10-16
 
