@@ -29,7 +29,6 @@
     "brace-expansion": "2.1.7",
     "minimatch": "9.0.7",
     "glob": "10.5.0",
-    "dicer": "0.3.1",
-    "@smithy/smithy-client": "4.15.2"
+    "dicer": "0.3.1"
   }
 }
